@@ -4,7 +4,5 @@
 3. Install JDK 25
 
 # Initial Setup Springboot
-buka 
-'''
-https://start.spring.io/
-'''https://start.spring.io/
+1. buka https://start.spring.io/ 
+![alt text](image.png)
