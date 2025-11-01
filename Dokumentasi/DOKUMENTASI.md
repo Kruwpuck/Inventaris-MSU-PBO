@@ -12,7 +12,8 @@
 4. Buka project di VS Code / IDE lainya
 5. buka pom.xml
 6. Tambahkan dependency berikut di dalam tag <dependencies> </dependencies>
-```		<dependency>
+```		
+        <dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
