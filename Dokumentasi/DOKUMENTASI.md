@@ -31,5 +31,6 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.6.0</version>
 		</dependency>
+```		
 7. jalankan perintah berikut di terminal untuk mendownload dependency
 ```
