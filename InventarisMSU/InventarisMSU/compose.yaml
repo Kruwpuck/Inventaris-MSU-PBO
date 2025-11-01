@@ -1,1 +1,10 @@
 services:
+  db:
+    image: postgres:16
+    container_name: inventarisMSU-db
+    environment:
+      POSTGRES_DB: inventaris
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"

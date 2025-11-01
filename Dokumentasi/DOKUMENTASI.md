@@ -3,6 +3,7 @@
 2. Install Maven 3.9
 3. Install JDK 25
 4. VS Code / IDE lainya
+5. Docker Desktop
 
 # Initial Setup Springboot
 1. buka https://start.spring.io/ 
@@ -32,5 +33,11 @@
 			<version>2.6.0</version>
 		</dependency>
 ```		
-7. jalankan perintah berikut di terminal untuk mendownload dependency
+# LANGSUNG JALANIN DARI SINI
+7. jalankan perintah berikut di terminal yang sama dengan working directory project
 ```
+mvn spring-boot:run
+```
+8. buka browser dan akses http://localhost:8080/
+9. Login menggunakan username: `user` dan password: yang tersedia di terminal seperti berikut
+![alt text](image-1.png)
