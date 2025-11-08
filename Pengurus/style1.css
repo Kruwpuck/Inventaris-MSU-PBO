@@ -1,0 +1,60 @@
+/* ---------- Header Hijau ---------- */
+.header-green {
+  background-color: #c9f0d0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-icon {
+  background-color: #e6e6e6;
+  border-radius: 50%;
+  padding: 8px;
+  font-size: 20px;
+}
+
+/* ---------- Dashboard ---------- */
+.dashboard {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.dashboard h2 {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.dashboard p {
+  font-size: 14px;
+  color: #555;
+}
+
+.menu-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 60px;
+}
+
+.menu-btn {
+  background-color: #48b588;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  background-color: #3da377;
+  transform: translateY(-2px);
+}
