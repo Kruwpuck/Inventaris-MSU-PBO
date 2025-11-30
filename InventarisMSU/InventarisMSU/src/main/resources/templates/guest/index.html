@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Masjid Syamsul Ulum</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" th:href="@{/assets/guest/styles.css}">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-masjid sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+        <img th:src="@{/assets/guest/loogoo.png}" alt="Logo" class="logo">
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navMain">
+        <ul class="navbar-nav align-items-lg-center gap-lg-4">
+          <li class="nav-item"><a class="nav-link active" href="#beranda">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/catalogue}">Pinjam Barang</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/ruangan}">Pinjam Fasilitas</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="beranda" class="hero">
+    <div class="hero-bg" th:style="'background-image:url(' + @{/assets/guest/plaza1.png} + ');'"></div>
+    <div class="hero-overlay"></div>
+    <div class="container text-center">
+      <h1 class="hero-title drop-in">
+        SELAMAT DATANG DI MASJID <br /> SYAMSUL ULUM
+      </h1>
+    </div>
+  </header>
+
+  <!-- PROMO -->
+  <section class="promo">
+    <div class="container text-center position-relative">
+      <h2 class="promo-title reveal-up">
+        Satu langkah menuju <span class="text-highlight">kemudahan beraktivitas</span> di MSU
+      </h2>
+      <p class="promo-subtitle mt-2 reveal-up" style="transition-delay:.1s">
+        Semua urusan peminjaman dan perizinan kini bisa dilakukan secara online.
+      </p>
+      <a href="#pinjam-barang" class="btn btn-panduan mt-3 reveal-up" style="transition-delay:.2s">
+        Baca Panduan
+      </a>
+    </div>
+  </section>
+
+  <!-- DESKRIPSI -->
+  <section class="py-5">
+    <div class="container">
+      <h3 class="section-title mb-3">Deskripsi Aplikasi</h3>
+      <p class="mb-0">
+        Aplikasi Inventory MSU memudahkan pengecekan ketersediaan, peminjaman, dan pengembalian barang/fasilitas secara
+        tertib dan tercatat.
+      </p>
+    </div>
+  </section>
+
+  <!-- FLOW PEMINJAMAN (bernomor + panah) -->
+  <section class="pb-4">
+    <div class="container">
+      <h3 class="section-title mb-4">Flow Peminjaman</h3>
+
+      <div class="row g-4 flow-steps">
+        <div class="col-6 col-lg-3">
+          <div class="flow-card tap-anim reveal-up">
+            <span class="flow-step-badge">1</span>
+            <div class="flow-thumb">
+              <img src="peminjam.jpeg" alt="Mengisi Form Peminjaman" class="img-fluid">
+            </div>
+            <div class="flow-caption">Mengisi Form Peminjaman</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="flow-card tap-anim reveal-up" style="transition-delay:.05s">
+            <span class="flow-step-badge">2</span>
+            <div class="flow-thumb">
+              <img src="setuju.jpeg" alt="Pengelola Menyetujui" class="img-fluid">
+            </div>
+            <div class="flow-caption">Pengelola Menyetujui</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="flow-card tap-anim reveal-up" style="transition-delay:.1s">
+            <span class="flow-step-badge">3</span>
+            <div class="flow-thumb">
+              <img src="jabat.jpg" alt="Pengurus Melakukan COD" class="img-fluid">
+            </div>
+            <div class="flow-caption">Pengurus Melakukan COD</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="flow-card tap-anim reveal-up" style="transition-delay:.15s">
+            <span class="flow-step-badge">4</span>
+            <div class="flow-thumb">
+              <img src="balik.jpg" alt="Pengembalian & Selesai" class="img-fluid">
+            </div>
+            <div class="flow-caption">Pengembalian & Selesai</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- WAKTU PEMINJAMAN -->
+  <section class="datebar">
+    <div class="container">
+      <h3 class="section-title mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-clock-history"></i> Waktu Peminjaman
+      </h3>
+
+      <div class="datebar-wrap">
+        <!-- Tanggal Pakai -->
+        <div class="datebar-field datebar-field--start">
+          <label for="dateStart" class="form-label mb-1">
+            <i class="bi bi-calendar-event me-1"></i>Tanggal Pakai
+          </label>
+          <input id="dateStart" type="date" class="form-control form-control-sm">
+        </div>
+
+        <!-- Tanggal Kembali -->
+        <div class="datebar-field datebar-field--end">
+          <label for="dateEnd" class="form-label mb-1">
+            <i class="bi bi-calendar-check me-1"></i>Tanggal Kembali
+          </label>
+          <input id="dateEnd" type="date" class="form-control form-control-sm">
+        </div>
+
+        <!-- Jam Mulai -->
+        <div class="datebar-field datebar-field--time">
+          <label for="timeStart" class="form-label mb-1">
+            <i class="bi bi-alarm me-1"></i>Jam Mulai
+          </label>
+          <input id="timeStart" type="time" class="form-control form-control-sm">
+        </div>
+
+        <!-- Durasi -->
+        <div class="datebar-field datebar-field--dur">
+          <label for="durationSel" class="form-label mb-1">
+            <i class="bi bi-hourglass-split me-1"></i>Durasi
+          </label>
+          <select id="durationSel" class="form-select form-select-sm">
+            <option value="1">1 jam</option>
+            <option value="2">2 jam</option>
+            <option value="3">3 jam</option>
+            <option value="4">4 jam</option>
+            <option value="8">Seharian</option>
+          </select>
+        </div>
+
+        <!-- Tombol + info tanggal -->
+        <div class="datebar-actions">
+          <button id="btnSetDates" class="btn btn-success btn-sm w-100">
+            <i class="bi bi-search me-1"></i>Cek Ketersediaan
+          </button>
+          <div class="small text-muted mt-2 js-daterange" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PINJAM BARANG (contoh ringkas) -->
+  <section id="pinjam-barang" class="py-4">
+    <div class="container">
+      <h3 class="section-title mb-3">Pinjam Barang</h3>
+
+      <div class="row g-4 align-items-stretch items-grid">
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-max="7">
+            <div class="item-thumb">
+              <img src="proyektor.jpeg" alt="Proyektor" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Proyektor</div>
+              <div class="item-meta">Sisa : <span class="sisa">7</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-max="5">
+            <div class="item-thumb">
+              <img src="sound.jpeg" alt="Sound System" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Sound System</div>
+              <div class="item-meta">Sisa : <span class="sisa">5</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-max="12">
+            <div class="item-thumb">
+              <img src="terpal.jpeg" alt="Terpal" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Terpal</div>
+              <div class="item-meta">Sisa : <span class="sisa">12</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-max="8">
+            <div class="item-thumb">
+              <img src="karpet.jpeg" alt="Karpet" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Karpet</div>
+              <div class="item-meta">Sisa : <span class="sisa">8</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2-4">
+          <a href="barang.html" class="cta-card tap-anim reveal-up h-100 text-decoration-none">
+            <div class="cta-plus">+</div>
+            <div>Cari Barang</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PINJAM RUANGAN (contoh ringkas) -->
+  <section id="pinjam-fasilitas" class="py-4">
+    <div class="container">
+      <h3 class="section-title mb-3">Pinjam Ruangan</h3>
+      <div class="row g-4 align-items-stretch items-grid">
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-type="ruang" data-max="1">
+            <div class="item-thumb">
+              <img src="plaza.jpeg" alt="Aula Utama" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Aula Utama</div>
+              <div class="item-meta">Sisa : <span class="sisa">1</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-type="ruang" data-max="1">
+            <div class="item-thumb">
+              <img src="plaza.jpeg" alt="Aula Utama" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Aula Utama</div>
+              <div class="item-meta">Sisa : <span class="sisa">1</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-type="ruang" data-max="1">
+            <div class="item-thumb">
+              <img src="plaza.jpeg" alt="Aula Utama" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Aula Utama</div>
+              <div class="item-meta">Sisa : <span class="sisa">1</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <article class="item-card tap-anim reveal-up h-100" data-type="ruang" data-max="1">
+            <div class="item-thumb">
+              <img src="plaza.jpeg" alt="Aula Utama" class="img-fluid">
+              <span class="badge-status">Active</span>
+              <div class="qty-actions">
+                <button type="button" class="qty-btn" data-action="inc">−</button>
+                <button type="button" class="qty-btn" data-action="dec">＋</button>
+              </div>
+            </div>
+            <div class="item-body">
+              <div class="item-title">Aula Utama</div>
+              <div class="item-meta">Sisa : <span class="sisa">1</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2-4">
+          <a href="ruangan.html" class="cta-card tap-anim reveal-up h-100 text-decoration-none">
+            <div class="cta-plus">+</div>
+            <div>Cari Ruang</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAB Checkout -->
+  <button id="fabCheckout" class="fab-checkout" type="button" aria-label="Checkout">
+    <i class="bi bi-bag-check"></i>
+    <span id="fabCount" class="fab-count">0</span>
+  </button>
+
+  <!-- Modal Konfirmasi -->
+  <div class="modal fade" id="confirmAddModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">Konfirmasi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <div class="d-flex align-items-center gap-3">
+            <img id="confirmThumb" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;">
+            <div>
+              <div class="small text-muted mb-1">Tambah ke keranjang</div>
+              <div id="confirmName" class="fw-semibold">Nama Item</div>
+              <div id="confirmType" class="small text-muted"></div>
+            </div>
+          </div>
+          <div class="alert alert-info d-flex align-items-center gap-2 py-2 px-3 mt-3 mb-0">
+            <i class="bi bi-info-circle"></i>
+            <div class="small">Setelah dikonfirmasi, item masuk ke keranjang dan kamu tetap di halaman ini.</div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success" id="confirmAddBtn">
+            <i class="bi bi-bag-plus me-1"></i> Tambah
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastStack" class="toast-container position-fixed top-0 end-0 p-3" style="z-index:2000"></div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer mt-5">
+    <div class="container py-4">
+      <div class="row g-4 align-items-start">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <img src="loogoo.png" alt="Logo MSU" class="logo footer-logo">
+            <strong>Masjid Syamsul Ulum</strong>
+          </div>
+          <div class="text-muted small">
+            Jl. Telekomunikasi No.1, Bandung • Jawa Barat, Indonesia<br />
+            Telp: 08xx-xxxx-xxxx • Email: msu@example.ac.id
+          </div>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="small text-muted">© <span id="yearNow"></span> MSU — All Rights Reserved</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/assets/guest/cart.js}"></script>
+  <script th:src="@{/assets/guest/main.js}"></script>
+  <script>document.getElementById('yearNow').textContent = new Date().getFullYear();</script>
+</body>
+
+</html>
