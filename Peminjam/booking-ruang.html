@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Booking Peminjaman Ruangan — MSU</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="booking-ruang.css" />
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-masjid sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="loogoo.png" alt="Logo" class="logo" />
+        <span class="brand-text d-none d-sm-inline">SYAMSUL ULUM</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navMain">
+        <ul class="navbar-nav align-items-lg-center gap-lg-4">
+          <li class="nav-item"><a class="nav-link" href="index.html#beranda">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link" href="barang.html">Pinjam Barang</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Pinjam Fasilitas</a></li>
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h1 class="page-title drop-in m-0">Keterangan Peminjaman Ruangan</h1>
+      <span class="badge rounded-pill text-bg-warning-subtle border reveal-up">
+        <i class="bi bi-lightning-charge-fill me-1"></i> Booking
+      </span>
+    </div>
+
+    <div class="row g-4">
+      <!-- LEFT -->
+      <aside class="col-lg-4">
+        <div class="summary-card reveal-up">
+          <div class="summary-thumb">
+            <img id="roomImage" src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?q=80&w=1200&auto=format&fit=crop" alt="Ruang" />
+            <span class="badge-status" id="roomStatus">Available</span>
+          </div>
+
+          <div class="p-3 text-center">
+            <h4 id="roomName" class="mb-1">Ruang 130</h4>
+            <div class="text-muted">Gedung Utama • Lantai 1</div>
+          </div>
+
+          <!-- Kalender mini -->
+          <div class="mini-calendar p-3 border-top">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <button class="cal-nav" id="calPrev" type="button" aria-label="Bulan sebelumnya"><i class="bi bi-chevron-left"></i></button>
+              <strong id="calTitle">September 2025</strong>
+              <button class="cal-nav" id="calNext" type="button" aria-label="Bulan berikutnya"><i class="bi bi-chevron-right"></i></button>
+            </div>
+            <div class="calendar-legend mb-2">
+              <span class="legend-box booked"></span><small class="ms-1 me-3">Terbooking/Habis</small>
+              <span class="legend-box today"></span><small class="ms-1">Hari ini</small>
+            </div>
+            <div class="calendar-grid" id="calGrid" aria-hidden="true"></div>
+            <small class="text-muted d-block mt-2">
+              <i class="bi bi-info-circle me-1"></i>Tanggal merah tidak dapat dipilih.
+            </small>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: FORM (tanpa Quantity) -->
+      <section class="col-lg-8">
+        <form id="bookingRoomForm" class="form-card reveal-up needs-validation" novalidate>
+          <div class="row g-3">
+            <!-- Identitas -->
+            <div class="col-md-6">
+              <label class="form-label">Penanggung jawab</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                <input type="text" class="form-control" id="pjName" placeholder="Nama lengkap" required />
+                <div class="invalid-feedback">Wajib diisi.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">NIM/NIP</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                <input type="text" class="form-control" id="idNumber" placeholder="21573xxxxx" required />
+                <div class="invalid-feedback">Wajib diisi.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" id="email" placeholder="nama@contoh.ac.id" required />
+                <div class="invalid-feedback">Masukkan email yang valid.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Program Studi / Unit</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-mortarboard"></i></span>
+                <select class="form-select" id="studyProgram" required>
+                  <option value="" selected disabled>Pilih</option>
+                  <option>Sistem Informasi</option>
+                  <option>Informatika</option>
+                  <option>Teknologi Informasi</option>
+                  <option>Unit / Organisasi</option>
+                </select>
+                <div class="invalid-feedback">Pilih salah satu.</div>
+              </div>
+            </div>
+
+            <!-- Tanggal & Waktu & Durasi -->
+            <div class="col-md-6">
+              <label class="form-label">Tanggal Peminjaman</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                <input type="date" class="form-control" id="loanDate" required />
+                <div class="invalid-feedback">Pilih tanggal.</div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Waktu Mulai</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                <input type="time" class="form-control" id="startTime" required />
+                <div class="invalid-feedback">Pilih waktu mulai.</div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Durasi</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
+                <select class="form-select" id="duration" required>
+                  <option value="" selected disabled>Pilih</option>
+                  <option value="1">1 jam</option>
+                  <option value="2">2 jam</option>
+                  <option value="3">3 jam</option>
+                  <option value="4">4 jam</option>
+                  <option value="8">Seharian</option>
+                </select>
+                <div class="invalid-feedback">Pilih durasi.</div>
+              </div>
+            </div>
+
+            <!-- Upload persyaratan -->
+            <div class="col-md-12">
+              <label class="form-label">Upload Dokumen Persyaratan</label>
+              <input class="form-control" type="file" id="requirements" accept=".pdf,.jpg,.jpeg,.png" required>
+              <div class="form-text">
+                Format: PDF/JPG/PNG (maks 10 MB). Unduh & tandatangani
+                <a href="pakta-peminjaman-barang.pdf" target="_blank" rel="noopener">Pakta Peminjaman Barang</a>,
+                lalu unggah bersama dokumen pendukung.
+              </div>
+              <div class="invalid-feedback">Unggah dokumen persyaratan.</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Keperluan (deskripsi)</label>
+              <textarea id="longPurpose" class="form-control" rows="4" placeholder="Tuliskan detail singkat keperluan…" required></textarea>
+              <div class="invalid-feedback">Wajib diisi.</div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end mt-4 reveal-up">
+            <button class="btn btn-outline-danger" type="button" id="btnCancel">
+              <i class="bi bi-x-circle me-1"></i>Batalkan
+            </button>
+            <button class="btn btn-primary btn-book" type="submit" id="btnSubmit" disabled>
+              <i class="bi bi-check2-circle me-1"></i>Kirim Booking
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="booking-ruang.js"></script>
+</body>
+</html>
+    
