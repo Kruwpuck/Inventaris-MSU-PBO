@@ -20,7 +20,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
         if (roles.contains("ROLE_PENGELOLA")) {
-            response.sendRedirect("/pengelola/dashboard");
+            response.sendRedirect("/pengelola/beranda");
         } else if (roles.contains("ROLE_PENGURUS")) {
             response.sendRedirect("/pengurus/dashboard");
         } else {

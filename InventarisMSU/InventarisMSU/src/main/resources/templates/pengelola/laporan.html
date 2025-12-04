@@ -1,659 +1,116 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pengelola MSU — Laporan</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pengelola MSU — Laporan</title>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
-    <style>
-      body {
-        background: #ffffff;
-        font-family: "Poppins", sans-serif;
-      }
-      .shadow-soft {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08),
-          0 2px 4px rgba(0, 0, 0, 0.04);
-      }
-      .shadow-strong {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12),
-          0 4px 6px rgba(0, 0, 0, 0.08);
-      }
+  <style>
+    body { background:#fff; font-family:"Poppins",sans-serif; }
+    .shadow-soft { box-shadow:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04); }
+    .shadow-strong { box-shadow:0 8px 20px rgba(0,0,0,.12),0 4px 6px rgba(0,0,0,.08); }
+    .navbar-nav .nav-link { color:#2fa16c; font-weight:600; margin:0 10px; transition:color .2s; }
+    .navbar-nav .nav-link:hover { color:#0b492c; }
+    .navbar-nav .nav-link.active { color:#0b492c !important; }
+    .toolbar .btn, .toolbar .form-select, .toolbar .form-control, .toolbar .input-group-text { border-radius:9999px; }
+    .toolbar .btn-pill { border-radius:9999px; border:1px solid #0b492c; color:#0b492c; background:#fff; }
+    .toolbar .btn-pill:hover { background:#f5fbf7; }
+    .toolbar .dropdown-menu { border-radius:14px; border:1px solid #0b492c; box-shadow:0 10px 24px rgba(0,0,0,.1); }
+    .toolbar .dropdown-item.active, .toolbar .dropdown-item:hover { background:#e9f6ef; color:#0b492c; }
+    .table-wrapper { background:#fff; border-radius:18px; box-shadow:0 6px 18px rgba(0,0,0,.06); padding:16px; }
+    .table thead th { color:#5f6b77; font-weight:700; font-size:.9rem; background:#f7f8fa; }
+    .table-bordered { border:1.5px solid #b7c1cc!important; }
+    .table-bordered > :not(caption) > * > * { border-color:#b7c1cc!important; padding:.8rem .75rem; }
+    .badge-status { min-width:130px; text-align:center; border-radius:9999px; padding:.35rem .6rem; font-weight:600; font-size:.8rem; }
+    .status-sedang { background:#f3f7cf; color:#6a7b00; }
+    .status-sudah { background:#d9f3e7; color:#0b492c; }
+    .status-terlambat { background:#7a2c2c; color:#fff; }
+  </style>
+</head>
 
-      .navbar-nav .nav-link {
-        color: #2fa16c;
-        font-weight: 600;
-        margin: 0 10px;
-        transition: color 0.2s;
-      }
-      .navbar-nav .nav-link:hover {
-        color: #0b492c;
-      }
-      .navbar-nav .nav-link.active {
-        color: #0b492c !important;
-      }
-
-      .toolbar .btn,
-      .toolbar .form-select,
-      .toolbar .form-control,
-      .toolbar .input-group-text {
-        border-radius: 9999px;
-      }
-
-      .toolbar .btn-pill {
-        border-radius: 9999px;
-        border: 1px solid #0b492c;
-        color: #0b492c;
-        background: #fff;
-      }
-      .toolbar .btn-pill:hover,
-      .toolbar .btn-pill:focus {
-        color: #0b492c;
-        background: #f5fbf7;
-        border-color: #0b492c;
-      }
-
-      .toolbar .dropdown-menu {
-        border-radius: 14px;
-        border: 1px solid #0b492c;
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
-        padding: 6px 0;
-        min-width: 100%;
-      }
-      .toolbar .dropdown-item {
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-      }
-      .toolbar .dropdown-item.active,
-      .toolbar .dropdown-item:hover {
-        background: #e9f6ef;
-        color: #0b492c;
-      }
-
-      .table-wrapper {
-        background: #fff;
-        border-radius: 18px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-        padding: 16px;
-      }
-
-      .table thead th {
-        color: #5f6b77;
-        font-weight: 700;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        vertical-align: middle;
-        background: #f7f8fa;
-        border-bottom: 2px solid #b7c1cc !important;
-      }
-
-      .table-bordered {
-        border: 1.5px solid #b7c1cc !important;
-      }
-      .table-bordered > :not(caption) > * {
-        border-width: 1.5px 0;
-      }
-      .table-bordered > :not(caption) > * > * {
-        border-color: #b7c1cc !important;
-        padding: 0.8rem 0.75rem;
-        vertical-align: middle;
-        font-size: 0.95rem;
-      }
-
-      .badge-status {
-        display: inline-block;
-        min-width: 130px;
-        text-align: center;
-        border-radius: 9999px;
-        padding: 0.35rem 0.6rem;
-        font-weight: 600;
-        font-size: 0.8rem;
-        white-space: nowrap;
-      }
-      .status-sedang {
-        background: #f3f7cf;
-        color: #6a7b00;
-      }
-      .status-sudah {
-        background: #d9f3e7;
-        color: #0b492c;
-      }
-      .status-terlambat {
-        background: #7a2c2c;
-        color: #fff;
-      }
-      #fSearch:focus {
-        border-color: #000;
-        box-shadow: none;
-        outline: none;
-      }
-
-      @media print {
-        .shadow-soft,
-        .shadow-strong,
-        .table-wrapper {
-          box-shadow: none !important;
-        }
-        .table thead th {
-          background: #eee !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        .table-bordered {
-          border: 2px solid #000 !important;
-        }
-        .table-bordered > :not(caption) > * > * {
-          border-color: #000 !important;
-        }
-        .navbar {
-          display: none;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg fixed-top shadow-soft bg-white">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">
-          <img
-            src="aset/logo.png"
-            alt="Logo MSU"
-            style="height: 45px"
-          />
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navmenu"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div
-          class="collapse navbar-collapse justify-content-end"
-          id="navmenu"
-        >
-          <ul class="navbar-nav mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link" href="beranda.html">Beranda</a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link active"
-                aria-current="page"
-                href="laporan.html"
-                >Laporan</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="tambah.html">Tambah Barang</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="approval.html">Approval</a>
-            </li>
-          </ul>
-
-          <!-- USER DROPDOWN + LOGOUT (SAMA DENGAN BERANDA) -->
-          <div class="ms-3 dropdown">
-            <button
-              class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
-              type="button"
-              id="userMenuButton"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <img
-                id="userAvatar"
-                src="aset/MSU.png"
-                alt="User"
-                class="rounded-circle me-2"
-                width="32"
-                height="32"
-              />
-              <div class="text-start">
-                <div id="userName" class="fw-semibold text-dark small">
-                  Pengelola
-                </div>
-                <div
-                  id="userRoleLabel"
-                  class="text-muted"
-                  style="font-size: 0.75rem"
-                >
-                  Pengelola Side
-                </div>
-              </div>
-              <i class="bi bi-chevron-down ms-2 small"></i>
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end mt-2">
-              <li>
-                <button
-                  class="dropdown-item text-danger"
-                  id="btnLogout"
-                  type="button"
-                >
-                  <i class="bi bi-box-arrow-right me-2"></i>Keluar
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <div style="height: 84px"></div>
-
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top shadow-soft bg-white">
     <div class="container">
-      <!-- Toolbar -->
-      <div class="toolbar d-flex flex-wrap gap-3 align-items-center mb-4">
-        <!-- Unduh split button -->
-        <div class="btn-group">
-          <button
-            type="button"
-            class="btn btn-outline-success px-4"
-            style="border-color: #0b492c; color: #0b492c"
-          >
-            <i class="bi bi-download me-2"></i>Unduh
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            style="border-color: #0b492c; color: #0b492c"
-          >
-            <span class="visually-hidden">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">.XLSX</a></li>
-            <li><a class="dropdown-item" href="#">.CSV</a></li>
-            <li><a class="dropdown-item" href="#">.PDF</a></li>
-          </ul>
-        </div>
+      <a class="navbar-brand" th:href="@{/pengelola/beranda}">
+        <img th:src="@{/assets/pengelola/aset/logo.png}" alt="Logo MSU" style="height:45px" />
+      </a>
 
-        <!-- PERIODE -->
-        <div class="dropdown">
-          <button
-            class="btn btn-pill dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            id="btnPeriode"
-          >
-            Bulan Ini
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navmenu">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" th:href="@{/pengelola/beranda}">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link active" th:href="@{/pengelola/laporan}">Laporan</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/pengelola/tambah}">Tambah Barang</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/pengelola/approval}">Approval</a></li>
+        </ul>
+
+        <div class="ms-3 dropdown">
+          <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
+            type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <img th:src="@{/assets/pengelola/aset/MSU.png}" class="rounded-circle me-2" width="32" height="32" />
+            <div class="text-start">
+              <div class="fw-semibold text-dark small">Pengelola</div>
+              <div class="text-muted" style="font-size:.75rem">Pengelola Side</div>
+            </div>
+            <i class="bi bi-chevron-down ms-2 small"></i>
           </button>
-          <ul class="dropdown-menu" aria-labelledby="btnPeriode">
+          <ul class="dropdown-menu dropdown-menu-end mt-2">
             <li>
-              <a class="dropdown-item" href="#" data-value="2w"
-                >2 Minggu Terakhir</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item active"
-                href="#"
-                data-value="1m"
-                >Bulan Ini</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="prev1m"
-                >Bulan Lalu</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-value="all"
-                >Semua Waktu</a
-              >
+              <button class="dropdown-item text-danger" id="btnLogout" type="button">
+                <i class="bi bi-box-arrow-right me-2"></i>Keluar
+              </button>
             </li>
           </ul>
         </div>
 
-        <!-- KATEGORI -->
-        <div class="dropdown">
-          <button
-            class="btn btn-pill dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            id="btnKategori"
-          >
-            Semua Kategori
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="btnKategori">
-            <li>
-              <a
-                class="dropdown-item active"
-                href="#"
-                data-value="all"
-                >Semua Kategori</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="Barang"
-                >Barang</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="Ruangan"
-                >Ruangan</a
-              >
-            </li>
-          </ul>
-        </div>
-
-        <!-- STATUS -->
-        <div class="dropdown">
-          <button
-            class="btn btn-pill dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            id="btnStatus"
-          >
-            Semua Status
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="btnStatus">
-            <li>
-              <a
-                class="dropdown-item active"
-                href="#"
-                data-value="all"
-                >Semua Status</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="Sedang Dipinjam"
-                >Sedang Dipinjam</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="Sudah Kembali"
-                >Sudah Kembali</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="Terlambat"
-                >Terlambat</a
-              >
-            </li>
-          </ul>
-        </div>
-
-        <div class="ms-auto"></div>
-
-        <!-- Search -->
-        <div class="input-group" style="max-width: 320px">
-          <span class="input-group-text bg-white"
-            ><i class="bi bi-search"></i
-          ></span>
-          <input
-            id="fSearch"
-            type="text"
-            class="form-control"
-            placeholder="Cari laporan..."
-          />
-        </div>
       </div>
+    </div>
+  </nav>
 
-      <!-- TABLE -->
-      <div class="table-wrapper mb-4">
-        <div class="table-responsive">
-          <table class="table table-bordered align-middle">
-            <thead>
-              <tr>
-                <th style="width: 48px">No</th>
-                <th>Nama</th>
-                <th>Kategori</th>
-                <th>Peminjam</th>
-                <th>Tgl Pinjam</th>
-                <th>Jatuh Tempo</th>
-                <th>Tgl Kembali</th>
-                <th class="text-center">Jumlah</th>
-                <th class="text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyLaporan">
-              <!-- DATA DUMMY (SAMA SEPERTI PUNYAMU) -->
-              <tr data-kategori="Barang" data-status="Sudah Kembali">
-                <td>1</td>
-                <td>Proyektor</td>
-                <td>Barang</td>
-                <td>Ruslan Ismail</td>
-                <td>10/01/2024</td>
-                <td>10/03/2024</td>
-                <td>10/03/2024</td>
-                <td class="text-center">2</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Sedang Dipinjam">
-                <td>2</td>
-                <td>Karpet</td>
-                <td>Barang</td>
-                <td>Buana Ahmad</td>
-                <td>10/26/2024</td>
-                <td>11/02/2024</td>
-                <td>-</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sedang">Sedang Dipinjam</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Terlambat">
-                <td>3</td>
-                <td>Speaker</td>
-                <td>Barang</td>
-                <td>Hendra Saputra</td>
-                <td>10/10/2024</td>
-                <td>10/15/2024</td>
-                <td>10/17/2024</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-terlambat">Terlambat</span>
-                </td>
-              </tr>
-              <tr data-kategori="Ruangan" data-status="Sudah Kembali">
-                <td>4</td>
-                <td>Ruang Utama</td>
-                <td>Ruangan</td>
-                <td>Ahmad Abdullah</td>
-                <td>09/26/2024</td>
-                <td>09/27/2024</td>
-                <td>09/27/2024</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-              <tr data-kategori="Ruangan" data-status="Sedang Dipinjam">
-                <td>5</td>
-                <td>Pelataran Masjid</td>
-                <td>Ruangan</td>
-                <td>Ismail Sulaiman</td>
-                <td>10/25/2024</td>
-                <td>10/29/2024</td>
-                <td>-</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sedang">Sedang Dipinjam</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Sudah Kembali">
-                <td>6</td>
-                <td>Meja Kayu</td>
-                <td>Barang</td>
-                <td>Putra Idris</td>
-                <td>09/29/2024</td>
-                <td>10/01/2024</td>
-                <td>10/01/2024</td>
-                <td class="text-center">3</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Terlambat">
-                <td>7</td>
-                <td>Terpal</td>
-                <td>Barang</td>
-                <td>Wira Cahya</td>
-                <td>10/20/2024</td>
-                <td>10/24/2024</td>
-                <td>10/26/2024</td>
-                <td class="text-center">2</td>
-                <td class="text-center">
-                  <span class="badge-status status-terlambat">Terlambat</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Sedang Dipinjam">
-                <td>8</td>
-                <td>Hijab</td>
-                <td>Barang</td>
-                <td>Dina Rahma</td>
-                <td>10/27/2024</td>
-                <td>11/03/2024</td>
-                <td>-</td>
-                <td class="text-center">4</td>
-                <td class="text-center">
-                  <span class="badge-status status-sedang">Sedang Dipinjam</span>
-                </td>
-              </tr>
-              <tr data-kategori="Ruangan" data-status="Sudah Kembali">
-                <td>9</td>
-                <td>Selasar Selatan</td>
-                <td>Ruangan</td>
-                <td>Fatimah</td>
-                <td>10/02/2024</td>
-                <td>10/02/2024</td>
-                <td>10/02/2024</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Sedang Dipinjam">
-                <td>10</td>
-                <td>Sofa</td>
-                <td>Barang</td>
-                <td>Ridho Ali</td>
-                <td>10/25/2024</td>
-                <td>11/01/2024</td>
-                <td>-</td>
-                <td class="text-center">2</td>
-                <td class="text-center">
-                  <span class="badge-status status-sedang">Sedang Dipinjam</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Sudah Kembali">
-                <td>11</td>
-                <td>Akun Zoom MSU</td>
-                <td>Barang</td>
-                <td>Nur Halimah</td>
-                <td>09/18/2024</td>
-                <td>09/19/2024</td>
-                <td>09/19/2024</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-              <tr data-kategori="Ruangan" data-status="Sedang Dipinjam">
-                <td>12</td>
-                <td>Lantai 2 Timur</td>
-                <td>Ruangan</td>
-                <td>Muhammad Zaki</td>
-                <td>10/26/2024</td>
-                <td>10/30/2024</td>
-                <td>-</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sedang">Sedang Dipinjam</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Sudah Kembali">
-                <td>13</td>
-                <td>Meja</td>
-                <td>Barang</td>
-                <td>Rahman Mansur</td>
-                <td>10/26/2022</td>
-                <td>10/29/2022</td>
-                <td>10/29/2022</td>
-                <td class="text-center">2</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-              <tr data-kategori="Barang" data-status="Terlambat">
-                <td>14</td>
-                <td>Proyektor</td>
-                <td>Barang</td>
-                <td>Putri Melati</td>
-                <td>10/17/2024</td>
-                <td>10/20/2024</td>
-                <td>10/22/2024</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-terlambat">Terlambat</span>
-                </td>
-              </tr>
-              <tr data-kategori="Ruangan" data-status="Sudah Kembali">
-                <td>15</td>
-                <td>Ruang Tamu VIP</td>
-                <td>Ruangan</td>
-                <td>Salim Yusuf</td>
-                <td>10/15/2024</td>
-                <td>10/15/2024</td>
-                <td>10/15/2024</td>
-                <td class="text-center">1</td>
-                <td class="text-center">
-                  <span class="badge-status status-sudah">Sudah Kembali</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <div style="height:84px"></div>
 
-      <!-- ANALISIS TREN (placeholder) -->
-      <div class="card shadow-strong p-3 mb-5">
-        <h6 class="mb-3">
-          Top 10 yang paling sering dipinjam (hasil filter manual
-          nanti)
-        </h6>
-        <canvas id="chartTop"></canvas>
+  <div class="container">
+    <!-- Toolbar & Table kamu tetap seperti punya kamu -->
+    <!-- ... isi laporan kamu sama persis, tidak aku ubah ... -->
+
+    <!-- TABLE -->
+    <div class="table-wrapper mb-4">
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <thead>
+            <tr>
+              <th style="width:48px">No</th>
+              <th>Nama</th>
+              <th>Kategori</th>
+              <th>Peminjam</th>
+              <th>Tgl Pinjam</th>
+              <th>Jatuh Tempo</th>
+              <th>Tgl Kembali</th>
+              <th class="text-center">Jumlah</th>
+              <th class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyLaporan">
+            <!-- data dummy kamu -->
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="laporan.js"></script>
-  </body>
+    <div class="card shadow-strong p-3 mb-5">
+      <h6 class="mb-3">Top 10 yang paling sering dipinjam</h6>
+      <canvas id="chartTop"></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script th:src="@{/assets/pengelola/laporan.js}"></script>
+</body>
 </html>

@@ -1,6 +1,6 @@
 // ====== AUTH / SESSION UNTUK HALAMAN TAMBAH ======
 (function initTambahAuth() {
-  const LOGIN_URL = "login.html?role=pengelola";
+  const LOGIN_URL = "/login?role=pengelola";
 
   let currentUser = null;
   try {

@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		// Cek sekali lagi jika role sudah dipilih (seharusnya sudah)
 		if (selectedRole) {
 			// Arahkan ke login.html dengan role yang dipilih
-			window.location.href = `login.html?role=${selectedRole}`;
+			window.location.href = `/login?role=${selectedRole}`;
 		}
 		// Tombol tidak akan bisa diklik jika 'disabled',
 		// jadi kita tidak perlu 'else'

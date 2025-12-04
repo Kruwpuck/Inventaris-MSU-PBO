@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cek apakah sudah login
     const user = JSON.parse(localStorage.getItem("msuUser"));
     if (user && user.role === "pengurus") {
-        window.location.href = "dashboard.html";
+        window.location.href = "/pengurus/dashboard";
         return;
     }
 
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }));
 
             alert("Login berhasil!");
-            window.location.href = "dashboard.html";
+            window.location.href = "/pengurus/dashboard";
             return;
         }
 

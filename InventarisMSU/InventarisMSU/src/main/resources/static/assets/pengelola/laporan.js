@@ -121,7 +121,7 @@ function syncMenuWidth() {
 /*  BOOT  */
 window.addEventListener("load", () => {
   // ====== LOGIN / SESSION CHECK (SAMA DENGAN BERANDA) ======
-  const LOGIN_URL = "login.html?role=pengelola";
+  const LOGIN_URL = "/login?role=pengelola";
 
   let currentUser = null;
   try {
