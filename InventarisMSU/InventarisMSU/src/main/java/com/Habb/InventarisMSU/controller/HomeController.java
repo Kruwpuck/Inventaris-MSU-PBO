@@ -21,6 +21,11 @@ public class HomeController {
         return "guest/ruangan";
     }
 
+    @GetMapping("/booking-ruang")
+    public String bookingRuang() {
+        return "guest/booking-ruang";
+    }
+
     @GetMapping("/form")
     public String form() {
         return "guest/bookingbarang";
@@ -28,6 +33,6 @@ public class HomeController {
 
     @GetMapping("/login")
     public String login() {
-        return "login"; // This should be a shared login page or specific one
+        return "login";
     }
 }
