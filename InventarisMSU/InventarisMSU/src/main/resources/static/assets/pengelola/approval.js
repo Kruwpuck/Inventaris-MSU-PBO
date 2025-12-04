@@ -1,11 +1,13 @@
 /*
- * File: approval.js
- * (Perbaikan: Menghapus text-center agar lurus dengan header)
+ * approval.js (FIX ROUTE TANPA .html)
+ * UI/interaction saja. Logic bisnis bisa dipindah ke Java nanti.
  */
 
 (function () {
 	const RIWAYAT_KEY = "riwayatPeminjamanMSU";
-	const LOGIN_URL = "login.html?role=pengelola";
+
+	// GANTI INI kalau route login kamu beda
+	const LOGIN_URL = "/login?role=pengelola";
 
 	// 1. DAFTAR FASILITAS
 	const daftarFasilitas = new Set([
@@ -40,7 +42,7 @@
 			tglPinjam: "2025-11-12",
 			tglSelesai: "2025-11-12",
 			status: "Pending",
-			proposalUrl: "aset/contoh-proposal.pdf",
+			proposalUrl: "/assets/pengelola/aset/contoh-proposal.pdf",
 		},
 		{
 			id: "P003",
@@ -58,7 +60,7 @@
 			tglPinjam: "2025-11-13",
 			tglSelesai: "2025-11-14",
 			status: "Pending",
-			proposalUrl: "aset/contoh-proposal-2.pdf",
+			proposalUrl: "/assets/pengelola/aset/contoh-proposal-2.pdf",
 		},
 	];
 
@@ -110,7 +112,7 @@
 	const btnExportCSV = document.getElementById("btnExportCSV");
 	const btnLogout = document.getElementById("btnLogout");
 
-	// ====== CEK LOGIN / SESSION (SAMA DENGAN BERANDA) ======
+	// ====== CEK LOGIN / SESSION ======
 	let currentUser = null;
 	try {
 		const raw = localStorage.getItem("msuUser");
@@ -134,7 +136,7 @@
 			currentUser.role === "pengelola" ? "Pengelola Side" : "Pengurus Side";
 	}
 
-	// Tombol logout
+	// Tombol logout (route tanpa .html)
 	if (btnLogout) {
 		btnLogout.addEventListener("click", (e) => {
 			e.preventDefault();
@@ -145,15 +147,13 @@
 	}
 
 	if (!submissionTableBody || !historyTableBody || !modalElement || !btnExportCSV) {
-		console.error(
-			"Salah satu elemen penting (tabel, modal, atau tombol ekspor) tidak ditemukan."
-		);
+		console.error("Elemen tabel/modal/tombol ekspor tidak ditemukan.");
 		return;
 	}
 
 	const rejectionModal = new bootstrap.Modal(modalElement);
 
-	// 4. FUNGSI-FUNGSI UTAMA
+	// 4. FUNGSI UTAMA
 
 	function saveHistoryToStorage() {
 		localStorage.setItem(RIWAYAT_KEY, JSON.stringify(mockHistory));
@@ -181,18 +181,16 @@
 				? `Disetujui: Peminjaman ${submission.item}`
 				: `Ditolak: Peminjaman ${submission.item}`;
 
-		console.log("--- SIMULASI 'ApproveEmail' ---");
+		console.log("--- SIMULASI EMAIL ---");
 		console.log(`Kepada: ${submission.user}`);
 		console.log(`Subjek: ${subjek}`);
 		console.log(
-			`Pengajuan ${submission.id} telah diproses oleh ${userNameSpan.textContent}.`
+			`Pengajuan ${submission.id} diproses oleh ${userNameSpan.textContent}.`
 		);
-		console.log("-------------------------------");
+		console.log("----------------------");
 	}
 
-	// -------------------------------
-	// RENDER SUBMISSION (Pending)
-	// -------------------------------
+	// RENDER PENDING
 	function renderSubmissions() {
 		submissionTableBody.innerHTML = "";
 		const pendingSubmissions = mockSubmissions.filter((s) => s.status === "Pending");
@@ -211,9 +209,8 @@
 			const isFasilitas = daftarFasilitas.has(sub.item);
 
 			const proposalButton = isFasilitas
-				? `<a href="${
-						sub.proposalUrl || "#"
-				  }" target="_blank" class="btn btn-outline-primary btn-sm">
+				? `<a href="${sub.proposalUrl || "#"}" target="_blank"
+						class="btn btn-outline-primary btn-sm">
 						<i class="bi bi-file-earmark-text"></i> Tinjau Proposal
 				   </a>`
 				: " - ";
@@ -240,9 +237,7 @@
 		});
 	}
 
-	// -------------------------------
 	// RENDER HISTORY
-	// -------------------------------
 	function renderHistory() {
 		historyTableBody.innerHTML = "";
 
@@ -268,9 +263,11 @@
 			const peminjam = sub.namaPenerima || sub.user;
 			const item = sub.namaBarang || sub.item;
 
+			// route cetak TANPA .html
 			const cetakButton =
 				sub.status === "Approved"
-					? `<a href="cetak.html?id=${sub.id}" class="btn btn-outline-secondary btn-sm" target="_blank">
+					? `<a href="/pengelola/cetak?id=${sub.id}"
+						 class="btn btn-outline-secondary btn-sm" target="_blank">
 							<i class="bi bi-printer"></i>
 					   </a>`
 					: "";
@@ -288,9 +285,7 @@
 		});
 	}
 
-	// -------------------------------
-	// PROSES PENGAJUAN
-	// -------------------------------
+	// PROSES PENGAJUAN (masih mockup)
 	function processSubmission(id, newStatus, reason = "-") {
 		const submissionIndex = mockSubmissions.findIndex((s) => s.id === id);
 		if (submissionIndex === -1) return;
@@ -305,8 +300,8 @@
 			processedData = {
 				id: originalSubmission.id,
 				namaPenerima: originalSubmission.user,
-				namaBarang: namaBarang,
-				quantity: quantity,
+				namaBarang,
+				quantity,
 				tglPakai: originalSubmission.tglPinjam,
 				tglSelesai: originalSubmission.tglSelesai,
 				tglAmbil: null,
@@ -314,7 +309,7 @@
 				beri: false,
 				kembali: false,
 				status: "Approved",
-				processedBy: processedBy,
+				processedBy,
 				reason: "-",
 			};
 
@@ -324,8 +319,8 @@
 			processedData = {
 				id: originalSubmission.id,
 				namaPenerima: originalSubmission.user,
-				namaBarang: namaBarang,
-				quantity: quantity,
+				namaBarang,
+				quantity,
 				tglPakai: originalSubmission.tglPinjam,
 				tglSelesai: originalSubmission.tglSelesai,
 				tglAmbil: null,
@@ -333,8 +328,8 @@
 				beri: false,
 				kembali: false,
 				status: "Rejected",
-				processedBy: processedBy,
-				reason: reason,
+				processedBy,
+				reason,
 			};
 
 			kirimEmail("reject", originalSubmission);
@@ -347,9 +342,7 @@
 		renderHistory();
 	}
 
-	// -------------------------------
 	// EVENT LISTENERS
-	// -------------------------------
 	document.addEventListener("DOMContentLoaded", () => {
 		renderSubmissions();
 		renderHistory();
@@ -391,16 +384,10 @@
 		rejectionSubmissionIdInput.value = "";
 	});
 
-	// -------------------------------
-	// FUNGSI EKSPOR CSV
-	// -------------------------------
+	// EKSPOR CSV
 	function sanitizeCSVValue(value) {
 		const stringValue = String(value || "");
-		if (
-			stringValue.includes(",") ||
-			stringValue.includes('"') ||
-			stringValue.includes("\n")
-		) {
+		if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
 			return `"${stringValue.replace(/"/g, '""')}"`;
 		}
 		return stringValue;
@@ -408,26 +395,15 @@
 
 	function exportToCSV() {
 		const data = mockHistory;
-
 		if (data.length === 0) {
 			alert("Tidak ada data riwayat untuk diekspor.");
 			return;
 		}
 
 		const headers = [
-			"ID",
-			"Status",
-			"NamaPenerima",
-			"NamaBarang",
-			"Quantity",
-			"TglPakai",
-			"TglSelesai",
-			"TglAmbil",
-			"TglKembali",
-			"SudahDiberi",
-			"SudahKembali",
-			"DiprosesOleh",
-			"CatatanAlasan",
+			"ID","Status","NamaPenerima","NamaBarang","Quantity",
+			"TglPakai","TglSelesai","TglAmbil","TglKembali",
+			"SudahDiberi","SudahKembali","DiprosesOleh","CatatanAlasan",
 		];
 
 		const csvRows = [];
@@ -435,28 +411,15 @@
 
 		for (const item of data) {
 			const values = [
-				item.id,
-				item.status,
-				item.namaPenerima,
-				item.namaBarang,
-				item.quantity,
-				item.tglPakai,
-				item.tglSelesai,
-				item.tglAmbil,
-				item.tglKembali,
-				item.beri,
-				item.kembali,
-				item.processedBy,
-				item.reason,
+				item.id, item.status, item.namaPenerima, item.namaBarang, item.quantity,
+				item.tglPakai, item.tglSelesai, item.tglAmbil, item.tglKembali,
+				item.beri, item.kembali, item.processedBy, item.reason,
 			];
-
 			csvRows.push(values.map(sanitizeCSVValue).join(","));
 		}
 
 		const csvString = "\uFEFF" + csvRows.join("\n");
-		const blob = new Blob([csvString], {
-			type: "text/csv;charset=utf-8;",
-		});
+		const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
 		const url = URL.createObjectURL(blob);
 
 		const link = document.createElement("a");
