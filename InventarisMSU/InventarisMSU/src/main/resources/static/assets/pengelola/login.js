@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				);
 
 				alert("Login berhasil!");
-				window.location.href = "beranda.html";
+				window.location.href = "/pengelola/beranda";
 				return;
 			} else {
 				alert("Username atau password salah!");

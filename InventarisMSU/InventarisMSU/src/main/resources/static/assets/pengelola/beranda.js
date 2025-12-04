@@ -60,15 +60,15 @@ function filterCards(query, grids) {
 
 // =============== BOOT ===============
 (function initBeranda() {
-  // URL login (karena beranda.html & login.html satu folder: /pengelola/)
-  const LOGIN_URL = "login.html?role=pengelola";
+  // ROUTE login TANPA .html
+  // GANTI ini kalau route login kamu beda
+  const LOGIN_URL = "/login?role=pengelola";
 
   // ====== CEK LOGIN / SESSION SEDERHANA ======
   let currentUser = null;
   try {
     const raw = localStorage.getItem("msuUser");
     if (!raw) {
-      // Belum login → kembali ke halaman login pengelola
       window.location.href = LOGIN_URL;
       return;
     }
@@ -92,7 +92,7 @@ function filterCards(query, grids) {
       currentUser.role === "pengelola" ? "Pengelola Side" : "Pengurus Side";
   }
 
-  // Tombol logout → hapus localStorage & balik ke halaman login
+  // Tombol logout → hapus localStorage & balik ke login (tanpa .html)
   const btnLogout = document.getElementById("btnLogout");
   if (btnLogout) {
     btnLogout.addEventListener("click", (e) => {
@@ -104,7 +104,7 @@ function filterCards(query, grids) {
     });
   }
 
-  // ====== KODE BERANDA YANG SUDAH ADA ======
+  // ====== KODE BERANDA ======
   const els = getEls();
   if (!els.input) return;
 
@@ -147,9 +147,7 @@ function filterCards(query, grids) {
     const editDeskripsiItem = document.getElementById("editDeskripsiItem");
     const editFormGroupBarang = document.getElementById("editFormGroupBarang");
     const editStokInput = document.getElementById("editStokInput");
-    const editFormGroupFasilitas = document.getElementById(
-      "editFormGroupFasilitas"
-    );
+    const editFormGroupFasilitas = document.getElementById("editFormGroupFasilitas");
     const editStatusSelect = document.getElementById("editStatusSelect");
 
     // Saat modal akan ditampilkan
@@ -212,7 +210,6 @@ function filterCards(query, grids) {
   /*
    * Titik-tiga (⋮) + Hapus
    */
-
   function injectMenuToCards(root) {
     const cards = root.querySelectorAll(".card");
     cards.forEach((card) => {
@@ -224,7 +221,8 @@ function filterCards(query, grids) {
       wrap.className = "msu-action-menu position-absolute top-0 end-0 p-2";
       wrap.innerHTML = `
         <div class="dropdown">
-          <button class="btn btn-light btn-sm rounded-circle shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu Aksi">
+          <button class="btn btn-light btn-sm rounded-circle shadow-sm"
+                  data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu Aksi">
             <i class="bi bi-three-dots-vertical"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">

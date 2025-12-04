@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pengelola")
 public class PengelolaController {
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
+    @GetMapping("/beranda")
+    public String beranda() {
         return "pengelola/beranda";
     }
 
