@@ -8,4 +8,10 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByTypeOrderByIdDesc(ItemType type);
+
+    Item findByName(String name);
+
+    List<Item> findByType(ItemType type);
+
+    List<Item> findTop4ByType(ItemType type);
 }

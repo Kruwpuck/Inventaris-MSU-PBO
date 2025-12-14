@@ -21,6 +21,9 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private ItemRepository itemRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @Override
     public void run(String... args) throws Exception {
         seedUsers();
@@ -31,13 +34,13 @@ public class DataSeeder implements CommandLineRunner {
         if (userRepository.count() == 0) {
             User pengelola = new User();
             pengelola.setUsername("pengelola");
-            pengelola.setPassword("password"); // In prod, use BCrypt
+            pengelola.setPassword(passwordEncoder.encode("password"));
             pengelola.setRole(Role.PENGELOLA);
             userRepository.save(pengelola);
 
             User pengurus = new User();
             pengurus.setUsername("pengurus");
-            pengurus.setPassword("password");
+            pengurus.setPassword(passwordEncoder.encode("password"));
             pengurus.setRole(Role.PENGURUS);
             userRepository.save(pengurus);
         }
