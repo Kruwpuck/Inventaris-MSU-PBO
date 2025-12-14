@@ -1,7 +1,11 @@
 package com.Habb.InventarisMSU.repository;
 
 import com.Habb.InventarisMSU.model.Item;
+import com.Habb.InventarisMSU.model.ItemType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ItemRepository extends JpaRepository<Item, Long> {
+    List<Item> findByTypeOrderByIdDesc(ItemType type);
 }

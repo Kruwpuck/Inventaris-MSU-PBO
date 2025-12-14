@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Pengelola MSU</title>
+
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,6 +13,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
     />
+
     <style>
       body {
         background-color: #ffffff;
@@ -48,20 +50,30 @@
         box-shadow: none !important;
         border-color: #000 !important;
       }
-      /* BARU: Style untuk card yang non-aktif */
+
+      /* Card non-aktif */
       .card.item-disabled {
         opacity: 0.6;
         background-color: #f8f9fa;
       }
 
-      /* (Opsional) sedikit blur pada tombol ⋮ agar kontras di atas gambar */
       .card .btn.btn-light.rounded-circle {
         backdrop-filter: blur(4px);
+      }
+
+      .btn-primary {
+        background-color: #0b492c !important;
+        border-color: #0b492c !important;
+      }
+      .btn-primary:hover {
+        background-color: #0a3f26 !important;
+        border-color: #0a3f26 !important;
       }
     </style>
   </head>
 
   <body>
+    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg fixed-top shadow-soft bg-white">
       <div class="container">
         <a class="navbar-brand" th:href="@{/pengelola/beranda}">
@@ -71,6 +83,7 @@
             style="height: 45px"
           />
         </a>
+
         <button
           class="navbar-toggler"
           type="button"
@@ -79,10 +92,13 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse justify-content-end" id="navmenu">
           <ul class="navbar-nav mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" th:href="@{/pengelola/beranda}">Beranda</a>
+              <a class="nav-link active" th:href="@{/pengelola/beranda}"
+                >Beranda</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link" th:href="@{/pengelola/laporan}">Laporan</a>
@@ -95,7 +111,7 @@
             </li>
           </ul>
 
-          <!-- USER DROPDOWN + LOGOUT SAJA -->
+          <!-- USER DROPDOWN + LOGOUT -->
           <div class="ms-3 dropdown">
             <button
               class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
@@ -133,6 +149,7 @@
                   class="dropdown-item text-danger"
                   id="btnLogout"
                   type="button"
+                  onclick="window.location.href='/logout';"
                 >
                   <i class="bi bi-box-arrow-right me-2"></i>Keluar
                 </button>
@@ -143,6 +160,7 @@
       </div>
     </nav>
 
+    <!-- HERO -->
     <section
       class="d-flex justify-content-center align-items-start position-relative w-100"
       style="
@@ -163,6 +181,7 @@
     </section>
 
     <div class="container">
+      <!-- SEARCH -->
       <form
         id="searchForm"
         class="row align-items-center justify-content-center gx-2 gy-2"
@@ -173,7 +192,7 @@
               id="quickSearch"
               type="text"
               class="form-control rounded-start-pill py-2"
-              placeholder="Cari barang atau fasilitas..."
+              placeholder="Cari barang atau ruangan..."
             />
             <button class="btn btn-success rounded-end-pill px-4" type="submit">
               <i class="bi bi-search me-1"></i>Cari
@@ -182,15 +201,16 @@
         </div>
       </form>
 
+      <!-- TITLE + FILTER -->
       <section class="text-center mt-5">
         <h4 class="fw-light mb-2">
           Satu langkah menuju
           <b class="text-success">kemudahan beraktivitas</b> di MSU
         </h4>
         <p class="text-muted mb-3">
-          Semua urusan peminjaman dan perizinan kini bisa dilakukan secara
-          online.
+          Semua urusan peminjaman dan perizinan kini bisa dilakukan secara online.
         </p>
+
         <div class="text-start">
           <div class="dropdown d-inline-block">
             <button
@@ -205,18 +225,10 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a
-                  class="dropdown-item"
-                  href="#"
-                  data-switch="barang"
-                  >Barang</a
-                >
+                <a class="dropdown-item" href="#" data-switch="barang">Barang</a>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
-                  href="#"
-                  data-switch="fasilitas"
+                <a class="dropdown-item" href="#" data-switch="ruangan"
                   >Ruangan</a
                 >
               </li>
@@ -225,541 +237,157 @@
         </div>
       </section>
 
-      <!-- GRID BARANG -->
+      <!-- GRID BARANG (DB) -->
       <section id="gridBarang" class="mt-4 pb-5">
         <div class="row g-4 justify-content-center">
-
-          <!-- KARTU-KARTU BARANG (punyamu, tidak diubah) -->
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div
+            class="col-12 col-sm-6 col-md-4 col-lg-3"
+            th:each="it : ${barangList}"
+          >
             <div
-              id="item-brg-1"
               class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
               style="max-width: 16rem"
+              th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''"
             >
+              <!-- CHANGED: tombol hapus jadi titik 3 pojok kanan atas -->
+              <button
+                class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#modalHapus"
+                th:attr="data-id=${it.id}, data-nama=${it.name}"
+                style="z-index: 3; width: 36px; height: 36px;"
+                aria-label="Hapus"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+
               <img
-                th:src="@{/assets/pengelola/aset/proyektor.png}"
+                th:src="@{/assets/pengelola/aset/{img}(img=${it.imageUrl})}"
                 class="card-img-top"
-                alt="Proyektor"
+                th:alt="${it.name}"
                 style="height: 160px; object-fit: cover"
               />
               <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Set Proyektor</h6>
-                <p class="card-text text-muted small mb-2">
-                  Unit proyektor untuk kegiatan presentasi.
+                <h6
+                  class="card-title fw-semibold mb-1"
+                  th:text="${it.name}"
+                >
+                  Nama
+                </h6>
+
+                <p
+                  class="card-text text-muted small mb-2"
+                  th:text="${it.description}"
+                >
+                  Deskripsi
                 </p>
+
                 <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>5 unit</b>
+                  Stok:
+                  <b th:text="${it.stock} + ' unit'">0 unit</b>
                 </p>
+
                 <button
                   class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
                   style="background-color: #0b492c"
                   data-bs-toggle="modal"
                   data-bs-target="#editModal"
-                  data-item-id="item-brg-1"
-                  data-item-tipe="barang"
-                  data-item-nama="Set Proyektor"
-                  data-item-deskripsi="Unit proyektor untuk kegiatan presentasi."
-                  data-item-stok="5"
+                  th:attr="data-id=${it.id},
+                           data-tipe=${it.type},
+                           data-nama=${it.name},
+                           data-deskripsi=${it.description},
+                           data-stok=${it.stock},
+                           data-status=${it.status}"
                 >
                   Edit
                 </button>
+
+                <!-- REMOVED: tombol hapus lama (diganti titik 3) -->
               </div>
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-2"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/speaker.png}"
-                class="card-img-top"
-                alt="Speaker"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Set Sound System Portable</h6>
-                <p class="card-text text-muted small mb-2">
-                  Speaker untuk kegiatan indoor dan outdoor.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>8 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-2"
-                  data-item-tipe="barang"
-                  data-item-nama="Set Sound System Portable"
-                  data-item-deskripsi="Speaker untuk kegiatan indoor dan outdoor."
-                  data-item-stok="8"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
+          <!-- kalau kosong -->
+          <div class="col-12 text-center text-muted mt-3" th:if="${#lists.isEmpty(barangList)}">
+            Belum ada barang di database.
           </div>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-3"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/terpal.png}"
-                class="card-img-top"
-                alt="Terpal"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Terpal</h6>
-                <p class="card-text text-muted small mb-2">
-                  Terpal untuk kegiatan luar ruangan.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>10 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-3"
-                  data-item-tipe="barang"
-                  data-item-nama="Terpal"
-                  data-item-deskripsi="Terpal untuk kegiatan luar ruangan."
-                  data-item-stok="10"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-4"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/zoom.jpg}"
-                class="card-img-top"
-                alt="Akun Zoom MSU"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Akun Zoom MSU</h6>
-                <p class="card-text text-muted small mb-2">
-                  Akun Zoom resmi untuk kegiatan online MSU.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>6 akun</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-4"
-                  data-item-tipe="barang"
-                  data-item-nama="Akun Zoom MSU"
-                  data-item-deskripsi="Akun Zoom resmi untuk kegiatan online MSU."
-                  data-item-stok="6"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-5"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/karpet.jpeg}"
-                class="card-img-top"
-                alt="Karpet"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Karpet</h6>
-                <p class="card-text text-muted small mb-2">
-                  Karpet untuk aula dan ruangan besar.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>12 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-5"
-                  data-item-tipe="barang"
-                  data-item-nama="Karpet"
-                  data-item-deskripsi="Karpet untuk aula dan ruangan besar."
-                  data-item-stok="12"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-6"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/buker.jpg}"
-                class="card-img-top"
-                alt="Peralatan Bukber"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Peralatan Bukber</h6>
-                <p class="card-text text-muted small mb-2">
-                  Peralatan tambahan untuk kegiatan MSU.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>6 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-6"
-                  data-item-tipe="barang"
-                  data-item-nama="Peralatan Bukber"
-                  data-item-deskripsi="Peralatan tambahan untuk kegiatan MSU."
-                  data-item-stok="6"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-7"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/hijab.png}"
-                class="card-img-top"
-                alt="Hijab"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Hijab</h6>
-                <p class="card-text text-muted small mb-2">
-                  Hijab seragam untuk kegiatan MSU.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>6 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-7"
-                  data-item-tipe="barang"
-                  data-item-nama="Hijab"
-                  data-item-deskripsi="Hijab seragam untuk kegiatan MSU."
-                  data-item-stok="6"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-8"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/meja.png}"
-                class="card-img-top"
-                alt="Meja Kayu"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Meja</h6>
-                <p class="card-text text-muted small mb-2">
-                  Meja serbaguna untuk kegiatan belajar.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>4 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-8"
-                  data-item-tipe="barang"
-                  data-item-nama="Meja"
-                  data-item-deskripsi="Meja serbaguna untuk kegiatan belajar."
-                  data-item-stok="4"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-brg-9"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/sofa.webp}"
-                class="card-img-top"
-                alt="Sofa"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Sofa</h6>
-                <p class="card-text text-muted small mb-2">
-                  Sofa nyaman untuk ruang tamu dan santai.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Stok: <b>3 unit</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background-color: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-brg-9"
-                  data-item-tipe="barang"
-                  data-item-nama="Sofa"
-                  data-item-deskripsi="Sofa nyaman untuk ruang tamu dan santai."
-                  data-item-stok="3"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      <!-- GRID FASILITAS -->
+      <!-- GRID RUANGAN (DB) -->
       <section id="gridFasilitas" class="mt-4 pb-5 d-none">
         <div class="row g-4 justify-content-center">
+          <div
+            class="col-12 col-sm-6 col-md-4 col-lg-3"
+            th:each="it : ${ruanganList}"
+          >
+            <div
+              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
+              style="max-width: 16rem"
+              th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''"
+            >
+              <!-- CHANGED: tombol hapus jadi titik 3 pojok kanan atas -->
+              <button
+                class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#modalHapus"
+                th:attr="data-id=${it.id}, data-nama=${it.name}"
+                style="z-index: 3; width: 36px; height: 36px;"
+                aria-label="Hapus"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
 
-          <!-- KARTU-KARTU FASILITAS (punyamu) -->
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-fas-1"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
               <img
-                th:src="@{/assets/pengelola/aset/ruang%20utama.jpg}"
+                th:src="@{/assets/pengelola/aset/{img}(img=${it.imageUrl})}"
                 class="card-img-top"
-                alt="Ruang Utama"
+                th:alt="${it.name}"
                 style="height: 160px; object-fit: cover"
               />
+
               <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Ruang Utama</h6>
-                <p class="card-text text-muted small mb-2">
-                  Kapasitas besar untuk acara utama.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Ketersediaan: <b>Tersedia</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-fas-1"
-                  data-item-tipe="fasilitas"
-                  data-item-nama="Ruang Utama"
-                  data-item-deskripsi="Kapasitas besar untuk acara utama."
-                  data-item-status="Tersedia"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-fas-2"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/ruangTamu.jpg}"
-                class="card-img-top"
-                alt="Ruang Tamu VIP"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Ruang Tamu VIP</h6>
-                <p class="card-text text-muted small mb-2">
-                  Kapasitas 10 orang untuk tamu penting.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Ketersediaan: <b>Tersedia</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-fas-2"
-                  data-item-tipe="fasilitas"
-                  data-item-nama="Ruang Tamu VIP"
-                  data-item-deskripsi="Kapasitas 10 orang untuk tamu penting."
-                  data-item-status="Tersedia"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-fas-3"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/plaza.jpg}"
-                class="card-img-top"
-                alt="Plaza"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">Plaza</h6>
-                <p class="card-text text-muted small mb-2">
-                  Area outdoor serbaguna di depan masjid.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Ketersediaan: <b>Tersedia</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-fas-3"
-                  data-item-tipe="fasilitas"
-                  data-item-nama="Plaza"
-                  data-item-deskripsi="Area outdoor serbaguna di depan masjid."
-                  data-item-status="Tersedia"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-fas-4"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/selasar.jpg}"
-                class="card-img-top"
-                alt="Selasar"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">
-                  Selasar/Teras Utara Masjid
+                <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">
+                  Nama
                 </h6>
-                <p class="card-text text-muted small mb-2">
-                  Area teras di sisi utara masjid.
+
+                <p
+                  class="card-text text-muted small mb-2"
+                  th:text="${it.description}"
+                >
+                  Deskripsi
                 </p>
+
                 <p class="item-stok text-secondary small mb-3">
-                  Ketersediaan: <b>Tersedia</b>
+                  Ketersediaan:
+                  <b th:text="${it.status}">Tersedia</b>
                 </p>
+
                 <button
                   class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
                   style="background: #0b492c"
                   data-bs-toggle="modal"
                   data-bs-target="#editModal"
-                  data-item-id="item-fas-4"
-                  data-item-tipe="fasilitas"
-                  data-item-nama="Selasar/Teras Utara Masjid"
-                  data-item-deskripsi="Area teras di sisi utara masjid."
-                  data-item-status="Tersedia"
+                  th:attr="data-id=${it.id},
+                           data-tipe=${it.type},
+                           data-nama=${it.name},
+                           data-deskripsi=${it.description},
+                           data-stok=${it.stock},
+                           data-status=${it.status}"
                 >
                   Edit
                 </button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div
-              id="item-fas-5"
-              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
-              style="max-width: 16rem"
-            >
-              <img
-                th:src="@{/assets/pengelola/aset/ruangKaca.jpg}"
-                class="card-img-top"
-                alt="Ruang Kaca"
-                style="height: 160px; object-fit: cover"
-              />
-              <div class="card-body py-3 px-3">
-                <h6 class="card-title fw-semibold mb-1">
-                  Lantai 2 Ruang Kaca
-                </h6>
-                <p class="card-text text-muted small mb-2">
-                  Ruang pertemuan indoor di lantai 2.
-                </p>
-                <p class="item-stok text-secondary small mb-3">
-                  Ketersediaan: <b>Tersedia</b>
-                </p>
-                <button
-                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
-                  style="background: #0b492c"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal"
-                  data-item-id="item-fas-5"
-                  data-item-tipe="fasilitas"
-                  data-item-nama="Lantai 2 Ruang Kaca"
-                  data-item-deskripsi="Ruang pertemuan indoor di lantai 2."
-                  data-item-status="Tersedia"
-                >
-                  Edit
-                </button>
+
+                <!-- REMOVED: tombol hapus lama (diganti titik 3) -->
               </div>
             </div>
           </div>
 
+          <!-- kalau kosong -->
+          <div class="col-12 text-center text-muted mt-3" th:if="${#lists.isEmpty(ruanganList)}">
+            Belum ada ruangan di database.
+          </div>
         </div>
       </section>
     </div>
@@ -785,14 +413,13 @@
               aria-label="Close"
             ></button>
           </div>
+
           <form id="editForm">
             <div class="modal-body">
               <input type="hidden" id="editItemId" />
 
               <div class="mb-3">
-                <label for="editNamaItem" class="form-label"
-                  >Nama Item</label
-                >
+                <label for="editNamaItem" class="form-label">Nama Item</label>
                 <input
                   type="text"
                   class="form-control"
@@ -801,6 +428,7 @@
                   disabled
                 />
               </div>
+
               <div class="mb-3">
                 <label for="editDeskripsiItem" class="form-label"
                   >Deskripsi</label
@@ -813,6 +441,7 @@
                 ></textarea>
               </div>
 
+              <!-- barang -->
               <div class="mb-3" id="editFormGroupBarang">
                 <label for="editStokInput" class="form-label"
                   >Stok (unit/akun)</label
@@ -826,20 +455,18 @@
                 />
               </div>
 
+              <!-- ruangan -->
               <div class="mb-3" id="editFormGroupFasilitas">
                 <label for="editStatusSelect" class="form-label"
                   >Status Ketersediaan</label
                 >
-                <select
-                  class="form-select"
-                  id="editStatusSelect"
-                  required
-                >
+                <select class="form-select" id="editStatusSelect" required>
                   <option value="Tersedia">Tersedia</option>
                   <option value="Tidak Tersedia">Tidak Tersedia</option>
                 </select>
               </div>
             </div>
+
             <div class="modal-footer">
               <button
                 type="button"
@@ -862,15 +489,27 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Hapus Item</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            <h5 class="modal-title">
+              <i class="bi bi-trash me-2"></i>Hapus Item
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Tutup"
+            ></button>
           </div>
+
           <div class="modal-body">
-            Yakin ingin menghapus <strong id="hapusNama">item ini</strong>? Tindakan ini tidak bisa dibatalkan.
+            Yakin ingin menghapus <strong id="hapusNama">item ini</strong>?
+            Tindakan ini tidak bisa dibatalkan.
             <input type="hidden" id="hapusId" />
           </div>
+
           <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Batal
+            </button>
             <button class="btn btn-danger" id="btnKonfirmasiHapus">
               <i class="bi bi-trash me-2"></i>Hapus
             </button>
@@ -881,5 +520,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/assets/pengelola/beranda.js}"></script>
+
+    <script>
+      // optional: kalau tombol logout kamu pakai POST /logout (Spring Security default)
+      // ini biar aman kalau /logout kamu wajib POST.
+      // Kalau punyamu sudah bisa GET, boleh hapus script ini.
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("btnLogout");
+        if (!btn) return;
+        btn.addEventListener("click", (e) => {
+          // biarin default onclick kalau sudah kamu set GET
+        });
+      });
+    </script>
   </body>
 </html>
