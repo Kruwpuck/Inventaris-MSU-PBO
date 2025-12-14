@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pengelola MSU</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <style>
+      body {
+        background-color: #ffffff;
+        font-family: "Poppins", sans-serif;
+      }
+      .shadow-soft {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08),
+          0 2px 4px rgba(0, 0, 0, 0.04);
+      }
+      .shadow-strong {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12),
+          0 4px 6px rgba(0, 0, 0, 0.08);
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        transition: all 0.25s ease;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+      }
+      .navbar-nav .nav-link {
+        color: #2fa16c;
+        font-weight: 600;
+        margin: 0 10px;
+        transition: color 0.2s ease;
+      }
+      .navbar-nav .nav-link:hover {
+        color: #0b492c;
+      }
+      .navbar-nav .nav-link.active {
+        color: #0b492c !important;
+      }
+      input[type="search"]:focus,
+      input[type="text"]:focus,
+      .form-control:focus {
+        box-shadow: none !important;
+        border-color: #000 !important;
+      }
+
+      /* Card non-aktif */
+      .card.item-disabled {
+        opacity: 0.6;
+        background-color: #f8f9fa;
+      }
+
+      .card .btn.btn-light.rounded-circle {
+        backdrop-filter: blur(4px);
+      }
+
+      .btn-primary {
+        background-color: #0b492c !important;
+        border-color: #0b492c !important;
+      }
+      .btn-primary:hover {
+        background-color: #0a3f26 !important;
+        border-color: #0a3f26 !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top shadow-soft bg-white">
+      <div class="container">
+        <a class="navbar-brand" th:href="@{/pengelola/beranda}">
+          <img
+            th:src="@{/assets/pengelola/aset/logo.png}"
+            alt="Logo MSU"
+            style="height: 45px"
+          />
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navmenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navmenu">
+          <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" th:href="@{/pengelola/beranda}"
+                >Beranda</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/pengelola/laporan}">Laporan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/pengelola/tambah}">Tambah Barang</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/pengelola/approval}">Approval</a>
+            </li>
+          </ul>
+
+          <!-- USER DROPDOWN + LOGOUT -->
+          <div class="ms-3 dropdown">
+            <button
+              class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
+              type="button"
+              id="userMenuButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <img
+                id="userAvatar"
+                th:src="@{/assets/pengelola/aset/MSU.png}"
+                alt="User"
+                class="rounded-circle me-2"
+                width="32"
+                height="32"
+              />
+              <div class="text-start">
+                <div id="userName" class="fw-semibold text-dark small">
+                  Pengelola
+                </div>
+                <div
+                  id="userRoleLabel"
+                  class="text-muted"
+                  style="font-size: 0.75rem"
+                >
+                  Pengelola Side
+                </div>
+              </div>
+              <i class="bi bi-chevron-down ms-2 small"></i>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end mt-2">
+              <li>
+                <button
+                  class="dropdown-item text-danger"
+                  id="btnLogout"
+                  type="button"
+                  onclick="window.location.href='/logout';"
+                >
+                  <i class="bi bi-box-arrow-right me-2"></i>Keluar
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section
+      class="d-flex justify-content-center align-items-start position-relative w-100"
+      style="
+        padding-top: 55px;
+        height: 70vh;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      "
+      th:styleappend="'background-image: url(' + @{/assets/pengelola/aset/ramadhan.png} + ');'"
+    >
+      <img
+        th:src="@{/assets/pengelola/aset/MSU.png}"
+        alt="Syamsul Ulum"
+        class="img-fluid shadow-strong rounded-3 mt-5"
+        style="height: 230px; width: 1100px; z-index: 2"
+      />
+    </section>
+
+    <div class="container">
+      <!-- SEARCH -->
+      <form
+        id="searchForm"
+        class="row align-items-center justify-content-center gx-2 gy-2"
+      >
+        <div class="col-12 col-md-6 col-lg-5">
+          <div class="input-group">
+            <input
+              id="quickSearch"
+              type="text"
+              class="form-control rounded-start-pill py-2"
+              placeholder="Cari barang atau ruangan..."
+            />
+            <button class="btn btn-success rounded-end-pill px-4" type="submit">
+              <i class="bi bi-search me-1"></i>Cari
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- TITLE + FILTER -->
+      <section class="text-center mt-5">
+        <h4 class="fw-light mb-2">
+          Satu langkah menuju
+          <b class="text-success">kemudahan beraktivitas</b> di MSU
+        </h4>
+        <p class="text-muted mb-3">
+          Semua urusan peminjaman dan perizinan kini bisa dilakukan secara online.
+        </p>
+
+        <div class="text-start">
+          <div class="dropdown d-inline-block">
+            <button
+              id="kategoriBtn"
+              class="btn btn-success dropdown-toggle rounded-pill px-4 py-2"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="background-color: #0b492c; border-color: #0b492c"
+            >
+              Barang
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#" data-switch="barang">Barang</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" data-switch="ruangan"
+                  >Ruangan</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- GRID BARANG (DB) -->
+      <section id="gridBarang" class="mt-4 pb-5">
+        <div class="row g-4 justify-content-center">
+          <div
+            class="col-12 col-sm-6 col-md-4 col-lg-3"
+            th:each="it : ${barangList}"
+          >
+            <div
+              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
+              style="max-width: 16rem"
+              th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''"
+            >
+              <!-- CHANGED: tombol hapus jadi titik 3 pojok kanan atas -->
+              <button
+                class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#modalHapus"
+                th:attr="data-id=${it.id}, data-nama=${it.name}"
+                style="z-index: 3; width: 36px; height: 36px;"
+                aria-label="Hapus"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+
+              <img
+                th:src="@{/assets/pengelola/aset/{img}(img=${it.imageUrl})}"
+                class="card-img-top"
+                th:alt="${it.name}"
+                style="height: 160px; object-fit: cover"
+              />
+              <div class="card-body py-3 px-3">
+                <h6
+                  class="card-title fw-semibold mb-1"
+                  th:text="${it.name}"
+                >
+                  Nama
+                </h6>
+
+                <p
+                  class="card-text text-muted small mb-2"
+                  th:text="${it.description}"
+                >
+                  Deskripsi
+                </p>
+
+                <p class="item-stok text-secondary small mb-3">
+                  Stok:
+                  <b th:text="${it.stock} + ' unit'">0 unit</b>
+                </p>
+
+                <button
+                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
+                  style="background-color: #0b492c"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal"
+                  th:attr="data-id=${it.id},
+                           data-tipe=${it.type},
+                           data-nama=${it.name},
+                           data-deskripsi=${it.description},
+                           data-stok=${it.stock},
+                           data-status=${it.status}"
+                >
+                  Edit
+                </button>
+
+                <!-- REMOVED: tombol hapus lama (diganti titik 3) -->
+              </div>
+            </div>
+          </div>
+
+          <!-- kalau kosong -->
+          <div class="col-12 text-center text-muted mt-3" th:if="${#lists.isEmpty(barangList)}">
+            Belum ada barang di database.
+          </div>
+        </div>
+      </section>
+
+      <!-- GRID RUANGAN (DB) -->
+      <section id="gridFasilitas" class="mt-4 pb-5 d-none">
+        <div class="row g-4 justify-content-center">
+          <div
+            class="col-12 col-sm-6 col-md-4 col-lg-3"
+            th:each="it : ${ruanganList}"
+          >
+            <div
+              class="card h-100 border-0 rounded-4 shadow-strong mx-auto"
+              style="max-width: 16rem"
+              th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''"
+            >
+              <!-- CHANGED: tombol hapus jadi titik 3 pojok kanan atas -->
+              <button
+                class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#modalHapus"
+                th:attr="data-id=${it.id}, data-nama=${it.name}"
+                style="z-index: 3; width: 36px; height: 36px;"
+                aria-label="Hapus"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+
+              <img
+                th:src="@{/assets/pengelola/aset/{img}(img=${it.imageUrl})}"
+                class="card-img-top"
+                th:alt="${it.name}"
+                style="height: 160px; object-fit: cover"
+              />
+
+              <div class="card-body py-3 px-3">
+                <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">
+                  Nama
+                </h6>
+
+                <p
+                  class="card-text text-muted small mb-2"
+                  th:text="${it.description}"
+                >
+                  Deskripsi
+                </p>
+
+                <p class="item-stok text-secondary small mb-3">
+                  Ketersediaan:
+                  <b th:text="${it.status}">Tersedia</b>
+                </p>
+
+                <button
+                  class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit"
+                  style="background: #0b492c"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal"
+                  th:attr="data-id=${it.id},
+                           data-tipe=${it.type},
+                           data-nama=${it.name},
+                           data-deskripsi=${it.description},
+                           data-stok=${it.stock},
+                           data-status=${it.status}"
+                >
+                  Edit
+                </button>
+
+                <!-- REMOVED: tombol hapus lama (diganti titik 3) -->
+              </div>
+            </div>
+          </div>
+
+          <!-- kalau kosong -->
+          <div class="col-12 text-center text-muted mt-3" th:if="${#lists.isEmpty(ruanganList)}">
+            Belum ada ruangan di database.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- MODAL EDIT -->
+    <div
+      class="modal fade"
+      id="editModal"
+      tabindex="-1"
+      aria-labelledby="editModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">
+              <i class="bi bi-pencil-square me-2"></i>Edit Item
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <form id="editForm">
+            <div class="modal-body">
+              <input type="hidden" id="editItemId" />
+
+              <div class="mb-3">
+                <label for="editNamaItem" class="form-label">Nama Item</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editNamaItem"
+                  readonly
+                  disabled
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="editDeskripsiItem" class="form-label"
+                  >Deskripsi</label
+                >
+                <textarea
+                  class="form-control"
+                  id="editDeskripsiItem"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+
+              <!-- barang -->
+              <div class="mb-3" id="editFormGroupBarang">
+                <label for="editStokInput" class="form-label"
+                  >Stok (unit/akun)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="editStokInput"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <!-- ruangan -->
+              <div class="mb-3" id="editFormGroupFasilitas">
+                <label for="editStatusSelect" class="form-label"
+                  >Status Ketersediaan</label
+                >
+                <select class="form-select" id="editStatusSelect" required>
+                  <option value="Tersedia">Tersedia</option>
+                  <option value="Tidak Tersedia">Tidak Tersedia</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Batal
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI HAPUS -->
+    <div class="modal fade" id="modalHapus" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-trash me-2"></i>Hapus Item
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Tutup"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            Yakin ingin menghapus <strong id="hapusNama">item ini</strong>?
+            Tindakan ini tidak bisa dibatalkan.
+            <input type="hidden" id="hapusId" />
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Batal
+            </button>
+            <button class="btn btn-danger" id="btnKonfirmasiHapus">
+              <i class="bi bi-trash me-2"></i>Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/assets/pengelola/beranda.js}"></script>
+
+    <script>
+      // optional: kalau tombol logout kamu pakai POST /logout (Spring Security default)
+      // ini biar aman kalau /logout kamu wajib POST.
+      // Kalau punyamu sudah bisa GET, boleh hapus script ini.
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("btnLogout");
+        if (!btn) return;
+        btn.addEventListener("click", (e) => {
+          // biarin default onclick kalau sudah kamu set GET
+        });
+      });
+    </script>
+  </body>
+</html>

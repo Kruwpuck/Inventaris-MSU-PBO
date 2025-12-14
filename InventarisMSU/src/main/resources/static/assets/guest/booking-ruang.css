@@ -1,0 +1,59 @@
+:root{
+  --green-1:#eaf6ee; --green-2:#9bd0a5; --green-3:#2e8b57; --green-4:#236e47;
+  --teal:#0f6f6b;
+}
+
+/* NAVBAR */
+.navbar-masjid{background:var(--green-1)!important;border-bottom:1px solid rgba(0,0,0,.06);padding:.6rem 0}
+.navbar-masjid .logo{width:36px;height:36px;object-fit:contain}
+.navbar-masjid .brand-text{font-weight:700;color:var(--green-3)}
+.navbar-masjid .nav-link{font-weight:700;color:var(--green-3);white-space:nowrap}
+.navbar-masjid .nav-link:hover{color:var(--green-4)}
+.navbar-masjid .nav-link.active{color:var(--green-4);position:relative}
+.navbar-masjid .nav-link.active::after{content:"";position:absolute;left:0;right:0;bottom:-6px;margin:auto;width:44px;height:4px;border-radius:999px;background:var(--green-2)}
+
+
+/* Global */
+body{background:#f6f8f7;color:#121816;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.page-title{font-weight:800}
+
+/* Summary left */
+.summary-card{
+  background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:18px;
+  box-shadow:0 8px 16px rgba(0,0,0,.08);overflow:hidden
+}
+.summary-thumb{position:relative;background:#f0f2f1}
+.summary-thumb img{width:100%;height:200px;object-fit:cover}
+.badge-status{position:absolute;top:10px;left:10px;background:#167c73;color:#fff;border-radius:9px;padding:.25rem .6rem;font-weight:700}
+
+/* Mini calendar */
+.mini-calendar{background:#fff}
+.cal-nav{border:none;background:#eef6f5;border-radius:8px;width:34px;height:30px}
+.calendar-legend{display:flex;align-items:center}
+.legend-box{width:14px;height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+.legend-box.booked{background:#ffd9db;border:1px solid #ffb7be}
+.legend-box.today{background:#e7fff4;border:1px solid #b9ecd0}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.calendar-grid span{display:block;text-align:center;padding:6px 0;border-radius:8px;background:#f3f6f6;font-size:.9rem}
+.calendar-grid span.muted{opacity:.4}
+.calendar-grid span.today{background:#e7fff4;border:1px solid #b9ecd0}
+.calendar-grid span.booked{background:#ffd9db;border:1px solid #ffb7be;color:#a40016;font-weight:700}
+
+/* Form right */
+.form-card{
+  background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:18px;
+  box-shadow:0 8px 16px rgba(0,0,0,.08);padding:18px
+}
+.input-group-text{background:#f3f6f6;border-color:#e9eeee}
+.form-control,.form-select{border-color:#e9eeee}
+.btn-book{background:var(--teal);border-color:var(--teal);font-weight:800}
+.btn-book:disabled{background:#9bbebe;border-color:#9bbebe}
+
+/* Animations */
+.drop-in{opacity:0;transform:translateY(-36px);transition:.9s}
+.drop-in.show{opacity:1;transform:none}
+.reveal-up{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease}
+.reveal-up.show{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .drop-in,.reveal-up{opacity:1;transform:none;transition:none}
+}
