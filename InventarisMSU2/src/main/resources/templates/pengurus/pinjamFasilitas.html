@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peminjaman Fasilitas</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<!-- ============================
+     HEADER FULLSCREEN
+============================= -->
+<header class="header">
+  <div class="logo">
+    <img src="Assets/logo.png" alt="Logo">
+  </div>
+
+  <nav class="nav-desktop">
+    <a href="dashboard.html">Beranda</a>
+    <a href="#" class="active">Peminjaman Fasilitas</a>
+    <a href="riwayatpinjam.html">Riwayat Peminjaman</a>
+  </nav>
+
+  <!-- User dropdown -->
+  <div class="user-desktop" onclick="toggleUserDropdown()">
+    <div class="user-info-box">
+      <img src="Assets/logo.png" class="user-photo">
+      <div>
+        <strong>pengurus</strong><br>
+        Pengurus Side
+      </div>
+      <span class="arrow">▼</span>
+    </div>
+
+    <div class="user-dropdown" id="user-dropdown">
+      <a href="#" onclick="logout()">Keluar</a>
+    </div>
+  </div>
+
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</header>
+
+<!-- Sidebar Mobile -->
+<div id="mobileMenu" class="mobile-menu">
+  <div class="mobile-logo">
+    <img src="Assets/logo.png" alt="">
+  </div>
+
+  <a href="dashboard.html">Beranda</a>
+  <a href="#" class="active">Peminjaman Fasilitas</a>
+  <a href="riwayatpinjam.html">Riwayat Peminjaman</a>
+
+  <div class="user-box">
+    <img src="Assets/logo.png" class="user-pic">
+    <div>
+      <strong>pengurus</strong><br>Pengurus Side
+    </div>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<!-- ============================
+     CONTENT
+============================= -->
+<h1>Peminjaman Fasilitas</h1>
+
+<div class="container table-responsive">
+  <table>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Nama Peminjam</th>
+        <th>Waktu Pengambilan</th>
+        <th>Waktu Pengembalian</th>
+        <th>Fasilitas</th>
+        <th>Sudah Ambil</th>
+        <th>Sudah Kembali</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Detail Peminjaman</h2>
+      </div>
+      <div class="modal-body">
+        <p id="detailContent">...</p>
+      </div>
+      <div class="modal-footer">
+        <button class="close-btn" onclick="closeModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared-data.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    initPinjamFasilitas();
+});
+
+// Dropdown user
+function toggleUserDropdown() {
+  document.getElementById("user-dropdown").classList.toggle("open");
+}
+
+window.addEventListener("click", e => {
+  const box = document.querySelector(".user-desktop");
+  const dd = document.getElementById("user-dropdown");
+  if (!box.contains(e.target)) dd.classList.remove("open");
+});
+
+// Sidebar mobile
+function toggleMenu() {
+  document.getElementById("mobileMenu").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+}
+
+function logout() {
+  localStorage.removeItem("msuUser");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

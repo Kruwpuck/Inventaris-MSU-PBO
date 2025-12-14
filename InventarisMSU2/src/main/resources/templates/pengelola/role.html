@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Pilih Role - MSU</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+		/>
+		
+		<style>
+			/* Font Utama */
+			body {
+				font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+					Roboto, "Helvetica Neue", Arial, sans-serif;
+				background-color: #ffffff;
+				overflow-x: hidden; 
+			}
+
+			
+			/* Container utama untuk layout 2 kolom */
+			.main-container {
+				min-height: 85vh; 
+				display: flex;
+				align-items: center;
+			}
+
+			/* Konten deskripsi di KIRI */
+			.description-content img {
+				max-width: 100%;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+				margin-bottom: 24px;
+			}
+			.description-content h2 {
+				font-weight: 700;
+				margin-bottom: 16px;
+			}
+
+			/*
+			 * CSS untuk CAROUSEL (Slider) di KANAN
+			 */
+			
+			.carousel-control-prev,
+			.carousel-control-next {
+				width: 5%;
+			}
+			.carousel-control-prev-icon {
+				background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+			}
+			.carousel-control-next-icon {
+				background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+			}
+
+			.carousel-indicators {
+				bottom: -80px; 
+			}
+			.carousel-indicators [data-bs-target] {
+				background-color: #ffffff;
+				width: 40px; 
+				height: 5px; 
+				border: none;
+				border-radius: 2px;
+				margin: 0 5px;
+			}
+
+			/*
+			 * PERUBAHAN STYLING KARTU ROLE
+			 */
+			.role-select-card {
+				border: 3px solid #e0e0e0;
+				border-radius: 24px;
+				height: 450px; /* Tinggi tetap */
+				width: 90%; 
+				margin: 0 auto; 
+				overflow: hidden; 
+				position: relative; /* INI PENTING */
+				transition: all 0.3s ease;
+				background-color: #fff;
+				/* Hapus flexbox dari sini */
+			}
+
+			.carousel-item.active .role-select-card {
+				border-color: #0b492c;
+				box-shadow: 0 12px 30px rgba(47, 161, 108, 0.2);
+			}
+
+			/* Gambar latar belakang (TETAP SAMA) */
+			.role-select-card .card-background-img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				object-fit: cover; 
+				z-index: 1; /* Di belakang */
+				border-radius: 21px; 
+			}
+
+			/*
+			 * PERUBAHAN PADA KONTEN KARTU
+			 */
+
+			/* Konten teks (layer di depan gambar) */
+			.role-select-card .card-content {
+				position: absolute; /* Mengisi penuh kartu */
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				z-index: 2; /* Di depan gambar */
+				color: #1a1a1a; 
+			}
+
+			/* Teks kecil (Pengurus Side) diposisikan ke kiri atas */
+			.role-select-card .card-content p {
+				position: absolute; /* Diposisikan relatif ke .card-content */
+				top: 24px;
+				left: 24px;
+				font-size: 1.1rem;
+				font-weight: 500;
+			}
+			
+			/* Teks besar (PENGURUS) diposisikan ke tengah sempurna */
+			.role-select-card .card-content h3 {
+				position: absolute; /* Diposisikan relatif ke .card-content */
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%); /* Trik rata tengah */
+				width: 100%; /* Pastikan lebar penuh untuk rata tengah teks */
+				text-align: center;
+				font-weight: 700;
+				font-size: 2.5rem; 
+				margin: 0; /* Hapus margin default h3 */
+			}
+			
+			/* Tombol Selesai */
+			.btn-selesai {
+				background-color: #1a1a1a;
+				color: #fff;
+				border: none;
+				border-radius: 8px;
+				padding: 12px 30px;
+				font-weight: 600;
+				transition: all 0.2s ease;
+			}
+			.btn-selesai:hover {
+				background-color: #333;
+				color: #fff;
+			}
+			.btn-selesai:disabled {
+				background-color: #e0e0e0;
+				color: #999;
+				cursor: not-allowed;
+			}
+		</style>
+	</head>
+	<body>
+	
+
+		<main class="container main-container">
+			<div class="row w-100 align-items-center">
+				
+				<div class="col-lg-7">
+					
+					<div class="description-content" id="pengelola-desc">
+					
+						<h2>PENGELOLA SIDE</h2>
+						<p class="text-muted fs-5">
+							Sebagai Pengelola, Anda bertanggung jawab untuk mengelola
+							inventaris masjid, menyetujui pengajuan peminjaman barang dan
+							fasilitas, serta memantau semua laporan aktivitas.
+						</g>
+					</div>
+
+					<div class="description-content d-none" id="pengurus-desc">
+						<h2>PENGURUS SIDE</h2>
+						<p class="text-muted fs-5">
+							Sebagai Pengurus, Anda memiliki peran penting dalam mencatat
+							penyerahan dan pengembalian barang atau fasilitas yang telah
+							disetujui, memastikan semua tercatat dengan rapi.
+						</g>
+					</div>
+				</div>
+
+				<div class="col-lg-5">
+					<div
+						id="roleCarousel"
+						class="carousel slide"
+						data-bs-ride="false"
+					>
+						<div class="carousel-indicators">
+							<button
+								type="button"
+								data-bs-target="#roleCarousel"
+								data-bs-slide-to="0"
+								class="active"
+								aria-current="true"
+								aria-label="Slide 1"
+							></button>
+							<button
+								type="button"
+								data-bs-target="#roleCarousel"
+								data-bs-slide-to="1"
+								aria-label="Slide 2"
+							></button>
+						</div>
+
+						<div class="carousel-inner">
+							<div class="carousel-item active" data-role="pengelola">
+								<div class="role-select-card">
+									<img src="aset/pengelola.png" class="card-background-img" alt="Background Pengelola" />
+									<div class="card-content">
+										<p>Pengelola Side</p>
+										<h3>PENGELOLA</h3>
+									</div>
+								</div>
+							</div>
+
+							<div class="carousel-item" data-role="pengurus">
+								<div class="role-select-card">
+									<img src="aset/pengurus.png" class="card-background-img" alt="Background Pengurus" />
+									<div class="card-content">
+										<p>Pengurus Side</p>
+										<h3>PENGURUS</h3>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<button
+							class="carousel-control-prev"
+							type="button"
+							data-bs-target="#roleCarousel"
+							data-bs-slide="prev"
+						>
+							<span
+								class="carousel-control-prev-icon"
+								aria-hidden="true"
+							></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button
+							class="carousel-control-next"
+							type="button"
+							data-bs-target="#roleCarousel"
+							data-bs-slide="next"
+						>
+							<span
+								class="carousel-control-next-icon"
+								aria-hidden="true"
+							></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+
+					<div class="text-end" style="margin-top: 20px">
+						<button class="btn btn-selesai" id="btnSelesai" disabled>
+							Selesai
+						</button>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="role.js"></script>
+	</body>
+
+</html>

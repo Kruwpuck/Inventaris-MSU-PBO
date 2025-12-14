@@ -1,0 +1,311 @@
+:root{
+  --green-1:#eaf6ee; --green-2:#9bd0a5; --green-3:#2e8b57; --green-4:#236e47;
+  --teal:#0f6f6b;
+}
+
+/* NAVBAR (konsisten) */
+.navbar-masjid{
+  background:var(--green-1)!important;
+  border-bottom:1px solid rgba(0,0,0,.06);
+  padding:.6rem 0
+}
+.navbar-masjid .logo{width:36px;height:36px;object-fit:contain}
+.navbar-masjid .nav-link{font-weight:700;color:var(--green-3);white-space:nowrap}
+.navbar-masjid .nav-link:hover{color:var(--green-4)}
+.navbar-masjid .nav-link.active{color:var(--green-4);position:relative}
+.navbar-masjid .nav-link.active::after{
+  content:"";position:absolute;left:0;right:0;bottom:-6px;margin:auto;
+  width:44px;height:4px;border-radius:999px;background:var(--green-2)
+}
+
+body{
+  background:#f6f8f7;
+  color:#121816;
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif
+}
+.page-title{font-weight:800}
+
+/* Card umum */
+.summary-card,.form-card{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  box-shadow:0 8px 16px rgba(0,0,0,.08);
+  overflow:hidden
+}
+
+/* Tabs horizontal barang – SCROLL KE SAMPING */
+.msu-item-tabs{
+  flex-wrap: nowrap;          /* jangan turun ke baris 2 */
+  overflow-x: auto;           /* bisa di-geser horizontal */
+  overflow-y: hidden;
+  white-space: nowrap;
+  gap:.75rem;                 /* jarak antar tab */
+}
+
+/* setiap item tab fix lebar konten, bukan melar */
+.msu-item-tabs .nav-item{
+  flex:0 0 auto;
+}
+
+/* tombol tab */
+.msu-item-tabs .nav-link{
+  border:none;
+  font-weight:700;
+  color:#567;
+  white-space:nowrap;         /* teks tetap 1 baris */
+}
+.msu-item-tabs .nav-link.active{
+  color:#0f6f6b;
+  position:relative;
+}
+.msu-item-tabs .nav-link.active::after{
+  content:"";
+  position:absolute;
+  left:12px; right:12px; bottom:-8px;
+  height:4px; border-radius:999px; background:var(--green-2);
+}
+
+/* optional: styling scrollbar horizontal */
+.msu-item-tabs::-webkit-scrollbar{
+  height:4px;
+}
+.msu-item-tabs::-webkit-scrollbar-thumb{
+  background:rgba(0,0,0,.12);
+  border-radius:999px;
+}
+
+/* Panel per barang */
+.item-panel .summary-thumb{
+  position:relative;
+  background:#f0f2f1;
+  border-radius:14px;
+  overflow:hidden
+}
+.item-panel .summary-thumb img{
+  width:100%;
+  height:200px;
+  object-fit:cover
+}
+.item-panel .badge-status{
+  position:absolute;top:10px;left:10px;
+  background:#167c73;color:#fff;border-radius:9px;
+  padding:.25rem .6rem;font-weight:700
+}
+.item-panel .title{font-weight:800}
+.item-panel .text-muted b{color:#0b5c58}
+
+.btn-qty{
+  background:#0f6f6b;
+  border:none;
+  color:#fff;
+  width:38px;height:34px;
+  border-radius:10px;
+  font-weight:800
+}
+.qty-display{
+  min-width:44px;height:34px;
+  border-radius:10px;
+  background:#eef6f5;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800
+}
+
+/* Mini calendar */
+.mini-calendar{
+  background:#fff;
+  border-top:1px dashed rgba(0,0,0,.08);
+  margin-top:10px;
+  padding-top:12px
+}
+.cal-nav{
+  border:none;
+  background:#eef6f5;
+  border-radius:8px;
+  width:34px;height:30px
+}
+.calendar-legend{display:flex;align-items:center}
+.legend-box{
+  width:14px;height:14px;border-radius:4px;
+  display:inline-block;vertical-align:middle
+}
+.legend-box.booked{background:#ffd9db;border:1px solid #ffb7be}
+.legend-box.today{background:#e7fff4;border:1px solid #b9ecd0}
+
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px
+}
+.calendar-grid span{
+  display:block;
+  text-align:center;
+  padding:6px 0;
+  border-radius:8px;
+  background:#f3f6f6;
+  font-size:.9rem
+}
+.calendar-grid span.muted{opacity:.4}
+.calendar-grid span.today{
+  background:#e7fff4;
+  border:1px solid #b9ecd0
+}
+.calendar-grid span.booked{
+  background:#ffd9db;
+  border:1px solid #ffb7be;
+  color:#a40016;
+  font-weight:700
+}
+.calendar-grid span.day{cursor:pointer}
+.calendar-grid span.selected{
+  outline:2px solid var(--green-3);
+  outline-offset:1px;
+}
+
+/* Booking list di bawah kalender */
+.booking-list{
+  margin-top:10px;
+}
+.booking-list-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:8px;
+  margin-top:4px;
+  border-top:1px dashed rgba(0,0,0,.08);
+}
+.booking-list-header .bl-title{
+  font-weight:700;
+  color:#0b5c58;
+  font-size:.9rem;
+}
+.booking-list-header .date-label{
+  font-size:.8rem;
+  color:#6c757d;
+}
+.booking-list-body{
+  margin-top:6px;
+}
+.booking-list-empty{
+  padding:10px 12px;
+  font-size:.88rem;
+  border-radius:10px;
+  background:#f6faf8;
+  border:1px dashed rgba(0,0,0,.08);
+  color:#6b7b73;
+}
+.booking-list-item{
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f6faf8;
+  border:1px solid rgba(0,0,0,.03);
+}
+.booking-list-item + .booking-list-item{
+  margin-top:6px;
+  border-top:1px dashed rgba(0,0,0,.08);
+}
+.bli-slot{
+  font-weight:700;
+  color:#0b5c58;
+  font-size:.9rem;
+}
+.bli-main{
+  font-weight:700;
+  font-size:.95rem;
+}
+.bli-meta{
+  font-size:.83rem;
+  color:#6c757d;
+}
+
+/* QRIS */
+.qris-img{
+  max-width:220px;
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:contain;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.06);
+  background:#fff
+}
+
+/* Footer */
+.site-footer .footer-logo{width:40px;height:40px;object-fit:contain}
+
+/* Animations */
+.drop-in{opacity:0;transform:translateY(-36px);transition:.9s}
+.drop-in.show{opacity:1;transform:none}
+.reveal-up{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease}
+.reveal-up.show{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .drop-in,.reveal-up{opacity:1;transform:none;transition:none}
+}
+
+/* Responsive tweaks */
+@media (max-width: 991.98px){
+  .item-panel .summary-thumb img{height:220px}
+}
+
+/* ==== Renggangin form booking ==== */
+.page-title { margin-bottom: .75rem; }
+
+/* card form lebih lapang */
+.form-card{
+  padding: 28px 26px !important;
+  border-radius: 20px;
+}
+
+/* spasi antar kolom & baris di dalam form */
+.form-card .row.g-3{
+  --bs-gutter-x: 1.25rem;
+  --bs-gutter-y: 1rem;
+}
+
+/* label & kontrol lebih bernapas */
+.form-card .form-label{
+  margin-bottom: .4rem;
+  font-weight: 600;
+}
+.form-card .input-group{
+  gap: .5rem;
+}
+.form-card .input-group-text{
+  padding: .6rem .8rem;
+  background: #f2f6f5;
+  border-color: #e7eeee;
+  border-radius: 10px;
+}
+.form-card .form-control,
+.form-card .form-select{
+  padding: .65rem .9rem;
+  border-color: #e7eeee;
+  border-radius: 10px;
+}
+
+/* file input & helper text */
+.form-card input[type="file"]{
+  padding: .55rem .75rem;
+  border-radius: 10px;
+}
+.form-card .form-text{
+  margin-top: .35rem;
+  line-height: 1.55;
+}
+
+/* textarea biar enak dibaca */
+#longPurpose{ line-height: 1.55; }
+
+/* form footer buttons kasih jarak dari isi form */
+.form-card .btn-book,
+.form-card #btnCancel{
+  padding: .65rem 1rem;
+}
+.form-card + .form-card{
+  margin-top: 1.25rem;
+}
+
+/* di layar kecil, tambah padding samping container */
+@media (max-width: 575.98px){
+  .container{ padding-left: 14px; padding-right: 14px; }
+  .form-card{ padding: 22px 18px !important; }
+}

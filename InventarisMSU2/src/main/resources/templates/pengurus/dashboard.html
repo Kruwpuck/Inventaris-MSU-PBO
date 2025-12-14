@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Pengurus</title>
+  <link rel="stylesheet" th:href="@{/assets/pengurus/style.css}" />
+</head>
+
+<body>
+
+  <!-- ==============================
+     HEADER FULLSCREEN
+=============================== -->
+  <header class="header">
+    <div class="logo">
+      <img src="Assets/logo.png" th:src="@{/assets/pengurus/Assets/logo.png}" alt="Logo">
+    </div>
+
+    <!-- NAV DESKTOP -->
+    <nav class="nav-desktop">
+      <a th:href="@{/pengurus/dashboard}" class="active">Beranda</a>
+      <a th:href="@{/pengurus/fasilitas}">Peminjaman Fasilitas</a>
+      <a th:href="@{/pengurus/riwayat}">Riwayat Peminjaman</a>
+    </nav>
+
+    <!-- USER DROPDOWN DESKTOP -->
+    <div class="user-desktop" onclick="toggleUserDropdown()">
+      <div class="user-info-box">
+        <img src="Assets/logo.png" th:src="@{/assets/pengurus/Assets/logo.png}" class="user-photo">
+        <div>
+          <strong>pengurus</strong><br>
+          Pengurus Side
+        </div>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="user-dropdown" id="user-dropdown">
+        <a href="#" id="logout-btn">Keluar</a>
+      </div>
+    </div>
+
+    <!-- HAMBURGER MOBILE -->
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+  </header>
+
+  <!-- ==============================
+     SIDEBAR MOBILE
+=============================== -->
+  <div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-logo">
+      <img src="Assets/logo.png" th:src="@{/assets/pengurus/Assets/logo.png}" alt="logo">
+    </div>
+
+    <a th:href="@{/pengurus/dashboard}">Beranda</a>
+    <a th:href="@{/pengurus/fasilitas}">Peminjaman Fasilitas</a>
+    <a th:href="@{/pengurus/riwayat}">Riwayat Peminjaman</a>
+    <a href="#" class="logout">Keluar</a>
+
+    <div class="user-box">
+      <img src="Assets/logo.png" th:src="@{/assets/pengurus/Assets/logo.png}" class="user-pic">
+      <div>
+        <strong>pengurus</strong><br>
+        Pengurus Side
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+  <!-- ==============================
+     HERO SECTION
+=============================== -->
+  <section class="hero">
+    <img src="Assets/gedung.png" th:src="@{/assets/pengurus/Assets/gedung.png}">
+    <div class="hero-subtext">
+      <p>
+        Satu langkah menuju <b>kemudahan beraktivitas</b> di MSU <br>
+        Semua urusan peminjaman dan perizinan kini bisa dilakukan secara online.
+      </p>
+    </div>
+  </section>
+
+  <section class="judul-bawah">
+    <h1>Peminjaman Hari ini</h1>
+  </section>
+
+  <!-- ==============================
+     SHARED DATA SCRIPT
+=============================== -->
+  <script th:src="@{/assets/pengurus/shared-data.js}"></script>
+
+  <!-- ==============================
+     DROPDOWN SCRIPT
+=============================== -->
+  <script>
+    function toggleUserDropdown() {
+      document.getElementById("user-dropdown").classList.toggle("open");
+    }
+
+    window.addEventListener("click", function (e) {
+      const box = document.querySelector(".user-desktop");
+      const dropdown = document.getElementById("user-dropdown");
+
+      if (!box.contains(e.target)) {
+        dropdown.classList.remove("open");
+      }
+    });
+
+    function toggleMenu() {
+      document.getElementById("mobileMenu").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+    }
+  </script>
+
+</body>
+
+</html>
