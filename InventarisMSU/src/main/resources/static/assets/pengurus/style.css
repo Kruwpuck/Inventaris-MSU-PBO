@@ -117,45 +117,47 @@ nav a {
   border-radius: 10px;
   margin-bottom: 20px;
 }
-    table {
-      width: 70%;
-      margin: 40px auto;
-      border-collapse: collapse;
-      text-align: center;
-    }
 
-    table th, table td {
-      padding: 10px;
-      border: 1px solid #d2d2d2;
-    }
+table {
+  width: 70%;
+  margin: 40px auto;
+  border-collapse: collapse;
+  text-align: center;
+}
 
-    table thead {
-      background-color: #cbf1cb;
-      font-weight: bold;
-    }
+table th,
+table td {
+  padding: 10px;
+  border: 1px solid #d2d2d2;
+}
 
-    table tbody tr:nth-child(even) {
-      background-color: #eafae9;
-    }
+table thead {
+  background-color: #cbf1cb;
+  font-weight: bold;
+}
 
-    button {
-      background-color: #1a73e8;
-      border: none;
-      padding: 6px 12px;
-      color: white;
-      cursor: pointer;
-      border-radius: 10px;
-    }
+table tbody tr:nth-child(even) {
+  background-color: #eafae9;
+}
 
-    button:hover {
-      background-color: #0b57c2;
-    }
+button {
+  background-color: #1a73e8;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+}
 
-  .modal-bg{
+button:hover {
+  background-color: #0b57c2;
+}
+
+.modal-bg {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
 }
@@ -190,7 +192,8 @@ nav a {
 .modal-body {
   padding: 20px;
   font-size: 1.1rem;
-  text-align: center;  /* isi ditengah */
+  text-align: center;
+  /* isi ditengah */
 }
 
 /* Tombol besar di tengah bawah */
@@ -214,6 +217,7 @@ nav a {
 .close-btn:hover {
   background: #147443;
 }
+
 nav a.active {
   font-weight: 700;
   color: #004d00;
@@ -242,7 +246,7 @@ nav a.active {
 .judul-bawah {
   text-align: center;
   background-color: white;
-  padding-top: 40px;   
+  padding-top: 40px;
   margin-top: 0;
   margin-bottom: 30px;
 }
@@ -256,135 +260,147 @@ nav a.active {
   padding: 12px 28px;
   border-radius: 10px;
 }
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
 
-  .profile-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-  .profile-info {
-    text-align: right;
-    font-size: 0.8rem;
-  }
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-  .profile-pic {
-    width: 40px;
-    height: 40px;
-    background-color: #d7e7c9;
-    border-radius: 50%;
-  }
- .container {
-    max-width: 900px;
-    margin: 35px auto;
-    padding: 0 20px;  /* ✅ Tambah padding kanan-kiri */
+.profile-info {
+  text-align: right;
+  font-size: 0.8rem;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  background-color: #d7e7c9;
+  border-radius: 50%;
+}
+
+.container {
+  max-width: 900px;
+  margin: 35px auto;
+  padding: 0 20px;
+  /* ✅ Tambah padding kanan-kiri */
 }
 
 .section-title {
-    font-weight: bold;
-    margin: 35px 0 12px 5px;
+  font-weight: bold;
+  margin: 35px 0 12px 5px;
 }
+
 /* Checkbox styling */
 input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 h1 {
-    text-align: center;
-    margin-top: 35px;
+  text-align: center;
+  margin-top: 35px;
 }
+
 .cancel-btn {
-    background-color: #dc3545;
-    border: none;
-    padding: 6px 12px;
-    color: white;
-    cursor: pointer;
-    border-radius: 10px;
+  background-color: #dc3545;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
 }
+
 .cancel-btn:hover {
-    background-color: #b02a37;
+  background-color: #b02a37;
 }
+
 .submit-btn {
-    background-color: #198754;
-    border: none;
-    padding: 6px 12px;
-    color: white;
-    cursor: pointer;
-    border-radius: 10px;
+  background-color: #198754;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
 }
+
 .submit-btn:hover {
-    background-color: #146c43;
+  background-color: #146c43;
 }
 
-button:disabled, input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+button:disabled,
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-//* =============================== */
+/* =============================== */
 /*   RESPONSIVE TAMPAKAN SISTEM   */
 /* =============================== */
 
 /* 1. Wrapper agar konten tidak mepet */
 .container,
 .wrapper {
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    padding: 0 16px;
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 16px;
 }
 
 /* 2. Tabel responsif saat layar kecil */
 .table-responsive {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-td, th {
-    padding: 8px 10px;
-    word-break: break-word;
+td,
+th {
+  padding: 8px 10px;
+  word-break: break-word;
 }
 
 /* 3. Card / box umum agar bisa mengecil */
 .card,
 .box,
 .content-box {
-    width: 100%;
-    border-radius: 12px;
-    padding: 16px;
-    box-sizing: border-box;
+  width: 100%;
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 /* 4. Input & button agar tidak meledak */
-input, select, button {
-    max-width: 100%;
-    box-sizing: border-box;
+input,
+select,
+button {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* 5. Navbar responsif */
 .navbar,
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-.navbar a, 
+.navbar a,
 .header a {
-    padding: 6px 10px;
-    display: inline-block;
+  padding: 6px 10px;
+  display: inline-block;
 }
 
 /* =============================== */
@@ -392,39 +408,42 @@ input, select, button {
 /* =============================== */
 @media (max-width: 768px) {
 
-    /* Judul font di kecilin */
-    h1, h2, h3, h4 {
-        font-size: 90%;
-    }
+  /* Judul font di kecilin */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-size: 90%;
+  }
 
-    /* Tabel dipaksa scroll */
-    .table-responsive {
-        overflow-x: scroll;
-        -webkit-overflow-scrolling: touch;
-    }
+  /* Tabel dipaksa scroll */
+  .table-responsive {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
 
-    table {
-        min-width: 700px;
-    }
+  table {
+    min-width: 700px;
+  }
 
-    /* Navbar turun ke bawah */
-    .navbar,
-    .header {
-        flex-direction: column;
-        gap: 10px;
-    }
+  /* Navbar turun ke bawah */
+  .navbar,
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
 
-    /* Kotak dashboard padding lebih kecil */
-    .card,
-    .box {
-        padding: 12px;
-    }
+  /* Kotak dashboard padding lebih kecil */
+  .card,
+  .box {
+    padding: 12px;
+  }
 
-    /* Tombol lebih besar biar mudah diklik */
-    button {
-        padding: 10px 14px;
-        font-size: 14px;
-    }
+  /* Tombol lebih besar biar mudah diklik */
+  button {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
 }
 
 /* =============================== */
@@ -432,42 +451,45 @@ input, select, button {
 /* =============================== */
 @media (max-width: 480px) {
 
-    /* Judul makin kecil */
-    h1, h2, h3 {
-        font-size: 80%;
-    }
+  /* Judul makin kecil */
+  h1,
+  h2,
+  h3 {
+    font-size: 80%;
+  }
 
-    /* Atur layout form login */
-    .login-container,
-    .login-box,
-    .form-wrapper {
-        width: 100%;
-        padding: 14px;
-    }
+  /* Atur layout form login */
+  .login-container,
+  .login-box,
+  .form-wrapper {
+    width: 100%;
+    padding: 14px;
+  }
 
-    /* Input full width */
-    input, select {
-        width: 100%;
-        font-size: 14px;
-        padding: 8px 12px;
-    }
+  /* Input full width */
+  input,
+  select {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
 
-    /* Tabel makin flexible */
-    table {
-        min-width: 600px;
-    }
+  /* Tabel makin flexible */
+  table {
+    min-width: 600px;
+  }
 
-    /* Spasi antar elemen */
-    .section,
-    .card,
-    .box {
-        margin-bottom: 16px;
-    }
+  /* Spasi antar elemen */
+  .section,
+  .card,
+  .box {
+    margin-bottom: 16px;
+  }
 
-    /* Tombol full width */
-    button {
-        width: 100%;
-    }
+  /* Tombol full width */
+  button {
+    width: 100%;
+  }
 }
 
 /* ==============================
@@ -511,7 +533,7 @@ input, select, button {
   width: 260px;
   height: 100vh;
   background: #ffffff;
-  box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   padding: 25px 20px;
   transition: 0.3s ease;
   z-index: 1000;
@@ -525,9 +547,11 @@ input, select, button {
 .overlay {
   display: none;
   position: fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  background: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 900;
 }
 
@@ -579,6 +603,7 @@ input, select, button {
   .nav-desktop {
     display: none;
   }
+
   .hamburger {
     display: block;
   }
@@ -586,60 +611,62 @@ input, select, button {
 
 /* user mobile */
 .user-box {
-    display: none;
+  display: none;
 }
 
 /* user desktop */
 .profile-wrapper {
-    display: flex;
+  display: flex;
 }
 
 @media (max-width: 800px) {
-    /* user desktop hilang di mobile */
-    .profile-wrapper {
-        display: none;
-    }
 
-    /* user mobile muncul */
-    .user-box {
-        display: flex;
-    }
+  /* user desktop hilang di mobile */
+  .profile-wrapper {
+    display: none;
+  }
+
+  /* user mobile muncul */
+  .user-box {
+    display: flex;
+  }
 }
+
 /* ======================
    USER DESKTOP (FULLSCREEN)
    ====================== */
 
 .user-desktop {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .user-info-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #5e6a72;
-    padding: 8px 12px;
-    border-radius: 30px;
-    color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #5e6a72;
+  padding: 8px 12px;
+  border-radius: 30px;
+  color: white;
 }
 
 .user-photo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
 .arrow {
-    font-size: 14px;
-    opacity: 0.8;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
 /* SEMBUNYIKAN USER DESKTOP DI MOBILE */
 @media (max-width: 800px) {
-    .user-desktop {
-        display: none;
-    }
+  .user-desktop {
+    display: none;
+  }
 }
 
 /* =========================
@@ -680,7 +707,7 @@ input, select, button {
   right: 0;
   width: 150px;
   background: white;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   display: none;
   flex-direction: column;
@@ -707,22 +734,26 @@ input, select, button {
 }
 
 body {
-  margin-top: 100px; /* supaya konten tidak ketutup header */
+  margin-top: 100px;
+  /* supaya konten tidak ketutup header */
 }
 
 /* USER DROPDOWN */
-.user-desktop { position: relative; }
+.user-desktop {
+  position: relative;
+}
+
 .user-dropdown {
   position: absolute;
-  top: 65px;  
+  top: 65px;
   right: 0;
   width: 180px;
   background: white;
   border-radius: 12px;
   display: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.user-dropdown.open { display: flex; }
-
-
+.user-dropdown.open {
+  display: flex;
+}
