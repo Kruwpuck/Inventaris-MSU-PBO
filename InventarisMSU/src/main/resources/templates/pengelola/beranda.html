@@ -282,9 +282,12 @@
               <p class="card-text text-muted small mb-2" th:text="${it.description}">Deskripsi</p>
 
               <p class="item-stok text-secondary small mb-1">
-                Kapasitas: <b th:text="${it.stock} + ' orang'">0 orang</b>
+                Stok: <b th:text="${it.stock}">1</b>
               </p>
-
+              <p class="item-stok text-secondary small mb-1">
+                Kapasitas: <b th:text="${it.capacity != null && it.capacity > 0 ? it.capacity : 50} + ' orang'">50
+                  orang</b>
+              </p>
 
 
               <button class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit" style="background: #0b492c"
