@@ -286,9 +286,7 @@
                 Kapasitas: <b th:text="${it.stock} + ' orang'">0 orang</b>
               </p>
 
-              <p class="item-stok text-secondary small mb-3">
-                Ketersediaan: <b th:text="${it.status}">Tersedia</b>
-              </p>
+  
 
               <button class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit" style="background: #0b492c"
                 data-bs-toggle="modal" data-bs-target="#editModal" th:attr="data-id=${it.id},
