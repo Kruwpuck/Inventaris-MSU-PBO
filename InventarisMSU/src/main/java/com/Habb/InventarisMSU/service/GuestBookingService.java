@@ -21,13 +21,15 @@ public class GuestBookingService {
     private final PeminjamanRepository peminjamanRepository;
     private final ItemRepository itemRepository;
     private final ObjectMapper objectMapper;
+    private final EmailService emailService;
     private static final String UPLOAD_DIR = "uploads";
 
     public GuestBookingService(PeminjamanRepository peminjamanRepository, ItemRepository itemRepository,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper, EmailService emailService) {
         this.peminjamanRepository = peminjamanRepository;
         this.itemRepository = itemRepository;
         this.objectMapper = objectMapper;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -93,6 +95,92 @@ public class GuestBookingService {
 
         // 5. Save
         peminjamanRepository.save(p);
+
+        // 6. Send Email Notification
+        sendBookingConfirmationEmail(p);
+    }
+
+    private void sendBookingConfirmationEmail(Peminjaman p) {
+        String subject = "Konfirmasi Peminjaman Fasilitas - Masjid Syamsul Ulum";
+
+        // Formatted dates/times for email
+        String tanggalStr = p.getStartDate().toString(); // You might want to format this nicely
+        String waktuStr = p.getStartTime() + " s/d " + p.getEndTime() + " WIB";
+
+        String htmlBody = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+                        .header { margin-bottom: 20px; }
+                        .header img { max-height: 60px; float: left; margin-right: 15px; }
+                        .header-text { overflow: hidden; }
+                        .header-text h2 { margin: 0; color: #000; font-size: 18px; font-weight: bold; }
+                        .header-text p { margin: 2px 0; font-size: 12px; color: #555; }
+                        .divider { border-top: 3px solid #d32f2f; margin: 15px 0; }
+                        .content { padding: 0 10px; }
+                        .summary-box { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                        .summary-item { margin-bottom: 8px; display: flex; }
+                        .label { font-weight: bold; width: 120px; }
+                        .value { flex: 1; }
+                        .footer { margin-top: 30px; font-size: 11px; color: #888; border-top: 1px solid #eee; padding-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <!-- Placeholder for Logo if needed, or just text -->
+                        <div style="font-weight: bold; font-size: 20px; color: #004d40;">MASJID SYAMSUL ULUM</div>
+                        <div style="font-size: 12px;">Jl. Telekomunikasi No.1, Bandung • Jawa Barat, Indonesia</div>
+                        <div style="font-size: 12px;">Telp: +62 882-7982-9071 • Email: msu.telyu@gmail.com</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="content">
+                        <p><strong>Halo, %s</strong></p>
+
+                        <p>Terima kasih telah melakukan peminjaman fasilitas di Masjid Syamsul Ulum. Permohonan Anda telah kami terima dan saat ini sedang dalam proses peninjauan oleh pengelola.</p>
+
+                        <p>Berikut adalah ringkasan permohonan Anda:</p>
+
+                        <div class="summary-box">
+                            <div class="summary-item">
+                                <span class="label">Keperluan</span>
+                                <span class="value">: %s</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Tanggal</span>
+                                <span class="value">: %s</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Waktu</span>
+                                <span class="value">: %s</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Status</span>
+                                <span class="value" style="font-weight: bold;">: Menunggu Persetujuan</span>
+                            </div>
+                        </div>
+
+                        <p>Kami akan memberitahukan status selanjutnya melalui email ini setelah permohonan Anda ditinjau.</p>
+
+                        <p>Terima kasih atas perhatian dan kerjasamanya.</p>
+
+                        <br>
+                        <p>Salam hangat,<br><strong>Pengelola MSU</strong></p>
+                    </div>
+
+                    <div class="footer">
+                        &copy; 2025 Masjid Syamsul Ulum Telkom University. All rights reserved.<br>
+                        Email ini dibuat secara otomatis, mohon tidak membalas email ini.
+                    </div>
+                </body>
+                </html>
+                """
+                .formatted(p.getBorrowerName(), p.getReason(), tanggalStr, waktuStr);
+
+        emailService.sendHtmlMessage(p.getEmail(), subject, htmlBody);
     }
 
     public List<PublicBookingDTO> getPublicBookings(String dateStr) {

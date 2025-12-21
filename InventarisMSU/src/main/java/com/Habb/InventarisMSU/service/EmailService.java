@@ -22,4 +22,21 @@ public class EmailService {
             System.err.println("Failed to send email: " + e.getMessage());
         }
     }
+
+    public void sendHtmlMessage(String to, String subject, String htmlBody) {
+        try {
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(
+                    message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true); // true = isHtml
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("Failed to send HTML email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
