@@ -113,7 +113,12 @@
           <div class="item-body">
             <div class="item-title fw-bold" th:text="${item.name}">Nama Ruang</div>
             <div class="item-desc text-muted small mb-2" th:text="${item.description}">Deskripsi ruang...</div>
-            <div class="item-meta">Tersedia : <span class="sisa" th:text="${item.stock}">1</span></div>
+            <div class="item-meta">
+              <div>Stok : <span class="sisa fw-bold" th:text="${item.stock}">1</span></div>
+              <div class="mt-1">Kapasitas: <span class="fw-bold"
+                  th:text="${item.capacity != null && item.capacity > 0 ? item.capacity : 50} + ' orang'">50
+                  orang</span></div>
+            </div>
           </div>
         </article>
       </div>
