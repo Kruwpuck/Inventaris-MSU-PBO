@@ -293,8 +293,18 @@ document.addEventListener("DOMContentLoaded", () => {
           const instance = bootstrap.Modal.getInstance(modalEl);
           if (instance) instance.hide();
         }
+
+        // SWAL SUKSES
+        Swal.fire({
+          icon: 'success',
+          title: 'Terhapus!',
+          text: 'Item berhasil dihapus.',
+          timer: 1500,
+          showConfirmButton: false
+        });
+
       } catch (err) {
-        alert(err.message || "Error saat hapus");
+        Swal.fire("Gagal", err.message || "Error saat hapus", "error");
       }
     });
   }
