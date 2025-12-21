@@ -138,6 +138,21 @@
       color: #fff;
     }
 
+    .status-menunggu {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-siap {
+      background: #cff4fc;
+      color: #055160;
+    }
+
+    .status-batal {
+      background: #f8d7da;
+      color: #842029;
+    }
+
     #fSearch:focus {
       border-color: #000;
       box-shadow: none;
@@ -350,201 +365,36 @@
             </tr>
           </thead>
           <tbody id="tbodyLaporan">
-            <!-- DATA DUMMY (SAMA SEPERTI PUNYAMU) -->
-            <tr data-kategori="Barang" data-status="Sudah Kembali">
-              <td>1</td>
-              <td>Proyektor</td>
-              <td>Barang</td>
-              <td>Ruslan Ismail</td>
-              <td>10/01/2024</td>
-              <td>10/03/2024</td>
-              <td>10/03/2024</td>
-              <td class="text-center">2</td>
+            <tr th:each="p, stat : ${listPeminjaman}">
+              <td th:text="${stat.count}">1</td>
+              <td>
+                <span th:if="${not #lists.isEmpty(p.details)}" th:text="${p.details[0].item.name}">Item Name</span>
+                <span th:if="${#lists.size(p.details) > 1}" class="badge bg-secondary rounded-pill"
+                  th:text="'+' + (${#lists.size(p.details)} - 1)"></span>
+                <span th:if="${#lists.isEmpty(p.details)}" class="text-muted">-</span>
+              </td>
+              <td>
+                <span th:if="${not #lists.isEmpty(p.details)}" th:text="${p.details[0].item.type}">Type</span>
+                <span th:if="${#lists.isEmpty(p.details)}">-</span>
+              </td>
+              <td th:text="${p.borrowerName}">Peminjam</td>
+              <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">Start</td>
+              <td th:text="${#temporals.format(p.endDate, 'dd/MM/yyyy')}">End</td>
+              <td th:text="${p.returned ? #temporals.format(p.endDate, 'dd/MM/yyyy') : '-'}">-</td>
               <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
+                <span th:if="${not #lists.isEmpty(p.details)}" th:text="${p.details[0].quantity}">1</span>
+              </td>
+              <td class="text-center">
+                <span th:if="${p.status != null and p.status.name() == 'PENDING'}" class="badge badge-status status-menunggu">Menunggu</span>
+                <span th:if="${p.status != null and p.status.name() == 'APPROVED'}" class="badge badge-status status-siap">Disetujui</span>
+                <span th:if="${p.status != null and p.status.name() == 'TAKEN'}" class="badge badge-status status-sedang">Sedang Dipinjam</span>
+                <span th:if="${p.status != null and p.status.name() == 'COMPLETED'}" class="badge badge-status status-sudah">Sudah Kembali</span>
+                <span th:if="${p.status != null and p.status.name() == 'REJECTED'}" class="badge badge-status status-batal">Ditolak</span>
+                <span th:if="${p.status != null and p.status.name() == 'OVERDUE'}" class="badge badge-status status-terlambat">Terlambat</span>
               </td>
             </tr>
-            <tr data-kategori="Barang" data-status="Sedang Dipinjam">
-              <td>2</td>
-              <td>Karpet</td>
-              <td>Barang</td>
-              <td>Buana Ahmad</td>
-              <td>10/26/2024</td>
-              <td>11/02/2024</td>
-              <td>-</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sedang">Sedang Dipinjam</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Terlambat">
-              <td>3</td>
-              <td>Speaker</td>
-              <td>Barang</td>
-              <td>Hendra Saputra</td>
-              <td>10/10/2024</td>
-              <td>10/15/2024</td>
-              <td>10/17/2024</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-terlambat">Terlambat</span>
-              </td>
-            </tr>
-            <tr data-kategori="Ruangan" data-status="Sudah Kembali">
-              <td>4</td>
-              <td>Ruang Utama</td>
-              <td>Ruangan</td>
-              <td>Ahmad Abdullah</td>
-              <td>09/26/2024</td>
-              <td>09/27/2024</td>
-              <td>09/27/2024</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
-              </td>
-            </tr>
-            <tr data-kategori="Ruangan" data-status="Sedang Dipinjam">
-              <td>5</td>
-              <td>Pelataran Masjid</td>
-              <td>Ruangan</td>
-              <td>Ismail Sulaiman</td>
-              <td>10/25/2024</td>
-              <td>10/29/2024</td>
-              <td>-</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sedang">Sedang Dipinjam</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Sudah Kembali">
-              <td>6</td>
-              <td>Meja Kayu</td>
-              <td>Barang</td>
-              <td>Putra Idris</td>
-              <td>09/29/2024</td>
-              <td>10/01/2024</td>
-              <td>10/01/2024</td>
-              <td class="text-center">3</td>
-              <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Terlambat">
-              <td>7</td>
-              <td>Terpal</td>
-              <td>Barang</td>
-              <td>Wira Cahya</td>
-              <td>10/20/2024</td>
-              <td>10/24/2024</td>
-              <td>10/26/2024</td>
-              <td class="text-center">2</td>
-              <td class="text-center">
-                <span class="badge-status status-terlambat">Terlambat</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Sedang Dipinjam">
-              <td>8</td>
-              <td>Hijab</td>
-              <td>Barang</td>
-              <td>Dina Rahma</td>
-              <td>10/27/2024</td>
-              <td>11/03/2024</td>
-              <td>-</td>
-              <td class="text-center">4</td>
-              <td class="text-center">
-                <span class="badge-status status-sedang">Sedang Dipinjam</span>
-              </td>
-            </tr>
-            <tr data-kategori="Ruangan" data-status="Sudah Kembali">
-              <td>9</td>
-              <td>Selasar Selatan</td>
-              <td>Ruangan</td>
-              <td>Fatimah</td>
-              <td>10/02/2024</td>
-              <td>10/02/2024</td>
-              <td>10/02/2024</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Sedang Dipinjam">
-              <td>10</td>
-              <td>Sofa</td>
-              <td>Barang</td>
-              <td>Ridho Ali</td>
-              <td>10/25/2024</td>
-              <td>11/01/2024</td>
-              <td>-</td>
-              <td class="text-center">2</td>
-              <td class="text-center">
-                <span class="badge-status status-sedang">Sedang Dipinjam</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Sudah Kembali">
-              <td>11</td>
-              <td>Akun Zoom MSU</td>
-              <td>Barang</td>
-              <td>Nur Halimah</td>
-              <td>09/18/2024</td>
-              <td>09/19/2024</td>
-              <td>09/19/2024</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
-              </td>
-            </tr>
-            <tr data-kategori="Ruangan" data-status="Sedang Dipinjam">
-              <td>12</td>
-              <td>Lantai 2 Timur</td>
-              <td>Ruangan</td>
-              <td>Muhammad Zaki</td>
-              <td>10/26/2024</td>
-              <td>10/30/2024</td>
-              <td>-</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sedang">Sedang Dipinjam</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Sudah Kembali">
-              <td>13</td>
-              <td>Meja</td>
-              <td>Barang</td>
-              <td>Rahman Mansur</td>
-              <td>10/26/2022</td>
-              <td>10/29/2022</td>
-              <td>10/29/2022</td>
-              <td class="text-center">2</td>
-              <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
-              </td>
-            </tr>
-            <tr data-kategori="Barang" data-status="Terlambat">
-              <td>14</td>
-              <td>Proyektor</td>
-              <td>Barang</td>
-              <td>Putri Melati</td>
-              <td>10/17/2024</td>
-              <td>10/20/2024</td>
-              <td>10/22/2024</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-terlambat">Terlambat</span>
-              </td>
-            </tr>
-            <tr data-kategori="Ruangan" data-status="Sudah Kembali">
-              <td>15</td>
-              <td>Ruang Tamu VIP</td>
-              <td>Ruangan</td>
-              <td>Salim Yusuf</td>
-              <td>10/15/2024</td>
-              <td>10/15/2024</td>
-              <td>10/15/2024</td>
-              <td class="text-center">1</td>
-              <td class="text-center">
-                <span class="badge-status status-sudah">Sudah Kembali</span>
-              </td>
+            <tr th:if="${#lists.isEmpty(listPeminjaman)}">
+              <td colspan="9" class="text-center py-5 text-muted">Belum ada data laporan.</td>
             </tr>
           </tbody>
         </table>
