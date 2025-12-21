@@ -23,10 +23,10 @@ public class ItemManageController {
             @PathVariable Long id,
             @RequestParam String name,
             @RequestParam String description,
-            @RequestParam Integer stock
-    ) {
+            @RequestParam Integer stock) {
         Item item = itemService.getItemById(id);
-        if (item == null || item.getType() != ItemType.BARANG) return "ERROR";
+        if (item == null || item.getType() != ItemType.BARANG)
+            return "ERROR";
 
         item.setName(name);
         item.setDescription(description);
@@ -35,21 +35,24 @@ public class ItemManageController {
         return "OK";
     }
 
-    // UPDATE RUANGAN
     @PostMapping("/{id}/update-ruangan")
     @ResponseBody
     public String updateRuangan(
             @PathVariable Long id,
             @RequestParam String name,
             @RequestParam String description,
-            @RequestParam String status
-    ) {
+            @RequestParam String status,
+            @RequestParam(required = false, defaultValue = "0") Integer capacity) {
         Item item = itemService.getItemById(id);
-        if (item == null || item.getType() != ItemType.RUANGAN) return "ERROR";
+        if (item == null || item.getType() != ItemType.RUANGAN)
+            return "ERROR";
 
         item.setName(name);
         item.setDescription(description);
         item.setStatus(status);
+        if (capacity != null) {
+            item.setCapacity(capacity);
+        }
         itemService.saveItem(item);
         return "OK";
     }
@@ -59,7 +62,8 @@ public class ItemManageController {
     @ResponseBody
     public String deleteItem(@PathVariable Long id) {
         Item item = itemService.getItemById(id);
-        if (item == null) return "ERROR";
+        if (item == null)
+            return "ERROR";
 
         itemService.deleteItem(id);
         return "OK";

@@ -82,9 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const editDeskripsiItem = document.getElementById("editDeskripsiItem");
   const editStokInput = document.getElementById("editStokInput");
   const editStatusSelect = document.getElementById("editStatusSelect");
+  const editCapacityInput = document.getElementById("editCapacityInput");
 
   const groupBarang = document.getElementById("editFormGroupBarang");
   const groupFasilitas = document.getElementById("editFormGroupFasilitas");
+  const groupCapacity = document.getElementById("editFormGroupCapacity");
 
   // klik tombol edit pada card
   document.querySelectorAll(".btn-edit").forEach((btn) => {
@@ -97,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const deskripsi = btn.dataset.deskripsi || "";
       const stok = btn.dataset.stok || 0;
       const status = btn.dataset.status || "Tersedia";
+      const capacity = btn.dataset.capacity || 0;
 
       editItemId.value = id || "";
       editNamaItem.value = nama;
@@ -106,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tipe === "BARANG") {
         if (groupBarang) groupBarang.style.display = "block";
         if (groupFasilitas) groupFasilitas.style.display = "none";
+        if (groupCapacity) groupCapacity.style.display = "none";
         if (editStokInput) {
           editStokInput.value = stok;
           editStokInput.disabled = false;
@@ -115,9 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (tipe === "RUANGAN") {
         if (groupBarang) groupBarang.style.display = "none";
         if (groupFasilitas) groupFasilitas.style.display = "block";
+        if (groupCapacity) {
+          groupCapacity.style.display = "block";
+          editCapacityInput.value = capacity;
+        }
         if (editStatusSelect) {
-            editStatusSelect.value = status;
-            editStatusSelect.disabled = false;
+          editStatusSelect.value = status;
+          editStatusSelect.disabled = false;
         }
         if (editStokInput) editStokInput.disabled = true;
       } else {
@@ -150,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (tipe === "RUANGAN") {
         url = `/pengelola/items/${id}/update-ruangan`;
         body.append("status", editStatusSelect.value);
+        if (editCapacityInput) body.append("capacity", editCapacityInput.value);
       } else {
         alert("Tipe item tidak dikenali: " + tipe);
         return;
