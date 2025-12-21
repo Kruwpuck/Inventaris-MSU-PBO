@@ -186,7 +186,13 @@
                     </thead>
                     <tbody id="historyTableBody">
                         <tr th:if="${#lists.isEmpty(historyLoans)}">
-                            <td colspan="8" class="text-center py-5 text-muted">Belum ada riwayat peminjaman.</td>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center justify-content-center"
+                                    style="color: #adb5bd; min-height: 200px;">
+                                    <i class="bi bi-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                    <h5 class="fw-normal text-secondary mb-2">Belum ada riwayat peminjaman.</h5>
+                                </div>
+                            </td>
                         </tr>
                         <tr th:each="p, iterStat : ${historyLoans}" th:if="${p.status.name() != 'REJECTED'}">
                             <td class="ps-4 fw-bold text-secondary" th:text="${iterStat.count}">1</td>
@@ -206,31 +212,23 @@
                                         class="text-primary fw-semibold"></span>
 
                                     <div th:unless="${p.laporan != null and p.laporan.pickedUpAt != null}">
-                                        <span th:text="${#temporals.format(p.startDate, 'dd MMM yyyy')}"
-                                            class="text-secondary"></span>
-                                        <span class="text-dark fw-bold">|</span>
-                                        <span th:text="${#temporals.format(p.startTime, 'HH:mm')}"
-                                            class="text-primary fw-semibold"></span>
+                                        <span class="fw-bold text-muted">-</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2" style="font-size: 0.9rem;">
-                                    <span th:if="${p.laporan != null and p.laporan.returnedAt != null}"
-                                        th:text="${#temporals.format(p.laporan.returnedAt, 'dd MMM yyyy')}"
-                                        class="text-secondary"></span>
-                                    <span th:if="${p.laporan != null and p.laporan.returnedAt != null}"
-                                        class="text-dark fw-bold">|</span>
-                                    <span th:if="${p.laporan != null and p.laporan.returnedAt != null}"
-                                        th:text="${#temporals.format(p.laporan.returnedAt, 'HH:mm')}"
-                                        class="text-primary fw-semibold"></span>
-
-                                    <div th:unless="${p.laporan != null and p.laporan.returnedAt != null}">
-                                        <span th:text="${#temporals.format(p.endDate, 'dd MMM yyyy')}"
+                                    <div
+                                        th:if="${(p.status.name() == 'RETURNED' or p.status.name() == 'COMPLETED') and p.laporan != null and p.laporan.returnedAt != null}">
+                                        <span th:text="${#temporals.format(p.laporan.returnedAt, 'dd MMM yyyy')}"
                                             class="text-secondary"></span>
                                         <span class="text-dark fw-bold">|</span>
-                                        <span th:text="${#temporals.format(p.endTime, 'HH:mm')}"
+                                        <span th:text="${#temporals.format(p.laporan.returnedAt, 'HH:mm')}"
                                             class="text-primary fw-semibold"></span>
+                                    </div>
+                                    <div
+                                        th:unless="${(p.status.name() == 'RETURNED' or p.status.name() == 'COMPLETED') and p.laporan != null and p.laporan.returnedAt != null}">
+                                        <span class="fw-bold text-muted">-</span>
                                     </div>
                                 </div>
                             </td>
@@ -245,8 +243,9 @@
                             </td>
 
                             <!-- CANCEL BUTTON -->
-                            <td class="text-center">
-                                <form th:if="${p.status.name() == 'COMPLETED' or p.status.name() == 'TAKEN'}"
+                            <td class="text-center" th:with="isSubmitted=${p.laporan != null and p.laporan.submitted}">
+                                <form
+                                    th:if="${!isSubmitted and (p.status.name() == 'TAKEN' or p.status.name() == 'RETURNED' or p.status.name() == 'COMPLETED')}"
                                     class="cancel-form" th:action="@{/pengurus/riwayat/cancel}" method="post">
                                     <input type="hidden" name="id" th:value="${p.id}" />
                                     <!-- Use type='button' to prevent auto-submit, JS handles it -->
@@ -257,11 +256,13 @@
                                     </button>
                                 </form>
                                 <span th:if="${p.status.name() == 'REJECTED'}" class="badge bg-danger">Ditolak</span>
+                                <span th:if="${isSubmitted}" class="badge bg-success">Selesai</span>
                             </td>
 
                             <!-- SUBMIT BUTTON -->
-                            <td class="text-center">
-                                <form th:if="${p.status.name() == 'COMPLETED' or p.status.name() == 'TAKEN'}"
+                            <td class="text-center" th:with="isSubmitted=${p.laporan != null and p.laporan.submitted}">
+                                <form
+                                    th:if="${!isSubmitted and (p.status.name() == 'RETURNED' or p.status.name() == 'COMPLETED')}"
                                     class="submit-form" th:action="@{/pengurus/riwayat/submit}" method="post">
                                     <input type="hidden" name="id" th:value="${p.id}" />
                                     <button type="button"
