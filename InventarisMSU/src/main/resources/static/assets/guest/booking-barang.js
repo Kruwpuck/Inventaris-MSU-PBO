@@ -208,12 +208,18 @@ async function renderBookingList(container, itemName, y, m, day) {
         box.innerHTML = relevant.map(b => {
             // Find slot/session info from description
             let slotLabel = "Waktu ditentukan";
-            const sessionMatch = b.description.match(/\[Sesi:\s*([^\]]+)\]/);
-            if (sessionMatch) {
-                // Formatting session to be nicer
-                let sRaw = sessionMatch[1];
-                // Remove redundant time info if present in label
-                slotLabel = sRaw;
+            // Regex baru untuk format [Waktu: yyyy-mm-dd hh:mm s/d yyyy-mm-dd hh:mm]
+            const timeMatch = b.description.match(/\[Waktu:\s*([^\]]+)\]/);
+            const sessionMatch = b.description.match(/\[Sesi:\s*([^\]]+)\]/); // Legacy support
+
+            if (timeMatch) {
+                // timeMatch[1] example: "2025-12-22 09:00 s/d 2025-12-22 17:00"
+                // Kita bisa memendekkan tampilan jika mau, atau tampilkan saja
+                // Extract just the times: 09:00 s/d 17:00
+                const extractedTime = timeMatch[1].replace(/\d{4}-\d{2}-\d{2}\s/g, '');
+                slotLabel = extractedTime;
+            } else if (sessionMatch) {
+                slotLabel = sessionMatch[1];
             }
 
             return `
@@ -544,17 +550,23 @@ function initPanels() {
 }
 
 /* ---------- Real-time Availability Check ---------- */
-const loanDate = document.getElementById('loanDate');
-const sessionEl = document.getElementById('session');
+/* ---------- Real-time Availability Check ---------- */
+const startDateEl = document.getElementById('startDate');
+const startTimeEl = document.getElementById('startTime');
+const endDateEl = document.getElementById('endDate');
+const endTimeEl = document.getElementById('endTime');
 
 async function checkRealtimeAvailability() {
-    const dVal = loanDate?.value;
-    const sVal = sessionEl?.value;
+    const sd = startDateEl?.value;
+    const st = startTimeEl?.value;
+    const ed = endDateEl?.value;
+    const et = endTimeEl?.value;
 
-    if (!dVal) return;
+    // Only check if all fields are filled
+    if (!sd || !st || !ed || !et) return;
 
     try {
-        const url = `/api/peminjaman/check?date=${dVal}&session=${encodeURIComponent(sVal || '')}`;
+        const url = `/api/peminjaman/check?startDate=${sd}&startTime=${encodeURIComponent(st)}&endDate=${ed}&endTime=${encodeURIComponent(et)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Availability check failed');
 
@@ -642,14 +654,12 @@ async function checkRealtimeAvailability() {
 }
 
 // Add listeners
-loanDate?.addEventListener('change', checkRealtimeAvailability);
-sessionEl?.addEventListener('change', checkRealtimeAvailability);
+[startDateEl, startTimeEl, endDateEl, endTimeEl].forEach(el => {
+    el?.addEventListener('change', checkRealtimeAvailability);
+});
 
-// Also trigger on load if date exists (with short delay to ensure rendering)
-// No need to call here anymore if buildTabsFromCart calls it. 
-// But keeping it as fallback won't hurt if buildTabsFromCart hasn't run yet.
-if (loanDate?.value && sessionEl?.value) {
-    // Only if tabs exist
+// Also trigger on load if all values exist
+if (startDateEl?.value && startTimeEl?.value && endDateEl?.value && endTimeEl?.value) {
     if (document.getElementById('itemTabContent')?.children?.length) {
         checkRealtimeAvailability();
     }
@@ -758,21 +768,22 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
         const prodi = document.getElementById('studyProgram')?.value || '';
         const kep = document.getElementById('purpose')?.value?.trim() || '';
         const det = document.getElementById('longPurpose')?.value?.trim() || '';
-        const tgl = document.getElementById('loanDate')?.value || '';
-        const sessionEl = document.getElementById('session');
-        const sessionVal = sessionEl ? sessionEl.value : '';
 
-        // Calculate details from session
-        const sessMap = {
-            'Pagi': { time: '06:00', dur: 6, label: 'Pagi (06.00 - 12.00)' },
-            'Siang': { time: '12:00', dur: 6, label: 'Siang (12.00 - 18.00)' },
-            'Malam': { time: '18:00', dur: 2, label: 'Malam (18.00 - 20.00)' },
-            'PagiSiang': { time: '06:00', dur: 12, label: 'Pagi & Siang (06.00 - 18.00)' },
-            'SiangMalam': { time: '12:00', dur: 8, label: 'Siang & Malam (12.00 - 20.00)' },
-            'Seharian': { time: '06:00', dur: 14, label: 'Seharian (06.00 - 20.00)' }
-        };
-        const sInfo = sessMap[sessionVal] || { time: '06:00', dur: 0, label: sessionVal };
-        const dur = sInfo.dur + ' jam';
+        const sd = document.getElementById('startDate')?.value || '';
+        const st = document.getElementById('startTime')?.value || '';
+        const ed = document.getElementById('endDate')?.value || '';
+        const et = document.getElementById('endTime')?.value || '';
+
+        // Calculate simple duration in hours for reference (optional)
+        // This is just a rough estimate for the 'duration' field if backend needs it
+        let dur = 0;
+        try {
+            const start = new Date(`${sd}T${st}`);
+            const end = new Date(`${ed}T${et}`);
+            const diffMs = end - start;
+            dur = Math.floor(diffMs / (1000 * 60 * 60));
+            if (dur < 1) dur = 1;
+        } catch (e) { }
 
         if (email) localStorage.setItem('lastBookingEmail', email);
 
@@ -790,6 +801,7 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
         const purpose = document.getElementById('purpose');
         const longPurpose = document.getElementById('longPurpose');
         const loanNumber = document.getElementById('loanNumber');
+        const locationInput = document.getElementById('location');
 
         formData.append('borrowerName', pjName.value);
         formData.append('email', email);
@@ -797,14 +809,28 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
         formData.append('nimNip', idNumber.value);
         formData.append('department', studyProgram.value);
         formData.append('reason', purpose.value);
-        formData.append('description', `[Sesi: ${sInfo.label}] [Jam Mulai: ${sInfo.time}] ${longPurpose.value}`);
-        formData.append('startDate', document.getElementById('loanDate').value);
-        formData.append('duration', sInfo.dur);
+        formData.append('location', locationInput.value);
+
+        // Descriptive string with time info
+        const timeInfo = `[Waktu: ${sd} ${st} s/d ${ed} ${et}]`;
+        formData.append('description', `${timeInfo} ${longPurpose.value}`);
+
+        formData.append('startDate', sd);
+        formData.append('startTime', st);
+        formData.append('endDate', ed);
+        formData.append('endTime', et);
+        formData.append('duration', dur);
 
         const fileInput = document.getElementById('requirements');
         if (fileInput.files.length > 0) {
             formData.append('file', fileInput.files[0]);
         }
+
+        const identityInput = document.getElementById('identityFile');
+        if (identityInput && identityInput.files.length > 0) {
+            formData.append('identityFile', identityInput.files[0]);
+        }
+
         formData.append('items', JSON.stringify(cart));
 
         // Loading state
@@ -836,15 +862,20 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
     // Load meta booking (tanggal, sesi) dari localStorage (std: msu_dates_v2)
     try {
         const meta = JSON.parse(localStorage.getItem('msu_dates_v2') || '{}');
-        if (meta.start) {
-            const el = document.getElementById('loanDate');
-            if (el) el.value = meta.start;
+        if (meta.startDate && document.getElementById('startDate')) {
+            document.getElementById('startDate').value = meta.startDate;
         }
-        if (meta.session) {
-            const el = document.getElementById('session');
-            if (el) el.value = meta.session;
+        if (meta.startTime && document.getElementById('startTime')) {
+            document.getElementById('startTime').value = meta.startTime;
+        }
+        if (meta.endDate && document.getElementById('endDate')) {
+            document.getElementById('endDate').value = meta.endDate;
+        }
+        if (meta.endTime && document.getElementById('endTime')) {
+            document.getElementById('endTime').value = meta.endTime;
         }
     } catch (e) { }
+
 
     // initial
     validateForm();

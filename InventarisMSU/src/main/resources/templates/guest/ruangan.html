@@ -66,33 +66,24 @@
         <div class="card-body p-4">
           <h5 class="card-title mb-3 fw-bold"><i class="bi bi-clock me-2"></i>Waktu Peminjaman</h5>
           <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label small fw-bold">Tanggal Pakai</label>
-              <input type="date" class="form-control" id="filterDateStart">
+              <input type="date" class="form-control" id="dateStart">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+              <label class="form-label small fw-bold">Jam Pakai</label>
+              <input type="time" class="form-control" id="timeStart">
+            </div>
+            <div class="col-md-3">
               <label class="form-label small fw-bold">Tanggal Kembali</label>
-              <input type="date" class="form-control" id="filterDateEnd">
+              <input type="date" class="form-control" id="dateEnd">
             </div>
-            <div class="col-md-4">
-              <label class="form-label small fw-bold">Sesi Peminjaman</label>
-              <select class="form-select" id="filterSession">
-                <optgroup label="Sesi (1/3 Hari)">
-                  <option value="Pagi">Pagi (06.00 - 12.00)</option>
-                  <option value="Siang">Siang (12.00 - 18.00)</option>
-                  <option value="Malam">Malam (18.00 - 20.00)</option>
-                </optgroup>
-                <optgroup label="Paket (2/3 Hari)">
-                  <option value="PagiSiang">Pagi & Siang (06.00 - 18.00)</option>
-                  <option value="SiangMalam">Siang & Malam (12.00 - 20.00)</option>
-                </optgroup>
-                <optgroup label="Full Day">
-                  <option value="Seharian">Seharian (06.00 - 20.00)</option>
-                </optgroup>
-              </select>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold">Jam Kembali</label>
+              <input type="time" class="form-control" id="timeEnd">
             </div>
             <div class="col-12 d-flex align-items-end mt-3 gap-2">
-              <div class="text-muted small me-auto" id="filterResultText">Silakan tentukan waktu peminjaman dulu.</div>
+              <div class="text-muted small me-auto js-daterange">Silakan tentukan waktu peminjaman dulu.</div>
               <button id="btnShowCalendar" class="btn btn-outline-secondary" type="button" title="Lihat Jadwal Harian">
                 <i class="bi bi-calendar3"></i>
               </button>

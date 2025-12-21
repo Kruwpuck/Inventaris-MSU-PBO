@@ -21,7 +21,8 @@ function addTapAnimation(el) {
 document.querySelectorAll('.tap-anim').forEach(addTapAnimation);
 
 // ====== Module: MSU Dates (disimpan di localStorage) ======
-// ====== Module: MSU Dates (Sessions) ======
+// ====== Module: MSU Dates (disimpan di localStorage) ======
+// Version 2: Supports start/end date AND time
 window.MSUDates = (function () {
   const KEY = 'msu_dates_v2';
 
@@ -30,10 +31,9 @@ window.MSUDates = (function () {
     catch (e) { return {}; }
   }
 
-  // Accepts: { start, end, session }
-  // Session keys: 'Pagi', 'Siang', 'Malam', 'PagiSiang', 'SiangMalam', 'Seharian'
-  function set({ start, end, session }) {
-    const d = { start, end, session };
+  // Accepts: { startDate, startTime, endDate, endTime }
+  function set({ startDate, startTime, endDate, endTime }) {
+    const d = { startDate, startTime, endDate, endTime };
     localStorage.setItem(KEY, JSON.stringify(d));
   }
 
@@ -41,65 +41,37 @@ window.MSUDates = (function () {
 
   function isSet() {
     const d = get();
-    return Boolean(d.start && d.end && d.session);
-  }
-
-  function getSessionLabel(key) {
-    const map = {
-      'Pagi': '06.00 - 12.00',
-      'Siang': '12.00 - 18.00',
-      'Malam': '18.00 - 20.00',
-      'PagiSiang': '06.00 - 18.00',
-      'SiangMalam': '12.00 - 20.00',
-      'Seharian': '06.00 - 20.00'
-    };
-    return map[key] || key;
+    return Boolean(d.startDate && d.startTime && d.endDate && d.endTime);
   }
 
   function formatRange() {
     const d = get();
-    if (!d.start || !d.end) return '';
-    const sess = d.session ? ` (${d.session}, ${getSessionLabel(d.session)})` : '';
-    return `${d.start} → ${d.end}${sess}`;
+    if (!d.startDate || !d.endDate) return '';
+    return `${d.startDate} ${d.startTime || ''} s/d ${d.endDate} ${d.endTime || ''}`;
   }
 
-  // Helper helper to convert session to time/duration
-  function getDetails() {
-    const d = get();
-    const map = {
-      'Pagi': { time: '06:00', dur: 6 },
-      'Siang': { time: '12:00', dur: 6 },
-      'Malam': { time: '18:00', dur: 2 },
-      'PagiSiang': { time: '06:00', dur: 12 },
-      'SiangMalam': { time: '12:00', dur: 8 },
-      'Seharian': { time: '06:00', dur: 14 }
-    };
-    const info = map[d.session] || { time: '00:00', dur: 0 };
-    return { ...d, ...info };
-  }
-
-  return { get, set, clear, isSet, formatRange, getDetails };
+  return { get, set, clear, isSet, formatRange };
 })();
 
 // ====== Render & set DateBar ======
 (function initDateBar() {
-  const inpStart = document.getElementById('dateStart') || document.getElementById('filterDateStart');
-  const inpEnd = document.getElementById('dateEnd') || document.getElementById('filterDateEnd');
-
-  // We look for session selector now
-  const selSession = document.getElementById('sessionSel') || document.getElementById('filterSession');
+  const dateStartEl = document.getElementById('dateStart');
+  const timeStartEl = document.getElementById('timeStart');
+  const dateEndEl = document.getElementById('dateEnd');
+  const timeEndEl = document.getElementById('timeEnd');
 
   const btnSet = document.getElementById('btnSetDates') || document.getElementById('btnCheckAvailability');
-  const lbl = document.querySelector('.js-daterange') || document.getElementById('filterResultText');
+  const lbl = document.querySelector('.js-daterange');
 
   // Prefill dari storage
   const saved = window.MSUDates.get();
-  if (inpStart && saved.start) inpStart.value = saved.start;
-  if (inpEnd && saved.end) inpEnd.value = saved.end;
-  if (selSession && saved.session) selSession.value = saved.session;
+  if (dateStartEl && saved.startDate) dateStartEl.value = saved.startDate;
+  if (timeStartEl && saved.startTime) timeStartEl.value = saved.startTime;
+  if (dateEndEl && saved.endDate) dateEndEl.value = saved.endDate;
+  if (timeEndEl && saved.endTime) timeEndEl.value = saved.endTime;
 
   if (lbl) {
-    lbl.textContent = (saved.start && saved.end && saved.session)
+    lbl.textContent = window.MSUDates.isSet()
       ? `Tanggal dipilih: ${window.MSUDates.formatRange()}`
       : 'Belum memilih jadwal.';
   }
@@ -107,7 +79,7 @@ window.MSUDates = (function () {
   // New Global Function for Checking Stock
   window.checkRealTimeStock = async function (isAuto = false) {
     const saved = window.MSUDates.get();
-    if (!saved.start || !saved.session) return; // Need at least start date and session
+    if (!saved.startDate || !saved.startTime || !saved.endDate || !saved.endTime) return;
 
     const btn = document.getElementById('btnSetDates') || document.getElementById('btnCheckAvailability');
     const originalText = btn ? btn.innerHTML : '';
@@ -117,7 +89,8 @@ window.MSUDates = (function () {
     }
 
     try {
-      const url = `/api/peminjaman/check?date=${saved.start}&session=${encodeURIComponent(saved.session)}`;
+      const url = `/api/peminjaman/check?startDate=${saved.startDate}&startTime=${encodeURIComponent(saved.startTime)}&endDate=${saved.endDate}&endTime=${encodeURIComponent(saved.endTime)}`;
+
       const res = await fetch(url);
       if (!res.ok) throw new Error('Network error');
       const data = await res.json(); // [{itemId, itemName, available}]
@@ -125,10 +98,10 @@ window.MSUDates = (function () {
       // Update UI Cards
       document.querySelectorAll('.item-card').forEach(card => {
         const titleEl = card.querySelector('.item-title');
-        const name = titleEl ? titleEl.textContent.trim() : '';
+        const name = titleEl ? titleEl.textContent.trim().toLowerCase() : '';
 
         // Find availability info
-        const info = data.find(d => d.itemName === name);
+        const info = data.find(d => (d.itemName || '').trim().toLowerCase() === name);
         if (info) {
           card.dataset.max = info.available;
         }
@@ -152,24 +125,25 @@ window.MSUDates = (function () {
   };
 
   btnSet?.addEventListener('click', () => {
-    const s = inpStart?.value || '';
-    const e = inpEnd?.value || '';
-    const sess = selSession?.value || '';
+    const sd = dateStartEl?.value || '';
+    const st = timeStartEl?.value || '';
+    const ed = dateEndEl?.value || '';
+    const et = timeEndEl?.value || '';
 
-    if (!s || !e) {
-      showToastInfo('Pilih tanggal pakai & kembali terlebih dahulu.');
-      return;
-    }
-    if (e < s) {
-      showToastInfo('Tanggal kembali tidak boleh lebih awal dari tanggal pakai.');
-      return;
-    }
-    if (!sess) {
-      showToastInfo('Pilih sesi peminjaman.');
+    if (!sd || !st || !ed || !et) {
+      showToastInfo('Lengkapi semua input tanggal dan jam.');
       return;
     }
 
-    window.MSUDates.set({ start: s, end: e, session: sess });
+    // Optional: add date validation (end > start)
+    const startDT = new Date(`${sd}T${st}`);
+    const endDT = new Date(`${ed}T${et}`);
+    if (endDT <= startDT) {
+      showToastInfo('Waktu kembali harus setelah waktu mulai.');
+      return;
+    }
+
+    window.MSUDates.set({ startDate: sd, startTime: st, endDate: ed, endTime: et });
     if (lbl) {
       lbl.textContent = `Tanggal dipilih: ${window.MSUDates.formatRange()}`;
     }
@@ -178,27 +152,19 @@ window.MSUDates = (function () {
     window.checkRealTimeStock();
   });
 
-  // Auto-save on change (Sync across pages)
+  // Auto-save logic
   function saveState() {
-    const s = inpStart?.value || '';
-    const e = inpEnd?.value || '';
-    const sess = selSession?.value || '';
-    // Save whatever we have, even if partial
-    window.MSUDates.set({ start: s, end: e, session: sess });
+    const sd = dateStartEl?.value || '';
+    const st = timeStartEl?.value || '';
+    const ed = dateEndEl?.value || '';
+    const et = timeEndEl?.value || '';
+    window.MSUDates.set({ startDate: sd, startTime: st, endDate: ed, endTime: et });
   }
 
-  if (inpStart) {
-    inpStart.addEventListener('change', saveState);
-    inpStart.addEventListener('input', saveState);
-  }
-  if (inpEnd) {
-    inpEnd.addEventListener('change', saveState);
-    inpEnd.addEventListener('input', saveState);
-  }
-  if (selSession) {
-    selSession.addEventListener('change', saveState);
-    selSession.addEventListener('input', saveState);
-  }
+  [dateStartEl, timeStartEl, dateEndEl, timeEndEl].forEach(el => {
+    el?.addEventListener('change', saveState);
+    el?.addEventListener('input', saveState);
+  });
 
   // Initial label update
   if (lbl) {
@@ -627,8 +593,8 @@ window.addEventListener('load', () => {
     // Try to get date from MSUDates if set
     let d = new Date();
     const saved = window.MSUDates?.get();
-    if (saved && saved.start) {
-      d = new Date(saved.start);
+    if (saved && saved.startDate) {
+      d = new Date(saved.startDate);
     }
     currentTargetDate = d;
 
@@ -637,7 +603,6 @@ window.addEventListener('load', () => {
 
     loadScheduleFor(currentTargetDate);
   }
-
   // Prev/Next handlers
   document.getElementById('schedPrevDay')?.addEventListener('click', () => {
     currentTargetDate.setDate(currentTargetDate.getDate() - 1);

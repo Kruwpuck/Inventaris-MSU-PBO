@@ -21,6 +21,8 @@ public class Peminjaman {
     private String description;
     private String documentPath;
     private Integer duration;
+    private String location;
+    private String identityCardPath;
 
     @Column(name = "session_time") // Mapping explicitly to avoid reserved word issues if any
     private String session;
@@ -127,6 +129,22 @@ public class Peminjaman {
         this.duration = duration;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getIdentityCardPath() {
+        return identityCardPath;
+    }
+
+    public void setIdentityCardPath(String identityCardPath) {
+        this.identityCardPath = identityCardPath;
+    }
+
     public String getSession() {
         return session;
     }
@@ -149,6 +167,25 @@ public class Peminjaman {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    private java.time.LocalTime startTime;
+    private java.time.LocalTime endTime;
+
+    public java.time.LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(java.time.LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public java.time.LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(java.time.LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public PeminjamanStatus getStatus() {
@@ -191,26 +228,4 @@ public class Peminjaman {
         this.details = details;
     }
 
-    // Helper to extract time from description if present
-    public String getStartTime() {
-        if (description != null && description.contains("[Jam Mulai:")) {
-            try {
-                int start = description.indexOf("[Jam Mulai:") + 12; // Length of "[Jam Mulai:" is 11, plus space is 12
-                                                                     // usually
-                // But looking at "[Jam Mulai: 12:18]", len is 11. space is at 11? No.
-                // "[Jam Mulai:" len is 11. If it is "[Jam Mulai: 12:18]", index of "1" is start
-                // + 1 (space).
-                // Let's be safer.
-                String marker = "[Jam Mulai:";
-                int startIdx = description.indexOf(marker) + marker.length();
-                int endIdx = description.indexOf("]", startIdx);
-                if (endIdx > startIdx) {
-                    return description.substring(startIdx, endIdx).trim();
-                }
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-        return "";
-    }
 }

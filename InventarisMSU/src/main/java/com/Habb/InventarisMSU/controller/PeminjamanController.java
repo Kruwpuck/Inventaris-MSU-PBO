@@ -61,21 +61,32 @@ public class PeminjamanController {
             @RequestParam("department") String department,
             @RequestParam("reason") String reason,
             @RequestParam("description") String description,
+            @RequestParam("location") String location,
             @RequestParam("startDate") String startDateStr,
+            @RequestParam("startTime") String startTimeStr,
+            @RequestParam("endDate") String endDateStr,
+            @RequestParam("endTime") String endTimeStr,
             @RequestParam("duration") Integer duration,
             @RequestParam("items") String itemsJson,
             @RequestParam("file") MultipartFile file,
+            @RequestParam("identityFile") MultipartFile identityFile,
             @RequestParam(value = "session", required = false) String session) {
         try {
-            // 1. Save File
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path uploadDir = Paths.get("uploads");
             if (!Files.exists(uploadDir))
                 Files.createDirectories(uploadDir);
+
+            // 1. Save Proposal File
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path filePath = uploadDir.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
 
-            // 2. Create Peminjaman
+            // 2. Save Identity File
+            String identityFileName = UUID.randomUUID().toString() + "_" + identityFile.getOriginalFilename();
+            Path identityFilePath = uploadDir.resolve(identityFileName);
+            Files.copy(identityFile.getInputStream(), identityFilePath);
+
+            // 3. Create Peminjaman
             Peminjaman p = new Peminjaman();
             p.setBorrowerName(borrowerName);
             p.setEmail(email);
@@ -84,34 +95,26 @@ public class PeminjamanController {
             p.setDepartment(department);
             p.setReason(reason);
             p.setDescription(description);
+            p.setLocation(location);
+
             // If session is not provided, try to extract from description or leave null
-            if (session == null && description != null) {
-                // Try extract
-                // [Sesi: Pagi] ...
-                if (description.contains("[Sesi:")) {
-                    int start = description.indexOf("[Sesi:") + 7;
-                    int end = description.indexOf("]", start);
-                    if (end > start) {
-                        session = description.substring(start, end).trim(); // This might get "Pagi (06..)"
-                        // We probably want the code "Pagi". But keeping full string is safer for now if
-                        // we don't change frontend much.
-                        // Actually, let's just save what we get.
-                    }
-                }
+            if (session == null) {
+                session = String.format("%s %s -> %s %s", startDateStr, startTimeStr, endDateStr, endTimeStr);
             }
             p.setSession(session);
 
             p.setStartDate(LocalDate.parse(startDateStr));
-            p.setDuration(duration);
+            p.setStartTime(java.time.LocalTime.parse(startTimeStr));
+            p.setEndDate(LocalDate.parse(endDateStr));
+            p.setEndTime(java.time.LocalTime.parse(endTimeStr));
+
             p.setDocumentPath(filePath.toString());
+            p.setIdentityCardPath(identityFilePath.toString());
             p.setStatus(PeminjamanStatus.PENDING);
 
-            // Calc End Date? Simple logic: same day or + days?
-            // Duration is usually hours. So EndDate = StartDate usually (for daily
-            // booking).
-            p.setEndDate(LocalDate.parse(startDateStr));
+            p.setDuration(duration);
 
-            // 3. Parse Items & Create Details
+            // 4. Parse Items & Create Details
             List<CartItem> cartItems = objectMapper.readValue(itemsJson, new TypeReference<List<CartItem>>() {
             });
             List<PeminjamanDetail> details = new ArrayList<>();
@@ -128,7 +131,7 @@ public class PeminjamanController {
             }
             p.setDetails(details);
 
-            // 4. Save
+            // 5. Save
             peminjamanRepository.save(p);
 
             return ResponseEntity.ok().body("{\"message\": \"Booking berhasil disimpan\"}");
@@ -252,19 +255,20 @@ public class PeminjamanController {
         }
     }
 
-    private String extractSession(String desc) {
-        if (desc == null)
-            return "";
-        if (desc.contains("[Sesi:")) {
-            try {
-                int start = desc.indexOf("[Sesi:") + 7;
-                int end = desc.indexOf("]", start);
-                if (end > start)
-                    return desc.substring(start, end).trim();
-            } catch (Exception e) {
-            }
+    private boolean isTimeOverlapping(java.time.LocalDateTime reqStart, java.time.LocalDateTime reqEnd, Peminjaman p) {
+        java.time.LocalDateTime pStart;
+        java.time.LocalDateTime pEnd;
+
+        if (p.getStartTime() != null && p.getEndTime() != null) {
+            pStart = p.getStartDate().atTime(p.getStartTime());
+            pEnd = p.getEndDate().atTime(p.getEndTime());
+        } else {
+            // Legacy fallback: Assume full day active if exact time not present
+            pStart = p.getStartDate().atTime(6, 0);
+            pEnd = p.getEndDate().atTime(20, 0);
         }
-        return "";
+
+        return reqStart.isBefore(pEnd) && reqEnd.isAfter(pStart);
     }
 
     private boolean isOverlapping(String s1, String s2) {
@@ -316,46 +320,51 @@ public class PeminjamanController {
 
     @GetMapping("/check")
     public ResponseEntity<List<AvailabilityDTO>> checkAvailability(
-            @RequestParam("date") String dateStr,
-            @RequestParam(value = "session", required = false) String session) {
+            @RequestParam("startDate") String startDateStr,
+            @RequestParam("startTime") String startTimeStr,
+            @RequestParam("endDate") String endDateStr,
+            @RequestParam("endTime") String endTimeStr) {
 
-        LocalDate date = LocalDate.parse(dateStr);
+        LocalDate reqStartDate = LocalDate.parse(startDateStr);
+        LocalDate reqEndDate = LocalDate.parse(endDateStr);
+        java.time.LocalDateTime reqStart = reqStartDate.atTime(java.time.LocalTime.parse(startTimeStr));
+        java.time.LocalDateTime reqEnd = reqEndDate.atTime(java.time.LocalTime.parse(endTimeStr));
+
         List<Item> allItems = itemRepository.findAll();
 
         // 1. Calculate 'Total Real Stock' (Asset Count) using Aggregate Query
-        // This avoids iterating thousands of bookings and LazyLoading issues.
-        List<PeminjamanStatus> activeStatuses = Arrays.asList(PeminjamanStatus.APPROVED, PeminjamanStatus.TAKEN);
-        List<Object[]> borrowedCountsList = peminjamanRepository.countBorrowedItems(activeStatuses);
+        // NO LONGER NEEDED: item.getStock() should represent the TOTAL asset count.
+        // We do NOT add borrowed items to it.
+        // List<PeminjamanStatus> activeStatuses =
+        // Arrays.asList(PeminjamanStatus.APPROVED, PeminjamanStatus.TAKEN,
+        // PeminjamanStatus.PENDING);
+        // List<Object[]> borrowedCountsList =
+        // peminjamanRepository.countBorrowedItems(activeStatuses);
 
-        java.util.Map<Long, Integer> borrowedCounts = new java.util.HashMap<>();
-        for (Object[] row : borrowedCountsList) {
-            Long itemId = (Long) row[0];
-            Long qty = (Long) row[1]; // SUM returns Long in JPQL
-            borrowedCounts.put(itemId, qty.intValue());
-        }
+        // java.util.Map<Long, Integer> borrowedCounts = new java.util.HashMap<>();
+        // for (Object[] row : borrowedCountsList) {
+        // Long itemId = (Long) row[0];
+        // Long qty = (Long) row[1]; // SUM returns Long in JPQL
+        // borrowedCounts.put(itemId, qty.intValue());
+        // }
 
-        // 2. Find overlapping bookings (now eager fetches details)
-        List<Peminjaman> overlapping = peminjamanRepository.findOverlappingBookings(date);
+        // 2. Find overlapping bookings (Date Range Overlap)
+        List<Peminjaman> overlapping = peminjamanRepository.findOverlappingRange(reqStartDate, reqEndDate);
 
         List<AvailabilityDTO> result = new ArrayList<>();
 
         for (Item item : allItems) {
             int currentDbStock = item.getStock();
-            int totalAssetStock = currentDbStock + borrowedCounts.getOrDefault(item.getId(), 0);
+            // Total Asset Stock is simply what's in the DB (Total Inventory)
+            int totalAssetStock = currentDbStock;
 
             int projectedStock = totalAssetStock;
 
             // Deduct usage by overlapping bookings
             for (Peminjaman p : overlapping) {
-                boolean overlaps = true;
-                if (session != null && !session.isEmpty() && p.getSession() != null) {
-                    overlaps = isOverlapping(session, p.getSession());
-                }
-
-                if (overlaps) {
+                if (isTimeOverlapping(reqStart, reqEnd, p)) {
                     if (p.getDetails() != null) {
                         for (PeminjamanDetail pd : p.getDetails()) {
-                            // pd.getItem() is eager fetched now
                             if (pd.getItem().getId().equals(item.getId())) {
                                 projectedStock -= pd.getQuantity();
                             }

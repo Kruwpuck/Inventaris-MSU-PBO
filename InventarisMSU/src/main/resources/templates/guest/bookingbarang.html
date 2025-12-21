@@ -70,16 +70,15 @@
         <!-- Form Booking -->
         <form id="bookingForm" class="form-card reveal-up needs-validation" novalidate>
           <div class="row g-3">
-            <!-- NOMOR PEMINJAMAN -->
+            <!-- Row 1: Telp (Left), Name (Right) -->
             <div class="col-md-6">
               <label class="form-label">Nomor Telepon</label>
               <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-receipt-cutoff"></i></span>
+                <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
                 <input type="text" class="form-control" id="loanNumber" placeholder="Contoh: 08123456789" required />
                 <div class="invalid-feedback">Wajib diisi.</div>
               </div>
             </div>
-
             <div class="col-md-6">
               <label class="form-label">Penanggung jawab</label>
               <div class="input-group">
@@ -89,6 +88,7 @@
               </div>
             </div>
 
+            <!-- Row 2: NIM (Left), Email (Right) -->
             <div class="col-md-6">
               <label class="form-label">NIM/NIP</label>
               <div class="input-group">
@@ -97,7 +97,6 @@
                 <div class="invalid-feedback">Wajib diisi.</div>
               </div>
             </div>
-
             <div class="col-md-6">
               <label class="form-label">Email</label>
               <div class="input-group">
@@ -107,7 +106,8 @@
               </div>
             </div>
 
-            <div class="col-md-6">
+            <!-- Row 3: Study Program (Full width based on image implication or kept as standard) -->
+            <div class="col-12">
               <label class="form-label">Program Studi / Unit</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-mortarboard"></i></span>
@@ -117,76 +117,99 @@
               </div>
             </div>
 
+            <!-- Row 4: Kegiatan -->
             <div class="col-12">
-              <label class="form-label">Keperluan</label>
+              <label class="form-label">Kegiatan</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-clipboard-check"></i></span>
-                <input type="text" class="form-control" id="purpose" placeholder="Contoh: Kuliah tamu / kegiatan..."
+                <input type="text" class="form-control" id="purpose" placeholder="Contoh: Kuliah Tamu / Seminar..."
                   required />
                 <div class="invalid-feedback">Wajib diisi.</div>
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Tanggal Peminjaman</label>
+            <!-- Row 5: Lokasi (New) -->
+            <div class="col-12">
+              <label class="form-label">Lokasi Kegiatan</label>
               <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                <input type="date" class="form-control" id="loanDate" required />
-                <div class="invalid-feedback">Pilih tanggal.</div>
+                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                <input type="text" class="form-control" id="location" placeholder="Masukkan lokasi kegiatan" required />
+                <div class="invalid-feedback">Wajib diisi.</div>
               </div>
+              <div class="form-text">Hanya tersedia untuk kegiatan di lingkungan Telkom University.</div>
             </div>
 
+            <!-- WAKTU PEMINJAMAN -->
             <div class="col-md-6">
-              <label class="form-label">Sesi Peminjaman</label>
+              <label class="form-label text-primary fw-bold">Tanggal Pakai</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                <input type="date" class="form-control" id="startDate" required />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-primary fw-bold">Jam Pakai</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                <select class="form-select" id="session" required>
-                  <option value="" selected disabled>Pilih Sesi</option>
-                  <optgroup label="Sesi (1/3 Hari)">
-                    <option value="Pagi">Pagi (06.00 - 12.00)</option>
-                    <option value="Siang">Siang (12.00 - 18.00)</option>
-                    <option value="Malam">Malam (18.00 - 20.00)</option>
-                  </optgroup>
-                  <optgroup label="Paket (2/3 Hari)">
-                    <option value="PagiSiang">Pagi & Siang (06.00 - 18.00)</option>
-                    <option value="SiangMalam">Siang & Malam (12.00 - 20.00)</option>
-                  </optgroup>
-                  <optgroup label="Full Day">
-                    <option value="Seharian">Seharian (06.00 - 20.00)</option>
-                  </optgroup>
-                </select>
-                <div class="invalid-feedback">Pilih durasi.</div>
+                <input type="time" class="form-control" id="startTime" required />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label text-primary fw-bold">Tanggal Kembali</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                <input type="date" class="form-control" id="endDate" required />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-primary fw-bold">Jam Kembali</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                <input type="time" class="form-control" id="endTime" required />
+              </div>
+            </div>
+
+            <div class="col-12 text-end">
+              <button type="button" class="btn btn-success btn-sm" id="btnCheckAvailability">
+                <i class="bi bi-search me-1"></i> Cek Ketersediaan
+              </button>
+            </div>
+
+            <!-- Uploads -->
+            <div class="col-12">
+              <label class="form-label fw-bold"><i class="bi bi-cloud-arrow-up me-1"></i> Upload Dokumen</label>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small">Proposal Kegiatan</label>
+                  <input class="form-control" type="file" id="requirements" accept=".pdf" required>
+                  <div class="form-text">Wajib PDF (max 10MB).</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Identitas Peminjam (KTM/KTP/SIM)</label>
+                  <input class="form-control" type="file" id="identityFile" accept=".jpg,.jpeg,.png,.pdf" required>
+                  <div class="form-text">Wajib format gambar (JPG, PNG).</div>
+                </div>
               </div>
             </div>
 
             <div class="col-12">
-              <label class="form-label">Upload Dokumen Persyaratan</label>
-              <input class="form-control" type="file" id="requirements" accept=".pdf,.jpg,.jpeg,.png" required>
-              <div class="form-text">
-                Format: PDF/JPG/PNG (maks 10 MB). Unduh & tandatangani
-                <a href="pakta-peminjaman-barang.pdf" target="_blank" rel="noopener">Pakta Peminjaman Barang</a>,
-                lalu unggah bersama dokumen pendukung.
-              </div>
-              <div class="invalid-feedback">Unggah dokumen persyaratan.</div>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Deskripsi Keperluan</label>
-              <textarea id="longPurpose" class="form-control" rows="4" placeholder="Tuliskan detail singkat keperluan…"
-                required></textarea>
+              <label class="form-label">Deskripsi Kegiatan</label>
+              <textarea id="longPurpose" class="form-control" rows="4"
+                placeholder="Tuliskan detail deskripsi kegiatan..." required></textarea>
               <div class="invalid-feedback">Wajib diisi.</div>
             </div>
           </div>
 
           <div class="d-flex gap-2 justify-content-end mt-4 reveal-up">
             <a class="btn btn-outline-secondary" th:href="@{/catalogue}">
-              <i class="bi bi-arrow-left-circle me-1"></i>Tambah Barang
+              <i class="bi bi-plus-circle me-1"></i> Tambah Barang
             </a>
             <button class="btn btn-outline-danger" type="button" id="btnCancel">
-              <i class="bi bi-x-circle me-1"></i>Batalkan
+              <i class="bi bi-x-circle me-1"></i> Batalkan
             </button>
             <button class="btn btn-primary btn-book" type="submit" id="btnSubmit" disabled>
-              <i class="bi bi-check2-circle me-1"></i>Kirim Booking
+              <i class="bi bi-send me-1"></i> Kirim Booking
             </button>
           </div>
         </form>
