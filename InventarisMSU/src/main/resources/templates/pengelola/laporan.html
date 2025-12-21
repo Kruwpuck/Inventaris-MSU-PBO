@@ -335,6 +335,9 @@
           <li>
             <a class="dropdown-item" href="#" data-value="Terlambat">Terlambat</a>
           </li>
+          <li>
+            <a class="dropdown-item" href="#" data-value="Siap Diambil">Siap Diambil</a>
+          </li>
         </ul>
       </div>
 
@@ -365,7 +368,14 @@
             </tr>
           </thead>
           <tbody id="tbodyLaporan">
-            <tr th:each="p, stat : ${listPeminjaman}">
+            <tr th:each="p, stat : ${listPeminjaman}"
+                th:attr="data-kategori=${not #lists.isEmpty(p.details) ? #strings.capitalize(#strings.toLowerCase(p.details[0].item.type)) : ''},
+                         data-status=${p.status.name() == 'PENDING' ? 'Menunggu' : 
+                                       (p.status.name() == 'APPROVED' ? 'Siap Diambil' : 
+                                       (p.status.name() == 'TAKEN' ? 'Sedang Dipinjam' : 
+                                       (p.status.name() == 'COMPLETED' ? 'Sudah Kembali' : 
+                                       (p.status.name() == 'OVERDUE' ? 'Terlambat' : 
+                                       (p.status.name() == 'REJECTED' ? 'Ditolak' : '')))))}">
               <td th:text="${stat.count}">1</td>
               <td>
                 <span th:if="${not #lists.isEmpty(p.details)}" th:text="${p.details[0].item.name}">Item Name</span>
@@ -386,7 +396,7 @@
               </td>
               <td class="text-center">
                 <span th:if="${p.status != null and p.status.name() == 'PENDING'}" class="badge badge-status status-menunggu">Menunggu</span>
-                <span th:if="${p.status != null and p.status.name() == 'APPROVED'}" class="badge badge-status status-siap">Disetujui</span>
+                <span th:if="${p.status != null and p.status.name() == 'APPROVED'}" class="badge badge-status status-siap">Siap Diambil</span>
                 <span th:if="${p.status != null and p.status.name() == 'TAKEN'}" class="badge badge-status status-sedang">Sedang Dipinjam</span>
                 <span th:if="${p.status != null and p.status.name() == 'COMPLETED'}" class="badge badge-status status-sudah">Sudah Kembali</span>
                 <span th:if="${p.status != null and p.status.name() == 'REJECTED'}" class="badge badge-status status-batal">Ditolak</span>
