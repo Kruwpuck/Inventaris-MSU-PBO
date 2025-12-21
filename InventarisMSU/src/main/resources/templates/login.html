@@ -272,7 +272,8 @@
     <div class="left-panel">
       <!-- Alerts -->
       <div th:if="${param.error}" class="alert alert-danger py-2 mb-3 small border-0 bg-danger-subtle text-danger">
-        Email atau password salah.
+        <span th:if="${param.error[0] == 'role_mismatch'}">Role tidak sesuai dengan akun Anda.</span>
+        <span th:if="${param.error[0] != 'role_mismatch'}">Email atau password salah.</span>
       </div>
       <div th:if="${param.logout}" class="alert alert-success py-2 mb-3 small border-0 bg-success-subtle text-success">
         Berhasil logout.
@@ -292,6 +293,9 @@
       <!-- Form -->
       <form method="post" th:action="@{/login-check}">
         <div class="form-group">
+          <!-- Hidden Input for Role Validation -->
+          <input type="hidden" name="target_role" id="targetRole" value="PENGELOLA">
+
           <label for="username" class="form-label">Email Address</label>
           <input type="text" class="form-control" id="username" name="username" placeholder="name@example.com"
             required />
@@ -396,7 +400,7 @@
         $(this).toggleClass("bi-eye bi-eye-slash");
       });
 
-      // Sync Texts
+      // Sync Texts & Role Input
       owl.on('changed.owl.carousel', function (event) {
         var current = event.item.index;
         var activeItem = $(event.target).find(".owl-item").eq(current).find(".role-data");
@@ -405,6 +409,11 @@
           var tBold = activeItem.data("title-bold");
           var tLight = activeItem.data("title-light");
           var desc = activeItem.data("desc");
+
+          // Update Hidden Input (Important for Backend Validation)
+          // Default is PENGELOLA, if switched to PENGURUS, update it.
+          // Logic: BOLD title is "PENGELOLA" or "PENGURUS"
+          $("#targetRole").val(tBold);
 
           // Animate text
           $("#textContainer").fadeOut(200, function () {
