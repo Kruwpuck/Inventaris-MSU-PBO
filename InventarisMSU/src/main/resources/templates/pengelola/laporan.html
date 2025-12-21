@@ -360,11 +360,12 @@
               <th>Nama</th>
               <th>Kategori</th>
               <th>Peminjam</th>
-              <th>Tgl Pinjam</th>
+              <th>Waktu Pinjam</th>
               <th>Jatuh Tempo</th>
-              <th>Tgl Kembali</th>
+              <th>Waktu Kembali</th>
               <th class="text-center">Jumlah</th>
               <th class="text-center">Status</th>
+              <th>Keterangan</th>
             </tr>
           </thead>
           <tbody id="tbodyLaporan">
@@ -388,20 +389,28 @@
                 <span th:if="${#lists.isEmpty(p.details)}">-</span>
               </td>
               <td th:text="${p.borrowerName}">Peminjam</td>
-              <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">Start</td>
-              <td th:text="${#temporals.format(p.endDate, 'dd/MM/yyyy')}">End</td>
-              <td th:text="${p.returned ? #temporals.format(p.endDate, 'dd/MM/yyyy') : '-'}">-</td>
+              <td>
+                <span th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')} + ' | ' + ${#temporals.format(p.startTime, 'HH:mm')}">Start</span>
+              </td>
+              <td>
+                <span th:text="${#temporals.format(p.endDate, 'dd/MM/yyyy')} + ' | ' + ${#temporals.format(p.endTime, 'HH:mm')}">End</span>
+              </td>
+              <td>
+                <span th:if="${p.returned}" th:text="${#temporals.format(p.endDate, 'dd/MM/yyyy')} + ' | ' + ${#temporals.format(p.endTime, 'HH:mm')}">-</span>
+                <span th:unless="${p.returned}">-</span>
+              </td>
               <td class="text-center">
                 <span th:if="${not #lists.isEmpty(p.details)}" th:text="${p.details[0].quantity}">1</span>
               </td>
               <td class="text-center">
                 <span th:if="${p.status != null and p.status.name() == 'PENDING'}" class="badge badge-status status-menunggu">Menunggu</span>
                 <span th:if="${p.status != null and p.status.name() == 'APPROVED'}" class="badge badge-status status-siap">Siap Diambil</span>
-                <span th:if="${p.status != null and p.status.name() == 'TAKEN'}" class="badge badge-status status-sedang">Sedang Dipinjam</span>
+                <span th:if="${p.status != null and p.status.name() == 'TAKEN'}" class="badge badge-status status-sedang">Selesai</span>
                 <span th:if="${p.status != null and p.status.name() == 'COMPLETED'}" class="badge badge-status status-sudah">Sudah Kembali</span>
                 <span th:if="${p.status != null and p.status.name() == 'REJECTED'}" class="badge badge-status status-batal">Ditolak</span>
                 <span th:if="${p.status != null and p.status.name() == 'OVERDUE'}" class="badge badge-status status-terlambat">Terlambat</span>
               </td>
+              <td>-</td>
             </tr>
             <tr th:if="${#lists.isEmpty(listPeminjaman)}">
               <td colspan="9" class="text-center py-5 text-muted">Belum ada data laporan.</td>
