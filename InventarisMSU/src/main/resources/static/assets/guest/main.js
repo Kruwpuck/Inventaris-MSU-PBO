@@ -380,7 +380,7 @@ function updateBadgeAndButtons(card, sisa) {
   const max = Number(card.dataset.max || 0);
   const badge = card.querySelector('.badge-status');
   const minusBtn = card.querySelector('.qty-btn[data-action="inc"]');
-  const plusBtn = card.querySelector('.qty-btn[data-action="dec"]');
+  const plusBtn = card.querySelector('.qty-btn[data-action="dec"]'); // Button "+" (Decrease Stock / Add to Cart)
 
   if (badge) {
     if (sisa === 0) {
@@ -391,12 +391,25 @@ function updateBadgeAndButtons(card, sisa) {
       badge.style.background = '#167c73';
     }
   }
+
+  // Logic Disable tombol "+"
+  // Disable HANYA jika Stok habis (sisa <= 0). Tanggal dicek saat klik.
+  const disableAdd = (sisa <= 0);
+
   if (type === 'ruang') {
     if (minusBtn) { minusBtn.disabled = (sisa >= 1); minusBtn.style.opacity = minusBtn.disabled ? .6 : 1; }
-    if (plusBtn) { plusBtn.disabled = (sisa <= 0); plusBtn.style.opacity = plusBtn.disabled ? .6 : 1; }
+    if (plusBtn) {
+      plusBtn.disabled = disableAdd;
+      plusBtn.style.opacity = plusBtn.disabled ? .6 : 1;
+      plusBtn.title = "Tambah ke keranjang";
+    }
   } else {
     if (minusBtn) { minusBtn.disabled = (sisa >= max); minusBtn.style.opacity = minusBtn.disabled ? .6 : 1; }
-    if (plusBtn) { plusBtn.disabled = (sisa <= 0); plusBtn.style.opacity = plusBtn.disabled ? .6 : 1; }
+    if (plusBtn) {
+      plusBtn.disabled = disableAdd;
+      plusBtn.style.opacity = plusBtn.disabled ? .6 : 1;
+      plusBtn.title = "Tambah ke keranjang";
+    }
   }
 }
 
@@ -537,9 +550,10 @@ document.addEventListener('click', (e) => {
   const action = btn.dataset.action; // "dec" (pilih) | "inc" (batal/restore)
 
   if (action === 'dec') {
-    // Sebelum tambah, sarankan pilih tanggal (opsional)
+    // WAJIB: Cek tanggal dulu
     if (!window.MSUDates.isSet()) {
-      showToastInfo('Pilih tanggal pakai & kembali untuk cek ketersediaan.');
+      showToastInfo('Harap masukkan waktu peminjaman terlebih dahulu.');
+      return; // Stop execution
     }
     openConfirm(card);
     return;

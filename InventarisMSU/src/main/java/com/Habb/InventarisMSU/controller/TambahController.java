@@ -29,6 +29,7 @@ public class TambahController {
             @RequestParam("name") String name,
             @RequestParam("type") ItemType type,
             @RequestParam("stock") Integer stock,
+            @RequestParam(value = "capacity", required = false) Integer capacity,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile) {
@@ -36,6 +37,7 @@ public class TambahController {
         item.setName(name.trim());
         item.setType(type);
         item.setStock(stock == null ? 0 : stock);
+        item.setCapacity(capacity == null ? 0 : capacity);
         item.setDescription(description);
 
         // DEFAULT IMAGE

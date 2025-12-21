@@ -66,6 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const type = inpKategori.value;
 
+    const stockHidden = document.getElementById("stockHidden");
+    const capacityHidden = document.getElementById("capacityHidden"); // Ambil elemen hidden capacity
+
     if (type === "BARANG") {
       const stokVal = (inpStok.value || "").trim();
       if (stokVal === "") {
@@ -75,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       stockHidden.value = parseInt(stokVal, 10) || 0;
+      if (capacityHidden) capacityHidden.value = 0; // Reset capacity for BARANG
     } else {
       const kapVal = (inpKapasitas.value || "").trim();
       if (kapVal === "") {
@@ -83,7 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
         form.classList.add("was-validated");
         return;
       }
-      stockHidden.value = parseInt(kapVal, 10) || 0;
+      // Untuk RUANGAN: stock = 1, capacity = input
+      stockHidden.value = 1;
+      if (capacityHidden) capacityHidden.value = parseInt(kapVal, 10) || 0;
     }
 
     form.classList.add("was-validated");
