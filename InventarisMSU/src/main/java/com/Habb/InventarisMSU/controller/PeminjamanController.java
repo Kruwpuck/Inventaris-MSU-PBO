@@ -265,7 +265,7 @@ public class PeminjamanController {
         } else {
             // Legacy fallback: Assume full day active if exact time not present
             pStart = p.getStartDate().atTime(6, 0);
-            pEnd = p.getEndDate().atTime(20, 0);
+            pEnd = p.getEndDate().atTime(22, 0);
         }
 
         return reqStart.isBefore(pEnd) && reqEnd.isAfter(pStart);
@@ -316,6 +316,74 @@ public class PeminjamanController {
         }
 
         return r;
+    }
+
+    @GetMapping("/month")
+    public ResponseEntity<List<Integer>> getBookedDays(
+            @RequestParam("itemName") String itemName,
+            @RequestParam("year") int year,
+            @RequestParam("month") int month) {
+
+        try {
+            LocalDate start = LocalDate.of(year, month + 1, 1); // Frontend month is 0-indexed?
+            // Wait, standard java LocalDate month is 1-12.
+            // Frontend generic `new Date(y, m, 1)` uses 0-11 for month.
+            // But usually API expects 1-12.
+            // Let's assume frontend sends 1-12 or I adjust.
+            // If I look at existing `getBookings` it takes `yyyy-MM-dd`.
+            // Let's assume frontend sends 1-based month or I should document it.
+            // Actually, in JS `m` is 0-baed.
+            // I will use `month + 1` if input is 0-based.
+            // User query: `?month=0` -> Jan?
+            // Let's stick to standard 1-12 for API param, but if frontend sends 0-11 logic,
+            // I need to know.
+            // Javascript: `const mon = String(m + 1).padStart(2, '0');` in
+            // renderBookingList implies it converts to 1-based.
+            // So if I use that logic in frontend, I will send 1-based.
+        } catch (Exception e) {
+        }
+
+        // Let's just use int and assume 1-based for now, or handle 0-based if passed.
+        // Actually, safer to use 1-based.
+
+        LocalDate startOfMonth = LocalDate.of(year, month, 1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        List<Peminjaman> list = peminjamanRepository.findBookingsInDataRange(startOfMonth, endOfMonth);
+        java.util.Set<Integer> days = new java.util.HashSet<>();
+
+        for (Peminjaman p : list) {
+            if (p.getStatus() == PeminjamanStatus.REJECTED)
+                continue;
+
+            // Check item match
+            boolean match = false;
+            if (p.getDetails() != null) {
+                for (PeminjamanDetail pd : p.getDetails()) {
+                    if (pd.getItem().getName().toLowerCase().contains(itemName.toLowerCase())) {
+                        match = true;
+                        break;
+                    }
+                }
+            }
+
+            if (match) {
+                LocalDate s = p.getStartDate();
+                LocalDate e = p.getEndDate();
+
+                // Clamp to this month
+                if (s.isBefore(startOfMonth))
+                    s = startOfMonth;
+                if (e.isAfter(endOfMonth))
+                    e = endOfMonth;
+
+                for (LocalDate d = s; !d.isAfter(e); d = d.plusDays(1)) {
+                    days.add(d.getDayOfMonth());
+                }
+            }
+        }
+
+        return ResponseEntity.ok(new ArrayList<>(days));
     }
 
     @GetMapping("/check")

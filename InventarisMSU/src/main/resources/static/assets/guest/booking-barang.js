@@ -110,18 +110,18 @@ function fallbackThumbFor(name) {
     return 'https://placehold.co/600x400';
 }
 
-/* Booked dates berbeda per barang (contoh) */
-function getBookedDaysFor(itemName, y, m) {
-    // MAPPING CONTOH: (Diset kosong dulu agar user bisa leluasa tes tanggal)
-    // - Proyektor: tanggal 5,12,19
-    // - Sound System: 7,14,21
-    // - Karpet: 3,9,27
-    const base = (itemName || '').toLowerCase();
-    // if (base.includes('proyektor')) return [5, 12, 19];
-    // if (base.includes('sound')) return [7, 14, 21];
-    // if (base.includes('karpet')) return [3, 9, 27];
-    // default: kosong
-    return [];
+/* Fetch booked days from API */
+async function fetchBookedDays(itemName, y, m) {
+    // API expects month 1-12
+    const apiMonth = m + 1;
+    try {
+        const url = `/api/peminjaman/month?itemName=${encodeURIComponent(itemName)}&year=${y}&month=${apiMonth}`;
+        const res = await fetch(url);
+        if (!res.ok) return [];
+        return await res.json(); // Array of integers [1, 2, 23, ...]
+    } catch (e) {
+        return [];
+    }
 }
 
 function isToday(y, m, d) {
@@ -129,131 +129,31 @@ function isToday(y, m, d) {
     return y === t.getFullYear() && m === t.getMonth() && d === t.getDate();
 }
 
-/* ---------- Dummy booking list (1/3 hari) ---------- */
-function getBookingsFor(itemName, y, m, day) {
-    // Contoh: data dummy untuk beberapa tanggal di November 2025
-    const res = [];
-    if (y === 2025 && m === 10 && day === 7) {
-        res.push(
-            { slot: 'Pagi (1/3)', kegiatan: 'Latihan Paduan Suara', pj: 'UKM PSM' },
-            { slot: 'Siang (2/3)', kegiatan: 'Lomba Cerdas Cermat', pj: 'Panitia Acara Kampus' }
-        );
-    } else if (y === 2025 && m === 10 && day === 12) {
-        res.push(
-            { slot: 'Pagi (1/3)', kegiatan: 'Briefing Panitia Kajian Akbar', pj: 'DKM MSU' },
-            { slot: 'Malam (3/3)', kegiatan: 'Gladi Bersih Acara', pj: 'Panitia Acara Kampus' }
-        );
-    } else if (y === 2025 && m === 10 && day === 19) {
-        res.push(
-            { slot: 'Siang (2/3)', kegiatan: 'Latihan Tari', pj: 'UKM Seni Tari' }
-        );
-    }
-    return res;
-}
-
-/* Mapping label → jam */
-function slotTime(label) {
-    const lower = (label || '').toLowerCase();
-    if (lower.startsWith('pagi')) return '07.00 – 12.00';
-    if (lower.startsWith('siang')) return '12.00 – 17.00';
-    if (lower.startsWith('malam')) return '17.00 – 22.00';
-    return '';
-}
-
-/* Render booking list di bawah kalender */
-/* Render booking list di bawah kalender */
-async function renderBookingList(container, itemName, y, m, day) {
-    const box = container.querySelector('.booking-list-body');
-    const headerDate = container.querySelector('.booking-list-header .date-label');
-    if (!box) return;
-
-    // Set header date immediately
-    const dObj = new Date(y, m, day);
-    const label = dObj.toLocaleDateString('id-ID', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-    });
-    if (headerDate) headerDate.textContent = label;
-
-    box.innerHTML = '<div class="text-center text-muted py-3"><span class="spinner-border spinner-border-sm text-success"></span> Memuat...</div>';
-
-    try {
-        // Fetch API
-        const mon = String(m + 1).padStart(2, '0');
-        const dd = String(day).padStart(2, '0');
-        const iso = `${y}-${mon}-${dd}`;
-
-        const res = await fetch(`/api/peminjaman?date=${iso}`);
-        if (!res.ok) throw new Error('Network err');
-        const allBookings = await res.json();
-
-        // Filter for this item (partial name match)
-        // itemName example: "Proyektor", "Sound System"
-        // Booking items example: "Proyektor (1)", "Sound System (1)"
-        // If itemName is strictly equal, we might miss if API returns "Proyektor BenQ". 
-        // We'll use includes.
-        const relevant = allBookings.filter(b => {
-            // Check if any item in booking contains our itemName
-            // Case insensitive
-            if (!b.items) return false;
-            return b.items.some(it => it.toLowerCase().includes((itemName || '').toLowerCase()));
-        });
-
-        if (!relevant.length) {
-            box.innerHTML = `<div class="booking-list-empty">
-          Belum ada peminjaman tercatat untuk item ini pada tanggal ini.
-        </div>`;
-            return;
-        }
-
-        box.innerHTML = relevant.map(b => {
-            // Find slot/session info from description
-            let slotLabel = "Waktu ditentukan";
-            // Regex baru untuk format [Waktu: yyyy-mm-dd hh:mm s/d yyyy-mm-dd hh:mm]
-            const timeMatch = b.description.match(/\[Waktu:\s*([^\]]+)\]/);
-            const sessionMatch = b.description.match(/\[Sesi:\s*([^\]]+)\]/); // Legacy support
-
-            if (timeMatch) {
-                // timeMatch[1] example: "2025-12-22 09:00 s/d 2025-12-22 17:00"
-                // Kita bisa memendekkan tampilan jika mau, atau tampilkan saja
-                // Extract just the times: 09:00 s/d 17:00
-                const extractedTime = timeMatch[1].replace(/\d{4}-\d{2}-\d{2}\s/g, '');
-                slotLabel = extractedTime;
-            } else if (sessionMatch) {
-                slotLabel = sessionMatch[1];
-            }
-
-            return `
-          <div class="booking-list-item">
-            <div class="bli-slot">${slotLabel}</div>
-            <div class="bli-main">${b.department || 'Peminjam'}</div>
-            <div class="bli-meta text-muted">Status: ${b.status}</div>
-          </div>
-        `;
-        }).join('');
-
-    } catch (e) {
-        console.error(e);
-        box.innerHTML = `<div class="text-danger small">Gagal memuat data.</div>`;
-    }
-}
-
 /* Render mini kalender spesifik barang */
-function renderCalendarFor(container, itemName, refDate) {
+async function renderCalendarFor(container, itemName, refDate) {
     const calTitle = container.querySelector('.cal-title');
     const calGrid = container.querySelector('.calendar-grid');
     const y = refDate.getFullYear(), m = refDate.getMonth();
-
-    const first = new Date(y, m, 1);
-    const startDay = (first.getDay() + 6) % 7; // Senin=0
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const prevDays = new Date(y, m, 0).getDate();
-    const booked = new Set(getBookedDaysFor(itemName, y, m));
 
     if (calTitle) {
         calTitle.textContent = refDate.toLocaleDateString('id-ID', {
             month: 'long', year: 'numeric'
         });
     }
+
+    // Render skeleton/loading state first? Or just render days and then update dots?
+    // Let's fetch first.
+    let bookedList = [];
+    try {
+        bookedList = await fetchBookedDays(itemName, y, m);
+    } catch (e) { }
+
+    const booked = new Set(bookedList);
+
+    const first = new Date(y, m, 1);
+    const startDay = (first.getDay() + 6) % 7; // Senin=0
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const prevDays = new Date(y, m, 0).getDate();
 
     let html = '';
     'S N S R K J S'.split(' ').forEach(h => html += `<span class="muted">${h}</span>`);
@@ -272,7 +172,6 @@ function renderCalendarFor(container, itemName, refDate) {
     calGrid.innerHTML = html;
 
     const dayCells = calGrid.querySelectorAll('.day');
-
     dayCells.forEach(el => {
         el.addEventListener('click', () => {
             const d = Number(el.dataset.day);
@@ -282,38 +181,177 @@ function renderCalendarFor(container, itemName, refDate) {
         });
     });
 
-    // Default: pilih hari ini / hari pertama yang terbooking / tgl 1
-    let defaultDay = null;
+    // Default selection logic: Today if in month, else first booked day, else 1
+    let defaultDay = 1;
     const today = new Date();
     if (today.getFullYear() === y && today.getMonth() === m) {
         defaultDay = today.getDate();
-    }
-    if (!defaultDay) {
-        for (let d = 1; d <= daysInMonth; d++) {
-            if (booked.has(d)) { defaultDay = d; break; }
+    } else {
+        // If not today, find first booked day
+        if (booked.size > 0) {
+            const sorted = Array.from(booked).sort((a, b) => a - b);
+            defaultDay = sorted[0];
         }
     }
-    if (!defaultDay) defaultDay = 1;
 
+    // Highlight default
     const defCell = calGrid.querySelector(`.day[data-day="${defaultDay}"]`);
     if (defCell) {
         defCell.classList.add('selected');
+        // If we are auto-selecting today or a booked day, load the list
         renderBookingList(container, itemName, y, m, defaultDay);
     } else {
-        const box = container.querySelector('.booking-list-body');
-        const headerDate = container.querySelector('.booking-list-header .date-label');
-        if (headerDate) {
-            headerDate.textContent = new Date(y, m, 1).toLocaleDateString('id-ID', {
-                month: 'long', year: 'numeric'
-            });
-        }
-        if (box) {
-            box.innerHTML = `<div class="booking-list-empty">
-        Belum ada peminjaman tercatat pada bulan ini.
-      </div>`;
-        }
+        // Fallback manual trigger if cell logic fails
+        renderBookingList(container, itemName, y, m, defaultDay);
     }
 }
+/* Render booking list di bawah kalender */
+async function renderBookingList(container, itemName, y, m, day) {
+    const box = container.querySelector('.booking-list-body');
+    const headerEl = container.querySelector('.booking-list-header');
+    if (!box) return;
+
+    // Format Date: "Minggu, 21 Desember 2025"
+    const dObj = new Date(y, m, day);
+    const label = dObj.toLocaleDateString('id-ID', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    // Update Header Style to match image
+    if (headerEl) {
+        headerEl.innerHTML = `
+            <div class="d-flex justify-content-between align-items-end border-bottom pb-2 mb-2">
+                <span class="fw-bold" style="color: #1a535c; font-size: 1.1rem;">Peminjaman</span>
+                <span class="text-muted small">${label}</span>
+            </div>
+        `;
+    }
+
+    box.innerHTML = '<div class="text-center text-muted py-3"><span class="spinner-border spinner-border-sm text-success"></span> Memuat...</div>';
+
+    try {
+        const mon = String(m + 1).padStart(2, '0');
+        const dd = String(day).padStart(2, '0');
+        const iso = `${y}-${mon}-${dd}`;
+
+        const res = await fetch(`/api/peminjaman?date=${iso}`);
+        if (!res.ok) throw new Error('Network err');
+        const allBookings = await res.json();
+
+        // Filter
+        const relevant = allBookings.filter(b => {
+            if (!b.items) return false;
+            return b.items.some(it => it.toLowerCase().includes((itemName || '').toLowerCase()));
+        });
+
+        if (!relevant.length) {
+            box.innerHTML = `<div class="p-3 text-muted fst-italic text-center small bg-light rounded">
+                Belum ada peminjaman tercatat untuk item ini pada tanggal ini.
+            </div>`;
+            return;
+        }
+
+        // Grouping
+        const sessions = { pagi: [], siang: [], malam: [], seharian: [] };
+        relevant.forEach(b => {
+            let startHour = 8;
+            let timeLabel = "Waktu ditentukan";
+            let isFullDay = false;
+
+            // Time Parse
+            const timeMatch = b.description.match(/\[Waktu:\s*(\d{4}-\d{2}-\d{2}\s+(\d{2}):(\d{2}))\s+s\/d\s+(\d{4}-\d{2}-\d{2}\s+(\d{2}):(\d{2}))/);
+            if (timeMatch) {
+                startHour = parseInt(timeMatch[2], 10);
+                const startFull = timeMatch[1].replace(' ', 'T');
+                const endFull = timeMatch[4].replace(' ', 'T');
+                const dur = (new Date(endFull) - new Date(startFull)) / 36e5;
+                if (dur >= 20) isFullDay = true;
+                const fullStr = b.description.match(/\[Waktu:\s*([^\]]+)\]/)[1];
+                timeLabel = fullStr.replace(/\d{4}-\d{2}-\d{2}\s/g, '');
+            } else {
+                const sm = b.description.match(/\[Sesi:\s*([^\]]+)\]/);
+                if (sm) {
+                    const s = sm[1].toLowerCase();
+                    if (s.includes('siang')) startHour = 13;
+                    if (s.includes('malam')) startHour = 19;
+                    if (s.includes('pagi')) startHour = 8;
+                    timeLabel = sm[1];
+                }
+            }
+            b._displayTime = timeLabel;
+
+            if (isFullDay) sessions.seharian.push(b);
+            else {
+                if (startHour >= 6 && startHour < 12) sessions.pagi.push(b);
+                else if (startHour >= 12 && startHour < 18) sessions.siang.push(b);
+                else if (startHour >= 18) sessions.malam.push(b);
+                else sessions.pagi.push(b);
+            }
+        });
+
+        const renderCard = (b) => {
+            const maskName = (n) => (!n || n.length < 3) ? n : '|' + '*'.repeat(15);
+            // Name display: use department if avail, else borrowerName
+            const mainName = b.department || b.borrowerName;
+
+            const matchedItem = (b.items || []).find(it => it.toLowerCase().includes((itemName || '').toLowerCase())) || (b.items?.[0] || 'Item');
+
+            return `
+            <div class="card mb-3 border-0 shadow-sm" style="border-left: 5px solid #198754 !important; background: #fff;">
+                <div class="card-body py-3 px-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div class="fw-bold text-dark fs-6">${mainName}</div>
+                        <div class="fw-bold text-dark fs-6">${b._displayTime}</div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-end">
+                        <div class="text-muted small" style="font-family: monospace;">
+                            ${maskName(b.borrowerName)} 
+                            <span class="fw-bold ms-2 text-success">
+                               <i class="bi bi-box-seam me-1"></i>${matchedItem}
+                            </span>
+                        </div>
+                        <div class="text-uppercase fw-bold text-secondary small" style="font-size: 0.75rem;">
+                            ${b.status}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        };
+
+        const renderSection = (title, list) => {
+            if (!list.length) return `
+               <div class="mb-4">
+                  <h6 class="fw-bold text-secondary mb-2" style="font-size: 1rem;">${title}</h6>
+                  <div class="text-muted fst-italic small mb-2">- Kosong -</div>
+               </div>
+            `;
+
+            return `
+               <div class="mb-4">
+                  <h6 class="fw-bold text-secondary mb-2" style="font-size: 1rem;">${title}</h6>
+                  ${list.map(renderCard).join('')}
+               </div>
+            `;
+        };
+
+        let html = '';
+        html += renderSection('Pagi (06.00 - 12.00)', sessions.pagi);
+        html += renderSection('Siang (12.00 - 18.00)', sessions.siang);
+        html += renderSection('Malam (18.00 - 22.00)', sessions.malam);
+        if (sessions.seharian.length > 0) {
+            html += renderSection('Seharian (24 Jam)', sessions.seharian);
+        }
+
+        box.innerHTML = html;
+
+    } catch (e) {
+        console.error(e);
+        box.innerHTML = `<div class="text-danger small text-center">Gagal memuat data.</div>`;
+    }
+}
+
+
 
 /* Build satu panel barang (isi tab) */
 /* Build satu panel barang (isi tab) */
