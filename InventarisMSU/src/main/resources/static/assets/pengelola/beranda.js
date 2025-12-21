@@ -106,11 +106,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tipe === "BARANG") {
         if (groupBarang) groupBarang.style.display = "block";
         if (groupFasilitas) groupFasilitas.style.display = "none";
-        if (editStokInput) editStokInput.value = stok;
+        if (editStokInput) {
+          editStokInput.value = stok;
+          editStokInput.disabled = false;
+        }
+        if (editStatusSelect) editStatusSelect.disabled = true;
+
       } else if (tipe === "RUANGAN") {
         if (groupBarang) groupBarang.style.display = "none";
         if (groupFasilitas) groupFasilitas.style.display = "block";
-        if (editStatusSelect) editStatusSelect.value = status;
+        if (editStatusSelect) {
+            editStatusSelect.value = status;
+            editStatusSelect.disabled = false;
+        }
+        if (editStokInput) editStokInput.disabled = true;
       } else {
         if (groupBarang) groupBarang.style.display = "none";
         if (groupFasilitas) groupFasilitas.style.display = "none";
@@ -132,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let url = "";
       const body = new URLSearchParams();
+      body.append("name", editNamaItem.value);
       body.append("description", editDeskripsiItem.value);
 
       if (tipe === "BARANG") {

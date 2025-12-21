@@ -21,12 +21,14 @@ public class ItemManageController {
     @ResponseBody
     public String updateBarang(
             @PathVariable Long id,
+            @RequestParam String name,
             @RequestParam String description,
             @RequestParam Integer stock
     ) {
         Item item = itemService.getItemById(id);
         if (item == null || item.getType() != ItemType.BARANG) return "ERROR";
 
+        item.setName(name);
         item.setDescription(description);
         item.setStock(stock);
         itemService.saveItem(item);
@@ -38,12 +40,14 @@ public class ItemManageController {
     @ResponseBody
     public String updateRuangan(
             @PathVariable Long id,
+            @RequestParam String name,
             @RequestParam String description,
             @RequestParam String status
     ) {
         Item item = itemService.getItemById(id);
         if (item == null || item.getType() != ItemType.RUANGAN) return "ERROR";
 
+        item.setName(name);
         item.setDescription(description);
         item.setStatus(status);
         itemService.saveItem(item);
