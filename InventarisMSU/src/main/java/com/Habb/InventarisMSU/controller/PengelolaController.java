@@ -72,6 +72,14 @@ public class PengelolaController {
         return "redirect:/pengelola/approval";
     }
 
+    @GetMapping("/cetak")
+    public String cetak(@RequestParam("id") Long id, Model model) {
+        Peminjaman peminjaman = peminjamanRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid peminjaman Id:" + id));
+        model.addAttribute("peminjaman", peminjaman);
+        return "pengelola/cetak";
+    }
+
     @GetMapping("/laporan")
     public String laporan(Model model) {
         // Fetch all data for the table
