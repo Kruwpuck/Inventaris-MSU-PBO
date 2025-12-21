@@ -198,7 +198,7 @@
             <a class="nav-link active" th:href="@{/pengurus/dashboard}">Beranda</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" th:href="@{/pengurus/fasilitas}">Peminjaman Fasilitas</a>
+            <a class="nav-link" th:href="@{/pengurus/fasilitas}">Peminjaman Ruangan</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" th:href="@{/pengurus/riwayat}">Riwayat Peminjaman</a>
@@ -264,7 +264,7 @@
         style="color: #6c757d; min-height: 250px;">
         <i class="bi bi-calendar-event" style="font-size: 3rem; margin-bottom: 1rem; color: #8fbc8f;"></i>
         <h5 class="fw-normal text-dark mb-2">Data peminjaman hari ini akan muncul di sini.</h5>
-        <p class="small text-muted mb-4">Silakan cek menu Peminjaman Fasilitas untuk detail lengkap.</p>
+        <p class="small text-muted mb-4">Silakan cek menu Peminjaman Ruangan untuk detail lengkap.</p>
         <a th:href="@{/pengurus/fasilitas}" class="btn btn-success rounded-pill px-4 fw-medium"
           style="background-color: #198754; border: none;">
           Lihat Semua Peminjaman
@@ -389,7 +389,7 @@
           if (this.checked) {
             Swal.fire({
               title: 'Konfirmasi Pengambilan',
-              text: "Fasilitas berhasil diambil. Jangan lupa mintakan kartu identitas sebagai bukti peminjaman",
+              text: "Ruangan berhasil diambil. Jangan lupa mintakan kartu identitas sebagai bukti peminjaman",
               icon: 'question',
               showCancelButton: true,
               confirmButtonColor: '#198754',
@@ -425,7 +425,7 @@
 
             Swal.fire({
               title: 'Konfirmasi Pengembalian',
-              text: "Fasilitas berhasil dikembalikan. Jangan lupa kembalikan kartu identitas sebagai bukti pengembalian",
+              text: "Ruangan berhasil dikembalikan. Jangan lupa kembalikan kartu identitas sebagai bukti pengembalian",
               icon: 'question',
               showCancelButton: true,
               confirmButtonColor: '#198754',

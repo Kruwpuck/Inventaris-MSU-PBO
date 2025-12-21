@@ -41,6 +41,11 @@ public class HomeController {
         return "guest/bookingbarang";
     }
 
+    @GetMapping("/syarat-dan-ketentuan")
+    public String terms() {
+        return "guest/terms";
+    }
+
     @GetMapping("/success")
     public String success() {
         return "guest/success";

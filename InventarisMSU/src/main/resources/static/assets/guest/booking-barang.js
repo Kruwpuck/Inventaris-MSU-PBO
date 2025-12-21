@@ -389,7 +389,7 @@ function buildItemPanelHTML(item) {
       </div>
       <div class="text-center">
         <div class="title h4 mb-1">${name}</div>
-        <div class="text-muted small mb-3">${isRuang ? 'Fasilitas / Ruangan' : 'Barang Inventaris'}</div>
+        <div class="text-muted small mb-3">${isRuang ? 'Ruangan' : 'Barang Inventaris'}</div>
 
         <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
            <button class="btn btn-sm btn-outline-secondary rounded-circle btn-qminus" 
@@ -929,7 +929,9 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
         const requiredValid = [...form.querySelectorAll('[required]')].every(el => el.value && el.checkValidity());
         const cartHasQty = (MSUCart?.count() || 0) > 0;
         const fileOK = !!reqInput?.files?.length;
-        btnSubmit.disabled = !(requiredValid && cartHasQty && fileOK);
+        const termsOK = document.getElementById('agreeTerms')?.checked || false;
+
+        btnSubmit.disabled = !(requiredValid && cartHasQty && fileOK && termsOK);
     }
 
     form?.addEventListener('input', validateForm);
@@ -955,6 +957,14 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
     /* SUBMIT HANDLER - Modified for Modal Confirmation */
     form?.addEventListener('submit', async (e) => {
         e.preventDefault(); e.stopPropagation();
+
+        const agreeCheck = document.getElementById('agreeTerms');
+        if (agreeCheck && !agreeCheck.checked) {
+            showToastInfo('Harap setujui Syarat & Ketentuan terlebih dahulu.');
+            agreeCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
         if (!form.checkValidity()) {
             form.classList.add('was-validated');
             validateForm();
@@ -980,6 +990,11 @@ function buildMailtoURL({ to, subject, body, cc = '', bcc = '' }) {
             if (confirm("Pastikan data sudah benar. Kirim booking?")) processSubmission();
         }
     });
+
+    const agreeCheck = document.getElementById('agreeTerms');
+    if (agreeCheck) {
+        agreeCheck.addEventListener('change', validateForm);
+    }
 
     async function processSubmission() {
         const loanNo = document.getElementById('loanNumber')?.value?.trim() || '';

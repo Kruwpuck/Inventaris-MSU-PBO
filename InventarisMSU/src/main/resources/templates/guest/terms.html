@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Syarat & Ketentuan — Inventaris MSU</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+    <link rel="stylesheet" th:href="@{/assets/guest/style.css}" />
+    <style>
+        /* Keep specific overrides if needed, but rely on style.css for main valid */
+        .page-header {
+            background: #198754;
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-masjid sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                <img src="loogoo.png" th:src="@{/assets/guest/loogoo.png}" alt="Logo" class="logo" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navMain">
+                <ul class="navbar-nav align-items-lg-center gap-lg-4">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/catalogue}">Pinjam Barang</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/ruangan}">Pinjam Ruangan</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header text-center">
+        <div class="container">
+            <h1 class="mb-0">Syarat & Ketentuan</h1>
+            <p class="mb-0 opacity-75">Kebijakan Privasi & Peminjaman Inventaris MSU</p>
+        </div>
+    </header>
+
+    <main class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-5">
+                        <h5 class="fw-bold text-success mb-4">Peminjaman Inventaris Masjid Syamsul Ulum (MSU)</h5>
+                        <p>Selamat datang di sistem Inventaris Masjid Syamsul Ulum (MSU). Sebelum menggunakan layanan
+                            kami, mohon baca dokumen ini dengan saksama. Dengan melakukan peminjaman, Anda dianggap
+                            telah menyetujui poin-poin di bawah ini.</p>
+
+                        <hr class="my-4">
+
+                        <h6 class="fw-bold mt-4">1. Pengumpulan Data Pribadi</h6>
+                        <p>Pihak MSU mengumpulkan data pribadi Anda untuk keperluan administrasi peminjaman barang, yang
+                            meliputi namun tidak terbatas pada:</p>
+                        <ul>
+                            <li><strong>Identitas Diri:</strong> Nama Lengkap dan NIM (Nomor Induk Mahasiswa).</li>
+                            <li><strong>Kontak:</strong> Nomor WhatsApp/Telepon dan Email.</li>
+                            <li><strong>Data Peminjaman:</strong> Jenis barang, durasi peminjaman, dan tujuan
+                                penggunaan.</li>
+                        </ul>
+
+                        <h6 class="fw-bold mt-4">2. Penggunaan Data (Purpose of Use)</h6>
+                        <p>Data yang Anda berikan akan digunakan oleh pengurus MSU secara bertanggung jawab untuk:</p>
+                        <ul>
+                            <li><strong>Pelacakan (Tracking):</strong> Memantau keberadaan aset masjid yang sedang
+                                dipinjam.</li>
+                            <li><strong>Komunikasi:</strong> Menghubungi peminjam jika terjadi keterlambatan
+                                pengembalian atau masalah pada barang.</li>
+                            <li><strong>Audit Internal:</strong> Sebagai laporan berkala mengenai utilitas barang
+                                inventaris MSU.</li>
+                            <li><strong>Verifikasi:</strong> Memastikan peminjam adalah civitas akademika Telkom
+                                University yang sah.</li>
+                        </ul>
+
+                        <h6 class="fw-bold mt-4">3. Keamanan dan Penyimpanan Data</h6>
+                        <p>Data Anda disimpan secara digital dalam database sistem Inventaris MSU.</p>
+                        <p>Pihak MSU berkomitmen untuk menjaga kerahasiaan data tersebut dan tidak akan memberikan,
+                            menjual, atau menyebarluaskan data Anda kepada pihak ketiga di luar kepentingan internal MSU
+                            dan Telkom University.</p>
+
+                        <h6 class="fw-bold mt-4">4. Tanggung Jawab Peminjam</h6>
+                        <p>Dengan menyetujui ketentuan ini, Anda menyatakan bahwa:</p>
+                        <ul>
+                            <li>Data yang diberikan adalah benar dan akurat.</li>
+                            <li>Bersedia dihubungi melalui media komunikasi yang didaftarkan terkait urusan peminjaman.
+                            </li>
+                            <li>Bertanggung jawab penuh atas kondisi barang yang dipinjam hingga kembali ke pihak MSU.
+                            </li>
+                        </ul>
+
+                        <h6 class="fw-bold mt-4">5. Persetujuan (Consent)</h6>
+                        <p>Dengan melanjutkan proses peminjaman pada sistem ini, Anda memberikan persetujuan eksplisit
+                            kepada pihak pengurus MSU untuk menyimpan dan mengolah data pribadi Anda sesuai dengan
+                            tujuan yang telah disebutkan di atas.</p>
+
+                        <div class="text-center mt-5">
+                            <button class="btn btn-outline-success px-4 rounded-pill fw-bold"
+                                onclick="window.close()">Tutup Halaman Ini</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer mt-5" style="border-top: 1px solid #eee; padding-top: 2rem;">
+        <div class="container py-4">
+            <div class="row g-4 align-items-start">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <img src="loogoo.png" th:src="@{/assets/guest/loogoo.png}" alt="Logo MSU"
+                            class="logo footer-logo" style="height: 40px;">
+                        <strong style="font-size: 1.1rem; color: #1a535c;">Masjid Syamsul Ulum</strong>
+                    </div>
+                    <div class="text-muted small">
+                        Jl. Telekomunikasi No.1, Bandung • Jawa Barat, Indonesia<br />
+                        Telp: +62 882-7982-9071 • Email: msu.telyu@gmail.com
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="small text-muted">© <span id="yearNow"></span> MSU — All Rights Reserved</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>document.getElementById('yearNow').textContent = new Date().getFullYear();</script>
+</body>
+
+</html>

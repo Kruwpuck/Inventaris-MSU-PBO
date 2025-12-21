@@ -208,7 +208,7 @@
 		<!-- SECTION HEAD -->
 		<div class="mb-5 text-center">
 			<h2 class="page-title mb-2">Pusat Persetujuan</h2>
-			<p class="text-muted">Kelola semua pengajuan peminjaman barang dan fasilitas di sini.</p>
+			<p class="text-muted">Kelola semua pengajuan peminjaman barang dan ruangan di sini.</p>
 		</div>
 
 		<!-- PENDING APPROVALS -->
@@ -226,7 +226,7 @@
 								<th scope="col" class="ps-4">ID</th>
 								<th scope="col">Profil</th>
 								<th scope="col">Peminjam</th>
-								<th scope="col" style="min-width: 200px;">Barang/Fasilitas</th>
+								<th scope="col" style="min-width: 200px;">Barang/Ruangan</th>
 								<th scope="col">Kegiatan & Lokasi</th>
 								<th scope="col">Jadwal Peminjaman</th>
 								<th scope="col">Status</th>
@@ -244,8 +244,9 @@
 							<tr th:each="p : ${pendingList}">
 								<td class="ps-4 fw-bold text-secondary" th:text="${'#' + p.id}"></td>
 								<td>
-									<button type="button" class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center"
-										style="width: 36px; height: 36px;" 
+									<button type="button"
+										class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center"
+										style="width: 36px; height: 36px;"
 										th:attr="onclick='openProfileModal(\'' + ${p.borrowerName} + '\', \'' + ${p.nimNip} + '\', \'' + ${p.department} + '\', \'' + ${p.phone} + '\', \'' + ${p.email} + '\', \'' + ${p.identityCardPath} + '\')'">
 										<i class="bi bi-person-lines-fill text-primary"></i>
 									</button>
@@ -266,21 +267,27 @@
 									</ul>
 								</td>
 								<td>
-									<div class="fw-semibold text-dark" style="font-size: 0.9rem;" th:text="${p.description}">Kegiatan</div>
+									<div class="fw-semibold text-dark" style="font-size: 0.9rem;"
+										th:text="${p.description}">Kegiatan</div>
 									<div class="small text-muted mt-1">
-										<i class="bi bi-geo-alt me-1 text-danger"></i><span th:text="${p.location}">Lokasi</span>
+										<i class="bi bi-geo-alt me-1 text-danger"></i><span
+											th:text="${p.location}">Lokasi</span>
 									</div>
 								</td>
 								<td>
 									<div class="d-flex flex-column small">
 										<div class="mb-1">
-											<span class="fw-semibold text-dark" th:text="${#temporals.format(p.startDate, 'dd MMM yyyy')}">Start</span>
-											<span class="text-muted" th:if="${p.startTime != null}" th:text="' (' + ${p.startTime} + ')'"></span>
+											<span class="fw-semibold text-dark"
+												th:text="${#temporals.format(p.startDate, 'dd MMM yyyy')}">Start</span>
+											<span class="text-muted" th:if="${p.startTime != null}"
+												th:text="' (' + ${p.startTime} + ')'"></span>
 										</div>
 										<div class="text-muted small">s/d</div>
 										<div class="mt-1">
-											<span class="fw-semibold text-dark" th:text="${#temporals.format(p.endDate, 'dd MMM yyyy')}">End</span>
-											<span class="text-muted" th:if="${p.endTime != null}" th:text="' (' + ${p.endTime} + ')'"></span>
+											<span class="fw-semibold text-dark"
+												th:text="${#temporals.format(p.endDate, 'dd MMM yyyy')}">End</span>
+											<span class="text-muted" th:if="${p.endTime != null}"
+												th:text="' (' + ${p.endTime} + ')'"></span>
 										</div>
 									</div>
 								</td>

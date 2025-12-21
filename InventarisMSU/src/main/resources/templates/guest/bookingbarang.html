@@ -28,7 +28,7 @@
         <ul class="navbar-nav align-items-lg-center gap-lg-4" id="navItems">
           <li class="nav-item"><a class="nav-link" th:href="@{/}">Beranda</a></li>
           <li class="nav-item"><a class="nav-link" th:href="@{/catalogue}">Pinjam Barang</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/ruangan}">Pinjam Fasilitas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/ruangan}">Pinjam Ruangan</a></li>
           <!-- Cart icon disuntik otomatis dari cart.js -->
         </ul>
       </div>
@@ -198,6 +198,19 @@
               <textarea id="longPurpose" class="form-control" rows="4"
                 placeholder="Tuliskan detail deskripsi kegiatan..." required></textarea>
               <div class="invalid-feedback">Wajib diisi.</div>
+            </div>
+          </div>
+
+          <div class="col-12 mt-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+              <label class="form-check-label small text-muted" for="agreeTerms">
+                Saya menyetujui <a th:href="@{/syarat-dan-ketentuan}" href="/syarat-dan-ketentuan" target="_blank"
+                  onclick="event.stopPropagation();" class="text-decoration-none fw-bold">Syarat &
+                  Ketentuan</a> serta memberikan izin kepada MSU untuk mengelola data saya untuk keperluan pelacakan
+                inventaris.
+              </label>
+              <div class="invalid-feedback">Anda harus menyetujui syarat & ketentuan untuk melanjutkan.</div>
             </div>
           </div>
 

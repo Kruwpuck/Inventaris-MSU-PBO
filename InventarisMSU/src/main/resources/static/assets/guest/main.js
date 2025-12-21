@@ -474,7 +474,7 @@ function openConfirm(card) {
 
   // Jika belum ada, tampilkan modal konfirmasi
   pendingCard = card;
-  const type = (typeKey === 'ruang') ? 'Fasilitas / Ruangan' : 'Barang';
+  const type = (typeKey === 'ruang') ? 'Ruangan' : 'Barang';
   const thumb = card.querySelector('.item-thumb img')?.getAttribute('src') || '';
   if (confirmNameEl) confirmNameEl.textContent = name;
   if (confirmTypeEl) confirmTypeEl.textContent = type;
@@ -674,7 +674,7 @@ window.addEventListener('load', () => {
           <div class="text-center py-5 text-muted opacity-75">
             <i class="bi bi-calendar-check fs-1 d-block mb-3 text-success"></i>
             <div>Tidak ada peminjaman tercatat pada tanggal ini.</div>
-            <small>Fasilitas dan barang tersedia untuk dipinjam.</small>
+            <small>Ruangan dan barang tersedia untuk dipinjam.</small>
           </div>`;
         return;
       }
