@@ -224,12 +224,14 @@
 						<thead>
 							<tr>
 								<th scope="col" class="ps-4">ID</th>
+								<th scope="col">Profil</th>
 								<th scope="col">Peminjam</th>
-								<th scope="col">Barang/Fasilitas</th>
-								<th scope="col">Tanggal Pinjam</th>
+								<th scope="col" style="min-width: 200px;">Barang/Fasilitas</th>
+								<th scope="col">Kegiatan & Lokasi</th>
+								<th scope="col">Jadwal Peminjaman</th>
 								<th scope="col">Status</th>
-								<th scope="col">Proposal</th>
-								<th scope="col" class="text-end pe-4">Aksi</th>
+								<th scope="col">Aksi</th>
+								<th scope="col" class="text-end pe-4">Proposal</th>
 							</tr>
 						</thead>
 						<tbody id="submissionTableBody">
@@ -242,48 +244,73 @@
 							<tr th:each="p : ${pendingList}">
 								<td class="ps-4 fw-bold text-secondary" th:text="${'#' + p.id}"></td>
 								<td>
-									<div class="fw-semibold text-dark" th:text="${p.borrowerName}">Nama</div>
-									<small class="text-muted" style="font-size: 0.75rem">Anggota</small>
+									<button type="button" class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center"
+										style="width: 36px; height: 36px;" 
+										th:attr="onclick='openProfileModal(\'' + ${p.borrowerName} + '\', \'' + ${p.nimNip} + '\', \'' + ${p.department} + '\', \'' + ${p.phone} + '\', \'' + ${p.email} + '\', \'' + ${p.identityCardPath} + '\')'">
+										<i class="bi bi-person-lines-fill text-primary"></i>
+									</button>
+								</td>
+								<td>
+									<div class="fw-bold text-dark" th:text="${p.borrowerName}">Nama</div>
+									<div class="small text-muted">
+										<i class="bi bi-building me-1"></i><span th:text="${p.department}">Unit</span>
+									</div>
 								</td>
 								<td>
 									<ul class="list-unstyled mb-0 small">
-										<li th:each="d : ${p.details}">
-											<i class="bi bi-dot"></i>
+										<li th:each="d : ${p.details}" class="mb-1">
+											<i class="bi bi-dot text-secondary"></i>
 											<span th:text="${d.item.name}" class="fw-medium">Item</span>
 											<span class="text-muted" th:text="'(x' + ${d.quantity} + ')'"></span>
 										</li>
 									</ul>
 								</td>
 								<td>
-									<div class="d-flex align-items-center gap-2">
-										<i class="bi bi-calendar-event text-secondary"></i>
-										<span th:text="${p.startDate}">YYYY-MM-DD</span>
+									<div class="fw-semibold text-dark" style="font-size: 0.9rem;" th:text="${p.description}">Kegiatan</div>
+									<div class="small text-muted mt-1">
+										<i class="bi bi-geo-alt me-1 text-danger"></i><span th:text="${p.location}">Lokasi</span>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex flex-column small">
+										<div class="mb-1">
+											<span class="fw-semibold text-dark" th:text="${#temporals.format(p.startDate, 'dd MMM yyyy')}">Start</span>
+											<span class="text-muted" th:if="${p.startTime != null}" th:text="' (' + ${p.startTime} + ')'"></span>
+										</div>
+										<div class="text-muted small">s/d</div>
+										<div class="mt-1">
+											<span class="fw-semibold text-dark" th:text="${#temporals.format(p.endDate, 'dd MMM yyyy')}">End</span>
+											<span class="text-muted" th:if="${p.endTime != null}" th:text="' (' + ${p.endTime} + ')'"></span>
+										</div>
 									</div>
 								</td>
 								<td>
 									<span class="badge badge-status badge-pending">PENDING</span>
 								</td>
 								<td>
-									<a th:if="${p.documentPath != null}" th:href="@{'/uploads/' + ${p.documentPath}}"
-										target="_blank" class="btn btn-sm btn-proposal rounded-pill px-3">
-										<i class="bi bi-file-earmark-pdf me-1"></i>Buka
-									</a>
-									<span th:unless="${p.documentPath != null}"
-										class="text-muted small fst-italic">Tidak ada</span>
-								</td>
-								<td class="text-end pe-4">
-									<div class="d-flex gap-2 justify-content-end">
-										<button type="button" class="btn btn-sm btn-approve rounded-pill px-3"
+									<div class="d-flex gap-1">
+										<button type="button" class="btn btn-success btn-sm p-1 rounded-2"
 											th:attr="data-id=${p.id}"
-											onclick="openApprovalModal(this.getAttribute('data-id'))">
-											<i class="bi bi-check-lg me-1"></i>Terima
+											onclick="openApprovalModal(this.getAttribute('data-id'))"
+											data-bs-toggle="tooltip" title="Terima">
+											<i class="bi bi-check-lg" style="font-size: 1.1rem;"></i>
 										</button>
-										<button type="button" class="btn btn-sm btn-reject rounded-pill px-3"
+										<button type="button" class="btn btn-danger btn-sm p-1 rounded-2"
 											th:attr="data-id=${p.id}"
-											onclick="openRejectionModal(this.getAttribute('data-id'))">
-											<i class="bi bi-x-lg me-1"></i>Tolak
+											onclick="openRejectionModal(this.getAttribute('data-id'))"
+											data-bs-toggle="tooltip" title="Tolak">
+											<i class="bi bi-x-lg" style="font-size: 1.1rem;"></i>
 										</button>
 									</div>
+								</td>
+								<td class="text-end pe-4">
+
+									<a th:if="${p.documentPath != null}" th:href="@{'/uploads/' + ${p.documentPath}}"
+										target="_blank" class="btn btn-outline-primary btn-sm px-3 rounded-pill">
+										<i class="bi bi-file-earmark-pdf me-1"></i>PDF
+									</a>
+									<span th:unless="${p.documentPath != null}"
+										class="text-muted small fst-italic">-</span>
 								</td>
 							</tr>
 						</tbody>
@@ -413,8 +440,77 @@
 		</div>
 	</div>
 
+	<!-- MODAL PROFILE -->
+	<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content rounded-4 border-0 shadow-strong">
+				<div class="modal-header bg-primary text-white border-0 rounded-top-4">
+					<h5 class="modal-title fw-bold">
+						<i class="bi bi-person-vcard me-2"></i>Detail Peminjam
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body p-4">
+					<div class="text-center mb-4">
+						<label class="small text-muted mb-2 d-block">Foto Identitas (KTP)</label>
+						<div class="bg-light rounded-3 d-flex align-items-center justify-content-center overflow-hidden border"
+							style="width: 100%; height: 200px; max-width: 320px; margin: 0 auto;">
+							<img id="modalKtpImage" src="" alt="KTP" class="img-fluid"
+								style="max-height: 100%; object-fit: contain;">
+							<span id="modalNoKtp" class="text-muted small fst-italic d-none">Tidak ada foto KTP</span>
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<label class="text-muted small fw-bold text-uppercase">Nama Lengkap</label>
+						<div id="modalNama" class="fs-5 fw-bold text-dark"></div>
+					</div>
+
+					<div class="row g-3 mb-3">
+						<div class="col-6">
+							<label class="text-muted small fw-bold text-uppercase">NIM / NIP</label>
+							<div id="modalNim" class="fs-6 fw-medium text-dark"></div>
+						</div>
+						<div class="col-6">
+							<label class="text-muted small fw-bold text-uppercase">Unit / Departemen</label>
+							<div id="modalUnit" class="fs-6 fw-medium text-dark"></div>
+						</div>
+					</div>
+
+					<div class="bg-light rounded-3 p-3 border">
+						<label class="text-muted small fw-bold text-uppercase mb-2">Kontak</label>
+						<div class="d-flex align-items-center mb-2">
+							<i class="bi bi-envelope text-secondary me-2"></i>
+							<span id="modalEmail" class="text-dark"></span>
+						</div>
+						<div class="d-flex align-items-center justify-content-between">
+							<div>
+								<i class="bi bi-whatsapp text-success me-2"></i>
+								<span id="modalPhone" class="text-dark"></span>
+							</div>
+							<a id="modalWaLink" href="#" target="_blank"
+								class="btn btn-sm btn-outline-success rounded-pill px-3">
+								Chat
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer border-0 pt-0">
+					<button type="button" class="btn btn-secondary rounded-pill w-100"
+						data-bs-dismiss="modal">Tutup</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl)
+		})
+
 		function openRejectionModal(id) {
 			document.getElementById('rejectionSubmissionId').value = id;
 			var myModal = new bootstrap.Modal(document.getElementById('rejectionModal'));
@@ -424,6 +520,43 @@
 		function openApprovalModal(id) {
 			document.getElementById('approvalSubmissionId').value = id;
 			var myModal = new bootstrap.Modal(document.getElementById('approvalModal'));
+			myModal.show();
+		}
+
+		function openProfileModal(nama, nim, unit, phone, email, ktpPath) {
+			document.getElementById('modalNama').textContent = nama || '-';
+			document.getElementById('modalNim').textContent = nim || '-';
+			document.getElementById('modalUnit').textContent = unit || '-';
+			document.getElementById('modalPhone').textContent = phone || '-';
+			document.getElementById('modalEmail').textContent = email || '-';
+
+			const ktpImg = document.getElementById('modalKtpImage');
+			const noKtpMsg = document.getElementById('modalNoKtp');
+
+			if (ktpPath && ktpPath !== 'null') {
+				// Pastikan path image benar. Asumsi folder uploads public
+				ktpImg.src = '/uploads/' + ktpPath;
+				ktpImg.classList.remove('d-none');
+				noKtpMsg.classList.add('d-none');
+			} else {
+				ktpImg.classList.add('d-none');
+				noKtpMsg.classList.remove('d-none');
+			}
+
+			// WA Link
+			const waBtn = document.getElementById('modalWaLink');
+			if (phone) {
+				// Basic formatting for WA (remove non-digits, add 62 if 08)
+				let p = phone.replace(/\D/g, '');
+				if (p.startsWith('0')) p = '62' + p.substring(1);
+				waBtn.href = 'https://wa.me/' + p;
+				waBtn.classList.remove('disabled');
+			} else {
+				waBtn.href = '#';
+				waBtn.classList.add('disabled');
+			}
+
+			var myModal = new bootstrap.Modal(document.getElementById('profileModal'));
 			myModal.show();
 		}
 	</script>
