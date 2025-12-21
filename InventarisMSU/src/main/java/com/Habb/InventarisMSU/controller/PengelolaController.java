@@ -8,6 +8,9 @@ import com.Habb.InventarisMSU.model.PeminjamanStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.Habb.InventarisMSU.service.ReportService;
+import java.util.List;
+import com.Habb.InventarisMSU.model.Peminjaman;
 
 @Controller
 @RequestMapping("/pengelola")
@@ -16,26 +19,21 @@ public class PengelolaController {
     private final ItemService itemService;
     private final PeminjamanRepository peminjamanRepository;
     private final PeminjamanService peminjamanService;
+    private final ReportService reportService;
 
     public PengelolaController(ItemService itemService, PeminjamanRepository peminjamanRepository,
-            PeminjamanService peminjamanService) {
+            PeminjamanService peminjamanService, ReportService reportService) {
         this.itemService = itemService;
         this.peminjamanRepository = peminjamanRepository;
         this.peminjamanService = peminjamanService;
+        this.reportService = reportService;
     }
 
     @GetMapping("/beranda")
     public String beranda(Model model) {
         var all = itemService.getAllItems();
-
-        var barangList = all.stream()
-                .filter(it -> it.getType() == ItemType.BARANG)
-                .toList();
-
-        var ruanganList = all.stream()
-                .filter(it -> it.getType() == ItemType.RUANGAN)
-                .toList();
-
+        var barangList = all.stream().filter(it -> it.getType() == ItemType.BARANG).toList();
+        var ruanganList = all.stream().filter(it -> it.getType() == ItemType.RUANGAN).toList();
         model.addAttribute("barangList", barangList);
         model.addAttribute("ruanganList", ruanganList);
         return "pengelola/beranda";
@@ -43,8 +41,8 @@ public class PengelolaController {
 
     @GetMapping("/approval")
     public String approval(Model model) {
-        var pendingList = peminjamanRepository.findByStatus(com.Habb.InventarisMSU.model.PeminjamanStatus.PENDING);
-        var historyList = peminjamanRepository.findByStatusNot(com.Habb.InventarisMSU.model.PeminjamanStatus.PENDING);
+        var pendingList = peminjamanRepository.findByStatus(PeminjamanStatus.PENDING);
+        var historyList = peminjamanRepository.findByStatusNot(PeminjamanStatus.PENDING);
         model.addAttribute("pendingList", pendingList);
         model.addAttribute("historyList", historyList);
         return "pengelola/approval";
@@ -55,15 +53,46 @@ public class PengelolaController {
             @RequestParam(value = "reason", required = false) String reason) {
         PeminjamanStatus status = PeminjamanStatus.valueOf(statusStr);
         peminjamanService.updateStatus(id, status);
-        // We can add logic to save reason later if needed, Peminjaman model has
-        // 'reason' field but it seems to be for borrower's reason.
-        // If we want to store rejection reason, we might need a separate field or reuse
-        // 'reason' if it's empty, or just log it for now.
         return "redirect:/pengelola/approval";
     }
 
     @GetMapping("/laporan")
-    public String laporan() {
+    public String laporan(Model model) {
+        // Fetch all data for the table
+        List<Peminjaman> list = peminjamanRepository.findAll();
+        // Sort specifically if needed, but for now findAll matches seeder order if
+        // inserted sequentially
+        model.addAttribute("listPeminjaman", list);
         return "pengelola/laporan";
+    }
+
+    // --- REPORT DOWNLOAD ENDPOINTS ---
+
+    @GetMapping("/laporan/download/csv")
+    public org.springframework.http.ResponseEntity<byte[]> downloadCsv() {
+        byte[] data = reportService.generateCsv();
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=laporan.csv")
+                .contentType(org.springframework.http.MediaType.parseMediaType("text/csv"))
+                .body(data);
+    }
+
+    @GetMapping("/laporan/download/xlsx")
+    public org.springframework.http.ResponseEntity<byte[]> downloadXlsx() throws java.io.IOException {
+        byte[] data = reportService.generateXlsx();
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=laporan.xlsx")
+                .contentType(org.springframework.http.MediaType
+                        .parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(data);
+    }
+
+    @GetMapping("/laporan/download/pdf")
+    public org.springframework.http.ResponseEntity<byte[]> downloadPdf() {
+        byte[] data = reportService.generatePdf();
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=laporan.pdf")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(data);
     }
 }
