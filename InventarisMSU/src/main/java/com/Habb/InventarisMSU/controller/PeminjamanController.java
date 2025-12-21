@@ -136,7 +136,7 @@ public class PeminjamanController {
 
             return ResponseEntity.ok().body("{\"message\": \"Booking berhasil disimpan\"}");
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("Error saving booking: " + e.getMessage());
         }

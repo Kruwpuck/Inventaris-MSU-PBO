@@ -39,13 +39,29 @@ public class PengelolaController {
         return "pengelola/beranda";
     }
 
+    @GetMapping("/approval-check")
+    @ResponseBody
+    public String testApproval() {
+        return "Controller /pengelola/approval-check is reachable!";
+    }
+
     @GetMapping("/approval")
     public String approval(Model model) {
-        var pendingList = peminjamanRepository.findByStatus(PeminjamanStatus.PENDING);
-        var historyList = peminjamanRepository.findByStatusNot(PeminjamanStatus.PENDING);
-        model.addAttribute("pendingList", pendingList);
-        model.addAttribute("historyList", historyList);
-        return "pengelola/approval";
+        System.out.println("=== DEBUG: Entering approval method ===");
+        try {
+            var pendingList = peminjamanRepository.findByStatus(PeminjamanStatus.PENDING);
+            System.out.println("Pending list size: " + (pendingList == null ? "null" : pendingList.size()));
+
+            var historyList = peminjamanRepository.findByStatusNot(PeminjamanStatus.PENDING);
+            System.out.println("History list size: " + (historyList == null ? "null" : historyList.size()));
+
+            model.addAttribute("pendingList", pendingList);
+            model.addAttribute("historyList", historyList);
+            return "pengelola/approval_list";
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @PostMapping("/approval/update")

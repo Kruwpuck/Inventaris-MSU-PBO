@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/assets/**", "/css/**", "/js/**", "/images/**", "/catalogue",
                                 "/ruangan", "/api/cart/**", "/api/peminjaman/**", "/success", "/error", "/form",
-                                "/booking-ruang")
+                                "/booking-ruang", "/uploads/**")
                         .permitAll()
                         .requestMatchers("/pengelola/**").hasRole("PENGELOLA")
                         .requestMatchers("/pengurus/**").hasRole("PENGURUS")

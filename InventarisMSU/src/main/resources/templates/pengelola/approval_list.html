@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Approval Pengajuan — Pengelola MSU</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Inter", sans-serif;
+            color: #333;
+        }
+
+        .shadow-soft {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .shadow-strong {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08),
+                0 4px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Navbar items */
+        .navbar-nav .nav-link {
+            color: #2fa16c;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: color 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #0b492c;
+        }
+
+        .navbar-nav .nav-link.active {
+            color: #0b492c !important;
+        }
+
+        /* Cards */
+        .card-approval {
+            border: none;
+            border-radius: 16px;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        /* Tables */
+        .table thead th {
+            background-color: #f1f4f2;
+            color: #0b492c;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #555;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #fbfcfc;
+        }
+
+        /* Badges */
+        .badge-status {
+            padding: 0.5em 1em;
+            border-radius: 50rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-approved {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-rejected {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .badge-completed {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+
+        /* Buttons */
+        .btn-approve {
+            background-color: #0b492c;
+            border-color: #0b492c;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background-color: #093d25;
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .btn-proposal {
+            border: 1px solid #0b492c;
+            color: #0b492c;
+            background: transparent;
+        }
+
+        .btn-proposal:hover {
+            background-color: #f0fdf4;
+            color: #0b492c;
+        }
+
+        /* Page Header */
+        .page-title {
+            color: #0b492c;
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top shadow-soft bg-white">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/pengelola/beranda}">
+                <img th:src="@{/assets/pengelola/aset/logo.png}" alt="Logo MSU" style="height: 45px" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navmenu">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/pengelola/beranda}">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/pengelola/laporan}">Laporan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/pengelola/tambah}">Tambah Barang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/pengelola/approval}">Approval</a>
+                    </li>
+                </ul>
+
+                <!-- USER DROPDOWN -->
+                <div class="ms-3 dropdown">
+                    <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
+                        type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img id="userAvatar" th:src="@{/assets/pengelola/aset/MSU.png}" alt="User"
+                            class="rounded-circle me-2" width="32" height="32" />
+                        <div class="text-start">
+                            <div id="userName" class="fw-semibold text-dark small">
+                                Pengelola
+                            </div>
+                            <div id="userRoleLabel" class="text-muted" style="font-size: 0.75rem">
+                                Pengelola Side
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-down ms-2 small"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-soft border-0 rounded-4">
+                        <li>
+                            <a class="dropdown-item text-danger rounded-3" id="btnLogout" th:href="@{/logout}">
+                                <i class="bi bi-box-arrow-right me-2"></i>Keluar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="container" style="padding-top: 100px; padding-bottom: 80px;">
+
+        <!-- SECTION HEAD -->
+        <div class="mb-5 text-center">
+            <h2 class="page-title mb-2">Pusat Persetujuan</h2>
+            <p class="text-muted">Kelola semua pengajuan peminjaman barang dan fasilitas di sini.</p>
+        </div>
+
+        <!-- PENDING APPROVALS -->
+        <div class="mb-5">
+            <h4 class="section-title">
+                <i class="bi bi-hourglass-split text-warning"></i> Menunggu Persetujuan
+            </h4>
+            <p class="text-muted small mb-3">Tindakan diperlukan untuk pengajuan berikut.</p>
+
+            <div class="card card-approval shadow-soft">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="ps-4">ID</th>
+                                <th scope="col">Peminjam</th>
+                                <th scope="col">Barang/Fasilitas</th>
+                                <th scope="col">Tanggal Pinjam</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Proposal</th>
+                                <th scope="col" class="text-end pe-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionTableBody">
+                            <tr th:if="${#lists.isEmpty(pendingList)}">
+                                <td colspan="7" class="p-5 text-center text-muted">
+                                    <i class="bi bi-check-circle display-4 d-block mb-3 text-success opacity-50"></i>
+                                    Tidak ada pengajuan yang perlu diproses saat ini.
+                                </td>
+                            </tr>
+                            <tr th:each="p : ${pendingList}">
+                                <td class="ps-4 fw-bold text-secondary" th:text="${'#' + p.id}"></td>
+                                <td>
+                                    <div class="fw-semibold text-dark" th:text="${p.borrowerName}">Nama</div>
+                                    <small class="text-muted" style="font-size: 0.75rem">Anggota</small>
+                                </td>
+                                <td>
+                                    <ul class="list-unstyled mb-0 small">
+                                        <li th:each="d : ${p.details}">
+                                            <i class="bi bi-dot"></i>
+                                            <span th:text="${d.item.name}" class="fw-medium">Item</span>
+                                            <span class="text-muted" th:text="'(x' + ${d.quantity} + ')'"></span>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-calendar-event text-secondary"></i>
+                                        <span th:text="${p.startDate}">YYYY-MM-DD</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-status badge-pending">PENDING</span>
+                                </td>
+                                <td>
+                                    <a th:if="${p.documentPath != null}" th:href="@{'/' + ${p.documentPath}}"
+                                        target="_blank" class="btn btn-sm btn-proposal rounded-pill px-3">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i>Buka
+                                    </a>
+                                    <span th:unless="${p.documentPath != null}"
+                                        class="text-muted small fst-italic">Tidak ada</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <button type="button" class="btn btn-sm btn-approve rounded-pill px-3"
+                                            th:attr="data-id=${p.id}"
+                                            onclick="openApprovalModal(this.getAttribute('data-id'))">
+                                            <i class="bi bi-check-lg me-1"></i>Terima
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-reject rounded-pill px-3"
+                                            th:attr="data-id=${p.id}"
+                                            onclick="openRejectionModal(this.getAttribute('data-id'))">
+                                            <i class="bi bi-x-lg me-1"></i>Tolak
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="mt-5">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <div>
+                    <h4 class="section-title">
+                        <i class="bi bi-clock-history text-secondary"></i> Riwayat Keputusan
+                    </h4>
+                    <p class="text-muted small mb-0">Arsip pengajuan yang telah selesai diproses.</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-success rounded-pill btn-sm disabled" disabled>
+                        <i class="bi bi-download me-1"></i> Ekspor CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="card card-approval shadow-soft">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="ps-4">ID</th>
+                                <th scope="col">Peminjam</th>
+                                <th scope="col">Item Dipinjam</th>
+                                <th scope="col">Keputusan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr th:if="${#lists.isEmpty(historyList)}">
+                                <td colspan="4" class="p-5 text-center text-muted">Belum ada riwayat keputusan.</td>
+                            </tr>
+                            <tr th:each="h : ${historyList}">
+                                <td class="ps-4 fw-bold text-muted fw-light" th:text="${'#' + h.id}"></td>
+                                <td th:text="${h.borrowerName}" class="fw-medium"></td>
+                                <td>
+                                    <span th:each="d, iterStat : ${h.details}" class="small">
+                                        <span th:text="${d.item.name}"></span>
+                                        <span class="text-muted" th:text="'(x' + ${d.quantity} + ')'"></span><span
+                                            th:if="${!iterStat.last}">, </span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:if="${h.status.name() == 'APPROVED'}"
+                                        class="badge badge-status badge-approved">DISETUJUI</span>
+                                    <span th:if="${h.status.name() == 'REJECTED'}"
+                                        class="badge badge-status badge-rejected">DITOLAK</span>
+                                    <span th:if="${h.status.name() == 'COMPLETED'}"
+                                        class="badge badge-status badge-completed">SELESAI</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL PENOLAKAN -->
+    <div class="modal fade" id="rejectionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-strong">
+                <form th:action="@{/pengelola/approval/update}" method="post">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold text-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>Tolak Pengajuan
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="rejectionSubmissionId" />
+                        <input type="hidden" name="status" value="REJECTED" />
+                        <p class="text-muted small mb-3">Mohon berikan alasan penolakan agar peminjam dapat memahaminya.
+                        </p>
+                        <div class="mb-3">
+                            <label for="rejectionReason" class="form-label fw-semibold">Alasan Penolakan</label>
+                            <textarea class="form-control bg-light" name="reason" id="rejectionReason" rows="3"
+                                placeholder="Contoh: Barang sedang dalam perbaikan..." required
+                                style="border-radius: 12px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Tolak Pengajuan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SETUJU -->
+    <div class="modal fade" id="approvalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-strong">
+                <form th:action="@{/pengelola/approval/update}" method="post">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold text-success">
+                            <i class="bi bi-check-circle me-2"></i>Konfirmasi Persetujuan
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <input type="hidden" name="id" id="approvalSubmissionId" />
+                        <input type="hidden" name="status" value="APPROVED" />
+                        <div class="mb-3">
+                            <i class="bi bi-question-circle display-4 text-success opacity-50"></i>
+                        </div>
+                        <p class="mb-0 fw-medium">Apakah Anda yakin ingin menyetujui pengajuan ini?</p>
+                        <p class="text-muted small">Tindakan ini akan mengubah status pengajuan menjadi disetujui.</p>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 justify-content-center pb-4">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success rounded-pill px-4">Ya, Setuju</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openRejectionModal(id) {
+            document.getElementById('rejectionSubmissionId').value = id;
+            var myModal = new bootstrap.Modal(document.getElementById('rejectionModal'));
+            myModal.show();
+        }
+
+        function openApprovalModal(id) {
+            document.getElementById('approvalSubmissionId').value = id;
+            var myModal = new bootstrap.Modal(document.getElementById('approvalModal'));
+            myModal.show();
+        }
+    </script>
+</body>
+
+</html>
