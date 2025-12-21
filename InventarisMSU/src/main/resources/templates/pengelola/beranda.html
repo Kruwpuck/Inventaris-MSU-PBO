@@ -73,6 +73,34 @@
       background-color: #0a3f26 !important;
       border-color: #0a3f26 !important;
     }
+
+    /* ======================================================
+       ✅ TOMBOL TITIK 3 TANPA BACKGROUND PUTIH (BARANG & RUANGAN)
+       ====================================================== */
+    .btn-aksi {
+      background: transparent !important;
+      border: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      line-height: 1;
+    }
+
+    .btn-aksi:focus,
+    .btn-aksi:active {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /* area klik tetap enak + hover tipis */
+    .btn-aksi i {
+      font-size: 1.2rem;
+      padding: 8px;
+      border-radius: 999px;
+    }
+
+    .btn-aksi:hover i {
+      background: rgba(0, 0, 0, 0.06);
+    }
   </style>
 </head>
 
@@ -195,10 +223,11 @@
           <div class="card h-100 border-0 rounded-4 shadow-strong mx-auto" style="max-width: 16rem"
             th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''">
 
-            <!-- tombol hapus -->
-            <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus" type="button"
-              data-bs-toggle="modal" data-bs-target="#modalHapus" th:attr="data-id=${it.id}, data-nama=${it.name}"
-              style="z-index: 3; width: 36px; height: 36px;" aria-label="Hapus">
+            <!-- tombol hapus (OK) -->
+            <button class="btn btn-aksi position-absolute top-0 end-0 m-2 btn-hapus" type="button"
+              data-bs-toggle="modal" data-bs-target="#modalHapus"
+              th:attr="data-id=${it.id}, data-nama=${it.name}"
+              style="z-index: 3;" aria-label="Hapus">
               <i class="bi bi-three-dots-vertical"></i>
             </button>
 
@@ -206,17 +235,10 @@
               style="height: 160px; object-fit: cover" />
 
             <div class="card-body py-3 px-3">
-              <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">
-                Nama
-              </h6>
-
-              <p class="card-text text-muted small mb-2" th:text="${it.description}">
-                Deskripsi
-              </p>
-
+              <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">Nama</h6>
+              <p class="card-text text-muted small mb-2" th:text="${it.description}">Deskripsi</p>
               <p class="item-stok text-secondary small mb-3">
-                Stok:
-                <b th:text="${it.stock} + ' unit'">0 unit</b>
+                Stok: <b th:text="${it.stock} + ' unit'">0 unit</b>
               </p>
 
               <button class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit" style="background-color: #0b492c"
@@ -245,10 +267,11 @@
           <div class="card h-100 border-0 rounded-4 shadow-strong mx-auto" style="max-width: 16rem"
             th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''">
 
-            <!-- tombol hapus -->
-            <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus" type="button"
-              data-bs-toggle="modal" data-bs-target="#modalHapus" th:attr="data-id=${it.id}, data-nama=${it.name}"
-              style="z-index: 3; width: 36px; height: 36px;" aria-label="Hapus">
+            <!-- ✅ FIX: tombol hapus ruangan DISAMAKAN (tanpa background putih) -->
+            <button class="btn btn-aksi position-absolute top-0 end-0 m-2 btn-hapus" type="button"
+              data-bs-toggle="modal" data-bs-target="#modalHapus"
+              th:attr="data-id=${it.id}, data-nama=${it.name}"
+              style="z-index: 3;" aria-label="Hapus">
               <i class="bi bi-three-dots-vertical"></i>
             </button>
 
@@ -256,23 +279,15 @@
               style="height: 160px; object-fit: cover" />
 
             <div class="card-body py-3 px-3">
-              <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">
-                Nama
-              </h6>
+              <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">Nama</h6>
+              <p class="card-text text-muted small mb-2" th:text="${it.description}">Deskripsi</p>
 
-              <p class="card-text text-muted small mb-2" th:text="${it.description}">
-                Deskripsi
-              </p>
-
-              <!-- ✅ KAPASITAS pakai stock -->
               <p class="item-stok text-secondary small mb-1">
-                Kapasitas:
-                <b th:text="${it.stock} + ' orang'">0 orang</b>
+                Kapasitas: <b th:text="${it.stock} + ' orang'">0 orang</b>
               </p>
 
               <p class="item-stok text-secondary small mb-3">
-                Ketersediaan:
-                <b th:text="${it.status}">Tersedia</b>
+                Ketersediaan: <b th:text="${it.status}">Tersedia</b>
               </p>
 
               <button class="btn btn-success btn-sm rounded-pill px-3 py-1 btn-edit" style="background: #0b492c"
