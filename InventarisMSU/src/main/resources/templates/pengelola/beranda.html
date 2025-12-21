@@ -8,6 +8,7 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
   <style>
     body {
@@ -193,7 +194,8 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="it : ${barangList}">
           <div class="card h-100 border-0 rounded-4 shadow-strong mx-auto" style="max-width: 16rem"
             th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''">
-            <!-- CHANGED: tombol hapus jadi titik 3 pojok kanan atas -->
+
+            <!-- tombol hapus -->
             <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus" type="button"
               data-bs-toggle="modal" data-bs-target="#modalHapus" th:attr="data-id=${it.id}, data-nama=${it.name}"
               style="z-index: 3; width: 36px; height: 36px;" aria-label="Hapus">
@@ -202,6 +204,7 @@
 
             <img th:src="@{/assets/guest/{img}(img=${it.imageUrl})}" class="card-img-top" th:alt="${it.name}"
               style="height: 160px; object-fit: cover" />
+
             <div class="card-body py-3 px-3">
               <h6 class="card-title fw-semibold mb-1" th:text="${it.name}">
                 Nama
@@ -225,13 +228,10 @@
                            data-status=${it.status}">
                 Edit
               </button>
-
-              <!-- REMOVED: tombol hapus lama (diganti titik 3) -->
             </div>
           </div>
         </div>
 
-        <!-- kalau kosong -->
         <div class="col-12 text-center text-muted mt-3" th:if="${#lists.isEmpty(barangList)}">
           Belum ada barang di database.
         </div>
@@ -244,7 +244,8 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="it : ${ruanganList}">
           <div class="card h-100 border-0 rounded-4 shadow-strong mx-auto" style="max-width: 16rem"
             th:classappend="${it.status} != null and ${it.status} != 'Tersedia' ? ' item-disabled' : ''">
-            <!-- CHANGED: tombol hapus jadi titik 3 pojok kanan atas -->
+
+            <!-- tombol hapus -->
             <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-2 btn-hapus" type="button"
               data-bs-toggle="modal" data-bs-target="#modalHapus" th:attr="data-id=${it.id}, data-nama=${it.name}"
               style="z-index: 3; width: 36px; height: 36px;" aria-label="Hapus">
@@ -263,6 +264,12 @@
                 Deskripsi
               </p>
 
+              <!-- ✅ KAPASITAS pakai stock -->
+              <p class="item-stok text-secondary small mb-1">
+                Kapasitas:
+                <b th:text="${it.stock} + ' orang'">0 orang</b>
+              </p>
+
               <p class="item-stok text-secondary small mb-3">
                 Ketersediaan:
                 <b th:text="${it.status}">Tersedia</b>
@@ -277,13 +284,10 @@
                            data-status=${it.status}">
                 Edit
               </button>
-
-              <!-- REMOVED: tombol hapus lama (diganti titik 3) -->
             </div>
           </div>
         </div>
 
-        <!-- kalau kosong -->
         <div class="col-12 text-center text-muted mt-3" th:if="${#lists.isEmpty(ruanganList)}">
           Belum ada ruangan di database.
         </div>
@@ -377,18 +381,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script th:src="@{/assets/pengelola/beranda.js}"></script>
 
-  <script>
-    // optional: kalau tombol logout kamu pakai POST /logout (Spring Security default)
-    // ini biar aman kalau /logout kamu wajib POST.
-    // Kalau punyamu sudah bisa GET, boleh hapus script ini.
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("btnLogout");
-      if (!btn) return;
-      btn.addEventListener("click", (e) => {
-        // biarin default onclick kalau sudah kamu set GET
-      });
-    });
-  </script>
 </body>
 
 </html>

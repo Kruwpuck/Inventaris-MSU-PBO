@@ -4,13 +4,13 @@ function getEls() {
   const gridBarang = document.getElementById("gridBarang");
   const gridFasil = document.getElementById("gridFasilitas");
   const input = document.getElementById("quickSearch");
-  const form = input ? input.closest("form") : null;
+  const form = document.getElementById("searchForm"); // lebih aman dari closest
   return { btnKategori, gridBarang, gridFasil, input, form };
 }
 
 function getActiveGrid(grids) {
-  if (grids.gridFasil && !grids.gridFasil.classList.contains("d-none"))
-    return grids.gridFasil;
+  // kalau fasilitas lagi tampil (tidak d-none), berarti aktif fasilitas
+  if (grids.gridFasil && !grids.gridFasil.classList.contains("d-none")) return grids.gridFasil;
   return grids.gridBarang;
 }
 
@@ -18,24 +18,33 @@ function normalize(str) {
   return (str || "").toLowerCase().trim();
 }
 
-// Sembunyikan/lihat kolom card
+// cari kolom pembungkus card yang paling aman
+function getCardColumn(card) {
+  // struktur kamu: col-* -> card
+  // jadi cukup cari parent element yang class-nya mengandung "col-"
+  let el = card.parentElement;
+  while (el && el !== document.body) {
+    if ([...el.classList].some((c) => c.startsWith("col-"))) return el;
+    el = el.parentElement;
+  }
+  return card.parentElement || card;
+}
+
 function setCardColumnDisplay(card, show) {
-  const col =
-    card.closest(".col-12, .col-sm-6, .col-md-4, .col-lg-3") ||
-    card.parentElement;
+  const col = getCardColumn(card);
   if (col) col.style.display = show ? "" : "none";
 }
 
 // =============== GRID SWITCH ===============
 function setActiveGrid(type, grids, keepQuery = true) {
   const isBarang = type === "barang";
+
   if (grids.gridBarang) grids.gridBarang.classList.toggle("d-none", !isBarang);
   if (grids.gridFasil) grids.gridFasil.classList.toggle("d-none", isBarang);
 
-  if (grids.btnKategori) {
-    grids.btnKategori.textContent = isBarang ? "Barang" : "Fasilitas";
-  }
+  if (grids.btnKategori) grids.btnKategori.textContent = isBarang ? "Barang" : "Ruangan";
 
+  // ketika switch kategori, tetap apply query saat ini
   if (keepQuery && grids.input) {
     filterCards(grids.input.value, grids);
   }
@@ -52,23 +61,25 @@ function filterCards(query, grids) {
   cards.forEach((card) => {
     const title = card.querySelector(".card-title")?.innerText || "";
     const desc = card.querySelector(".card-text")?.innerText || "";
-    const blob = title + " " + desc + " " + card.innerText;
+
+    // cukup cari dari title + desc biar rapi (nggak terlalu “noise”)
+    const blob = `${title} ${desc}`;
     const match = normalize(blob).includes(q);
+
+    // kalau q kosong => tampilkan semua
     setCardColumnDisplay(card, q === "" ? true : match);
   });
 }
 
 // =============== BOOT ===============
 (function initBeranda() {
-  // URL login (karena beranda.html & login.html satu folder: /pengelola/)
+  // ====== LOGIN CHECK (punyamu) ======
   const LOGIN_URL = "login.html?role=pengelola";
 
-  // ====== CEK LOGIN / SESSION SEDERHANA ======
   let currentUser = null;
   try {
     const raw = localStorage.getItem("msuUser");
     if (!raw) {
-      // Belum login → kembali ke halaman login pengelola
       window.location.href = LOGIN_URL;
       return;
     }
@@ -79,64 +90,72 @@ function filterCards(query, grids) {
     return;
   }
 
-  // Set nama & role di navbar
   const userNameEl = document.getElementById("userName");
   const userRoleEl = document.getElementById("userRoleLabel");
 
-  if (userNameEl && currentUser.username) {
-    userNameEl.textContent = currentUser.username;
-  }
-
+  if (userNameEl && currentUser.username) userNameEl.textContent = currentUser.username;
   if (userRoleEl) {
-    userRoleEl.textContent =
-      currentUser.role === "pengelola" ? "Pengelola Side" : "Pengurus Side";
+    userRoleEl.textContent = currentUser.role === "pengelola" ? "Pengelola Side" : "Pengurus Side";
   }
 
-  // Tombol logout → hapus localStorage & balik ke halaman login
   const btnLogout = document.getElementById("btnLogout");
   if (btnLogout) {
     btnLogout.addEventListener("click", (e) => {
       e.preventDefault();
       if (!confirm("Yakin ingin keluar dari akun?")) return;
-
       localStorage.removeItem("msuUser");
       window.location.href = LOGIN_URL;
     });
   }
 
-  // ====== KODE BERANDA YANG SUDAH ADA ======
+  // ====== INIT ELEMENTS ======
   const els = getEls();
   if (!els.input) return;
 
-  // Submit search
-  if (els.form) {
-    els.form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      filterCards(els.input.value, els);
-    });
-  }
+  // Submit search (tombol Cari / Enter)
+if (els.form) {
+  els.form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    filterCards(els.input.value, els);
+  });
+}
 
-  // Live search saat mengetik
-  els.input.addEventListener("input", () => filterCards(els.input.value, els));
+// Live search: ngetik, hapus (backspace), paste, dll
+const runFilter = () => filterCards(els.input.value, els);
 
-  // Dropdown kategori: ganti grid
+// 1) Paling utama
+els.input.addEventListener("input", runFilter);
+
+// 2) Backup (beberapa kasus backspace / autofill kadang aneh)
+els.input.addEventListener("keyup", runFilter);
+
+// 3) Kalau suatu saat kamu ganti input jadi type="search" (ada tombol X clear)
+els.input.addEventListener("search", runFilter);
+
+// 4) Kalau field kehilangan fokus, tetap sinkron
+els.input.addEventListener("change", runFilter);
+
+
+  // Dropdown kategori
   if (els.btnKategori) {
     const menu = els.btnKategori.parentElement?.querySelector(".dropdown-menu");
     if (menu) {
       menu.querySelectorAll("[data-switch]").forEach((item) => {
         item.addEventListener("click", (e) => {
           e.preventDefault();
-          const type = item.getAttribute("data-switch");
-          setActiveGrid(type, els, true);
+          const type = item.getAttribute("data-switch"); // barang / fasilitas
+          // HTML kamu pakai "fasilitas", tapi label user maunya "Ruangan"
+          setActiveGrid(type === "fasilitas" ? "ruangan" : "barang", els, true);
         });
       });
     }
   }
 
+  // default pertama kali: semua tampil
   filterCards("", els);
 
   /*
-   * LOGIKA MODAL EDIT
+   * LOGIKA MODAL EDIT (punyamu, aku biarkan)
    */
   const editModalEl = document.getElementById("editModal");
   if (editModalEl) {
@@ -147,12 +166,9 @@ function filterCards(query, grids) {
     const editDeskripsiItem = document.getElementById("editDeskripsiItem");
     const editFormGroupBarang = document.getElementById("editFormGroupBarang");
     const editStokInput = document.getElementById("editStokInput");
-    const editFormGroupFasilitas = document.getElementById(
-      "editFormGroupFasilitas"
-    );
+    const editFormGroupFasilitas = document.getElementById("editFormGroupFasilitas");
     const editStatusSelect = document.getElementById("editStatusSelect");
 
-    // Saat modal akan ditampilkan
     editModalEl.addEventListener("show.bs.modal", (event) => {
       const button = event.relatedTarget;
 
@@ -170,7 +186,7 @@ function filterCards(query, grids) {
         editFormGroupFasilitas.style.display = "none";
         const itemStok = button.getAttribute("data-item-stok");
         editStokInput.value = itemStok;
-      } else if (itemTipe === "ruangan") {
+      } else {
         editFormGroupBarang.style.display = "none";
         editFormGroupFasilitas.style.display = "block";
         const itemStatus = button.getAttribute("data-item-status");
@@ -178,7 +194,6 @@ function filterCards(query, grids) {
       }
     });
 
-    // Submit edit
     editForm.addEventListener("submit", (event) => {
       event.preventDefault();
 
@@ -205,19 +220,21 @@ function filterCards(query, grids) {
       }
 
       editButton.setAttribute("data-item-deskripsi", newDeskripsi);
+
+      // ✅ setelah edit, re-filter sesuai query saat ini (biar tampilan konsisten)
+      filterCards(els.input.value, els);
+
       editModal.hide();
     });
   }
 
   /*
-   * Titik-tiga (⋮) + Hapus
+   * Titik-tiga (⋮) + Hapus (punyamu, aku biarkan)
    */
-
   function injectMenuToCards(root) {
     const cards = root.querySelectorAll(".card");
     cards.forEach((card) => {
       card.classList.add("position-relative");
-
       if (card.querySelector(".msu-action-menu")) return;
 
       const wrap = document.createElement("div");
@@ -271,18 +288,20 @@ function filterCards(query, grids) {
   if (btnHapusKonfirm) {
     btnHapusKonfirm.addEventListener("click", async () => {
       const id = hapusIdEl?.value;
-      if (!id) { modalHapus?.hide(); return; }
+      if (!id) {
+        modalHapus?.hide();
+        return;
+      }
 
       try {
-        const card =
-          document.getElementById(id) ||
-          document.querySelector(`[data-item-id="${CSS.escape(id)}"]`);
+        const card = document.getElementById(id);
         if (card) {
-          const col =
-            card.closest(".col-12, .col-sm-6, .col-md-4, .col-lg-3") ||
-            card.parentElement;
+          const col = getCardColumn(card);
           (col || card).remove();
         }
+
+        // ✅ setelah hapus, re-filter sesuai query saat ini
+        filterCards(els.input.value, els);
       } catch (err) {
         console.error(err);
         alert("Gagal menghapus item. Coba lagi.");

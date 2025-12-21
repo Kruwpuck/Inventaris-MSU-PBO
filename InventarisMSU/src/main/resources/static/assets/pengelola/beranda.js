@@ -1,25 +1,78 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ===== Switch grid barang/ruangan =====
+  // ===== ELEMEN UTAMA =====
   const gridBarang = document.getElementById("gridBarang");
   const gridFasilitas = document.getElementById("gridFasilitas");
   const kategoriBtn = document.getElementById("kategoriBtn");
 
+  const searchForm = document.getElementById("searchForm");
+  const quickSearch = document.getElementById("quickSearch");
+
+  // ===== UTIL =====
+  const normalize = (s) => (s || "").toString().toLowerCase().trim();
+
+  function getActiveGrid() {
+    // kalau barang disembunyikan berarti yang aktif ruangan
+    return gridBarang && gridBarang.classList.contains("d-none")
+      ? gridFasilitas
+      : gridBarang;
+  }
+
+  function filterActiveGrid() {
+    const q = normalize(quickSearch?.value);
+    const activeGrid = getActiveGrid();
+    if (!activeGrid) return;
+
+    // filter card di grid aktif
+    activeGrid.querySelectorAll(".card").forEach((card) => {
+      const name = normalize(card.querySelector(".card-title")?.textContent);
+      const desc = normalize(card.querySelector(".card-text")?.textContent);
+      const blob = `${name} ${desc} ${normalize(card.textContent)}`;
+
+      const show = q === "" ? true : blob.includes(q);
+
+      // card ada di dalam col-*
+      const col = card.closest(".col-12, .col-sm-6, .col-md-4, .col-lg-3") || card.parentElement;
+      if (col) col.style.display = show ? "" : "none";
+    });
+  }
+
+  // ===== Switch grid barang/ruangan =====
   document.querySelectorAll("[data-switch]").forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
       const target = a.getAttribute("data-switch");
 
       if (target === "barang") {
-        gridBarang.classList.remove("d-none");
-        gridFasilitas.classList.add("d-none");
-        kategoriBtn.textContent = "Barang";
+        gridBarang?.classList.remove("d-none");
+        gridFasilitas?.classList.add("d-none");
+        if (kategoriBtn) kategoriBtn.textContent = "Barang";
       } else {
-        gridBarang.classList.add("d-none");
-        gridFasilitas.classList.remove("d-none");
-        kategoriBtn.textContent = "Ruangan";
+        gridBarang?.classList.add("d-none");
+        gridFasilitas?.classList.remove("d-none");
+        if (kategoriBtn) kategoriBtn.textContent = "Ruangan";
       }
+
+      // penting: setelah switch, apply filter berdasarkan input sekarang
+      filterActiveGrid();
     });
   });
+
+  // ===== Search =====
+  if (searchForm && quickSearch) {
+    // submit tetap ada (kalau user klik tombol Cari)
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      filterActiveGrid();
+    });
+
+    // ✅ ini yang kamu butuhin: saat ketik / hapus huruf, langsung refresh tampilan
+    quickSearch.addEventListener("input", filterActiveGrid);
+    quickSearch.addEventListener("keyup", filterActiveGrid);
+    quickSearch.addEventListener("change", filterActiveGrid);
+
+    // event khusus kalau user klik tombol "x" bawaan input search (browser tertentu)
+    quickSearch.addEventListener("search", filterActiveGrid);
+  }
 
   // ===== Modal Edit =====
   const editForm = document.getElementById("editForm");
@@ -37,30 +90,31 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".btn-edit").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.id;
-      const tipe = btn.dataset.tipe; // BARANG / RUANGAN
+      const tipeRaw = btn.dataset.tipe; // bisa BARANG/RUANGAN atau barang/ruangan tergantung backend
+      const tipe = (tipeRaw || "").toString().toUpperCase();
+
       const nama = btn.dataset.nama || "";
       const deskripsi = btn.dataset.deskripsi || "";
       const stok = btn.dataset.stok || 0;
       const status = btn.dataset.status || "Tersedia";
 
-      editItemId.value = id;
+      editItemId.value = id || "";
       editNamaItem.value = nama;
       editDeskripsiItem.value = deskripsi;
 
       // mode barang / ruangan
       if (tipe === "BARANG") {
-        groupBarang.style.display = "block";
-        groupFasilitas.style.display = "none";
-        editStokInput.value = stok;
+        if (groupBarang) groupBarang.style.display = "block";
+        if (groupFasilitas) groupFasilitas.style.display = "none";
+        if (editStokInput) editStokInput.value = stok;
       } else if (tipe === "RUANGAN") {
-        groupBarang.style.display = "none";
-        groupFasilitas.style.display = "block";
-        editStatusSelect.value = status;
+        if (groupBarang) groupBarang.style.display = "none";
+        if (groupFasilitas) groupFasilitas.style.display = "block";
+        if (editStatusSelect) editStatusSelect.value = status;
       } else {
-        // kalau ternyata tipe bukan BARANG/RUANGAN
-        groupBarang.style.display = "none";
-        groupFasilitas.style.display = "none";
-        alert("Tipe item tidak dikenali: " + tipe);
+        if (groupBarang) groupBarang.style.display = "none";
+        if (groupFasilitas) groupFasilitas.style.display = "none";
+        alert("Tipe item tidak dikenali: " + tipeRaw);
       }
 
       // simpan tipe aktif di form
@@ -69,48 +123,47 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // submit edit
-  editForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (editForm) {
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const id = editItemId.value;
-    const tipe = editForm.dataset.tipe;
+      const id = editItemId.value;
+      const tipe = (editForm.dataset.tipe || "").toUpperCase();
 
-    let url = "";
-    const body = new URLSearchParams();
-    body.append("description", editDeskripsiItem.value);
+      let url = "";
+      const body = new URLSearchParams();
+      body.append("description", editDeskripsiItem.value);
 
-    if (tipe === "BARANG") {
-      url = `/pengelola/items/${id}/update-barang`;
-      body.append("stock", editStokInput.value);
-    } else if (tipe === "RUANGAN") {
-      url = `/pengelola/items/${id}/update-ruangan`;
-      body.append("status", editStatusSelect.value);
-    } else {
-      alert("Tipe item tidak dikenali: " + tipe);
-      return;
-    }
+      if (tipe === "BARANG") {
+        url = `/pengelola/items/${id}/update-barang`;
+        body.append("stock", editStokInput.value);
+      } else if (tipe === "RUANGAN") {
+        url = `/pengelola/items/${id}/update-ruangan`;
+        body.append("status", editStatusSelect.value);
+      } else {
+        alert("Tipe item tidak dikenali: " + tipe);
+        return;
+      }
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: body.toString(),
-      });
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: body.toString(),
+        });
 
-      // HTTP error
-      if (!res.ok) throw new Error("Gagal menyimpan perubahan (HTTP " + res.status + ")");
+        if (!res.ok) throw new Error("Gagal menyimpan perubahan (HTTP " + res.status + ")");
 
-      // cek isi response (OK / ERROR)
-      const text = (await res.text()).trim();
-      if (text !== "OK") throw new Error("Gagal menyimpan perubahan");
+        const text = (await res.text()).trim();
+        if (text !== "OK") throw new Error("Gagal menyimpan perubahan");
 
-      window.location.reload();
-    } catch (err) {
-      alert(err.message || "Error saat update");
-    }
-  });
+        // reload biar isi dari DB sinkron (sesuai perilaku kamu sebelumnya)
+        window.location.reload();
+      } catch (err) {
+        alert(err.message || "Error saat update");
+      }
+    });
+  }
 
   // ===== Modal Hapus =====
   const hapusNama = document.getElementById("hapusNama");
@@ -119,47 +172,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".btn-hapus").forEach((btn) => {
     btn.addEventListener("click", () => {
-      hapusId.value = btn.dataset.id;
-      hapusNama.textContent = btn.dataset.nama || "item ini";
+      if (hapusId) hapusId.value = btn.dataset.id || "";
+      if (hapusNama) hapusNama.textContent = btn.dataset.nama || "item ini";
     });
   });
 
-  btnKonfirmasiHapus.addEventListener("click", async () => {
-    const id = hapusId.value;
-    try {
-      const res = await fetch(`/pengelola/items/${id}/delete`, {
-        method: "POST",
-      });
+  if (btnKonfirmasiHapus) {
+    btnKonfirmasiHapus.addEventListener("click", async () => {
+      const id = hapusId?.value;
+      if (!id) return;
 
-      if (!res.ok) throw new Error("Gagal menghapus item (HTTP " + res.status + ")");
+      try {
+        const res = await fetch(`/pengelola/items/${id}/delete`, { method: "POST" });
+        if (!res.ok) throw new Error("Gagal menghapus item (HTTP " + res.status + ")");
 
-      const text = (await res.text()).trim();
-      if (text !== "OK") throw new Error("Gagal menghapus item");
+        const text = (await res.text()).trim();
+        if (text !== "OK") throw new Error("Gagal menghapus item");
 
-      window.location.reload();
-    } catch (err) {
-      alert(err.message || "Error saat hapus");
-    }
-  });
+        // ✅ tanpa reload pun bisa: langsung hilangkan card dari DOM lalu re-filter
+        const btnHapus = document.querySelector(`.btn-hapus[data-id="${CSS.escape(id)}"]`);
+        const card = btnHapus?.closest(".card");
+        const col = card?.closest(".col-12, .col-sm-6, .col-md-4, .col-lg-3") || card?.parentElement;
 
-  // ===== Search =====
-  const searchForm = document.getElementById("searchForm");
-  const quickSearch = document.getElementById("quickSearch");
+        if (col) col.remove();
 
-  if (searchForm && quickSearch) {
-    searchForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const q = quickSearch.value.trim().toLowerCase();
-      const activeGrid = gridBarang.classList.contains("d-none")
-        ? gridFasilitas
-        : gridBarang;
+        // setelah delete, tampilan tetap konsisten dengan search query
+        filterActiveGrid();
 
-      activeGrid.querySelectorAll(".card").forEach((card) => {
-        const name = (card.querySelector(".card-title")?.textContent || "").toLowerCase();
-        const desc = (card.querySelector(".card-text")?.textContent || "").toLowerCase();
-        const show = name.includes(q) || desc.includes(q);
-        card.parentElement.style.display = show ? "" : "none";
-      });
+        // tutup modal (kalau bootstrap tersedia)
+        const modalEl = document.getElementById("modalHapus");
+        if (modalEl && window.bootstrap) {
+          const instance = bootstrap.Modal.getInstance(modalEl);
+          if (instance) instance.hide();
+        }
+      } catch (err) {
+        alert(err.message || "Error saat hapus");
+      }
     });
   }
+
+  // apply filter awal (kalau ada isi input karena autofill)
+  filterActiveGrid();
 });
