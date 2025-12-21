@@ -280,45 +280,33 @@
           </ul>
         </div>
 
-        <!-- PERIODE -->
+        <!-- PERIODE (DROPDOWN DATE PICKER) -->
         <div class="dropdown">
-          <button
-            class="btn btn-pill dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            id="btnPeriode"
-          >
-            Bulan Ini
+          <button class="btn btn-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btnPilihTanggal">
+            Pilih Tanggal
           </button>
-          <ul class="dropdown-menu" aria-labelledby="btnPeriode">
-            <li>
-              <a class="dropdown-item" href="#" data-value="2w"
-                >2 Minggu Terakhir</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item active"
-                href="#"
-                data-value="1m"
-                >Bulan Ini</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="prev1m"
-                >Bulan Lalu</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-value="all"
-                >Semua Waktu</a
-              >
-            </li>
-          </ul>
+          <div class="dropdown-menu p-3 shadow-strong border-0" style="min-width: 280px; border-radius: 12px;">
+            <h6 class="fw-bold fs-6 mb-3" style="color: #0b492c;">Custom Range</h6>
+            
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="dateStart" class="form-label small text-muted mb-1">Dari</label>
+                <div class="input-group input-group-sm">
+                  <input type="date" id="dateStart" class="form-control rounded-pill border-secondary" style="font-size: 0.85rem;">
+                </div>
+              </div>
+              <div class="col-6">
+                <label for="dateEnd" class="form-label small text-muted mb-1">Sampai</label>
+                <div class="input-group input-group-sm">
+                  <input type="date" id="dateEnd" class="form-control rounded-pill border-secondary" style="font-size: 0.85rem;">
+                </div>
+              </div>
+            </div>
+
+            <button type="button" id="btnApplyDate" class="btn btn-success w-100 rounded-pill btn-sm fw-semibold" style="background-color: #0b492c; border-color: #0b492c;">
+              Terapkan
+            </button>
+          </div>
         </div>
 
         <!-- KATEGORI -->

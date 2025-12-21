@@ -36,8 +36,7 @@ function hookupFilterDropdown(btnId, onChange) {
 }
 
 /* STATE FILTER */
-let vPeriode = "1m",
-  vKategori = "all",
+let vKategori = "all",
   vStatus = "all";
 const inputSearch = document.getElementById("fSearch");
 const tbody = document.getElementById("tbodyLaporan");
@@ -46,23 +45,19 @@ const tbody = document.getElementById("tbodyLaporan");
 function filterTable() {
   if (!tbody) return;
 
-  const today = startOfToday();
-  let from = null,
-    to = null;
+  /* DATE FILTER LOGIC */
+  const dStart = document.getElementById("dateStart")?.valueAsDate;
+  const dEnd = document.getElementById("dateEnd")?.valueAsDate;
+  
+  let from = null;
+  let to = null;
 
-  if (vPeriode === "2w") {
-    from = new Date(today);
-    from.setDate(from.getDate() - 13);
-    to = new Date(today);
-  } else if (vPeriode === "1m") {
-    from = new Date(today.getFullYear(), today.getMonth(), 1);
-    to = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  } else if (vPeriode === "prev1m") {
-    from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    to = new Date(today.getFullYear(), today.getMonth(), 0);
-  } else {
-    // "all" -> biarkan from/to null
-  }
+  if (dStart) from = dStart;
+  if (dEnd) to = dEnd;
+
+  // set time to start/end of day for accurate comparison
+  if (from) from.setHours(0, 0, 0, 0);
+  if (to) to.setHours(23, 59, 59, 999);
 
   const q = (inputSearch?.value || "").toLowerCase().trim();
 
@@ -144,7 +139,28 @@ window.addEventListener("load", () => {
 
   // ====== LOGIKA FILTER LAPORAN (PUNYAMU) ======
   // Hook dropdowns
-  hookupFilterDropdown("btnPeriode", (v) => (vPeriode = v));
+  // Date inputs & Apply Button
+  const dateStart = document.getElementById("dateStart");
+  const dateEnd = document.getElementById("dateEnd");
+  const btnApplyDate = document.getElementById("btnApplyDate"); // Tombol Terapkan baru
+
+  // Jangan filter saat input berubah (tunggu tombol Terapkan)
+  // if (dateStart) dateStart.addEventListener("change", filterTable); 
+  // if (dateEnd) dateEnd.addEventListener("change", filterTable);
+
+  if (btnApplyDate) {
+    btnApplyDate.addEventListener("click", (e) => {
+      e.preventDefault(); // Mencegah form submit jika ada dalam form (meski type=button aman)
+      filterTable();
+      
+      // Opsional: Tutup dropdown setelah apply (kalau pakai Bootstrap vanilla)
+      // const dropdownEl = btnApplyDate.closest('.dropdown-menu');
+      // if(dropdownEl) dropdownEl.classList.remove('show'); 
+      // Tapi biasanya user menutup sendiri melaui klik luar.
+    });
+  }
+
+  // Hook dropdowns (Kategori & Status only)
   hookupFilterDropdown("btnKategori", (v) => (vKategori = v));
   hookupFilterDropdown("btnStatus", (v) => (vStatus = v));
 
