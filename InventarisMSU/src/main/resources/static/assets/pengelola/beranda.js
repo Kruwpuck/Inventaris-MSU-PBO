@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body.append("status", editStatusSelect.value);
         if (editCapacityInput) body.append("capacity", editCapacityInput.value);
       } else {
-        alert("Tipe item tidak dikenali: " + tipe);
+        Swal.fire("Error", "Tipe item tidak dikenali: " + tipe, "error");
         return;
       }
 
@@ -176,10 +176,79 @@ document.addEventListener("DOMContentLoaded", () => {
         const text = (await res.text()).trim();
         if (text !== "OK") throw new Error("Gagal menyimpan perubahan");
 
-        // reload biar isi dari DB sinkron (sesuai perilaku kamu sebelumnya)
-        window.location.reload();
+        // ===== SUCCESS UI UPDATE (Tanpa Reload) =====
+
+        // 1. Tutup Modal
+        const modalEl = document.getElementById("editModal");
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        // 2. SweetAlert Sukses
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: (tipe === "BARANG" ? "Barang" : "Ruangan") + " berhasil diupdate.",
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        // 3. Update DOM Card secara manual
+        // Cari tombol edit yang punya data-id ini, karena tombol ada di dalam card
+        const btnEdit = document.querySelector(`.btn-edit[data-id="${id}"]`);
+        if (btnEdit) {
+          const card = btnEdit.closest(".card");
+
+          if (card) {
+            // Update Teks Judul & Deskripsi
+            const titleEl = card.querySelector(".card-title");
+            const descEl = card.querySelector(".card-text");
+            if (titleEl) titleEl.textContent = editNamaItem.value;
+            if (descEl) descEl.textContent = editDeskripsiItem.value;
+
+            // Update Stok / Kapasitas / Status Tampilan
+            // Struktur HTML item-stok agak variatif, kita rebuild atau cari elemen spesifik
+            const stokEls = card.querySelectorAll(".item-stok b");
+
+            if (tipe === "BARANG") {
+              // Barang cuma punya 1 line stok biasanya: Stok: <b>...</b>
+              if (stokEls[0]) stokEls[0].textContent = editStokInput.value + " unit";
+
+              // Update data attributes di tombol edit biar kalau dibuka lagi datanya baru
+              btnEdit.dataset.nama = editNamaItem.value;
+              btnEdit.dataset.deskripsi = editDeskripsiItem.value;
+              btnEdit.dataset.stok = editStokInput.value;
+
+            } else {
+              // Ruangan punya Stok & Kapasitas
+              // Asumsi urutan: [0] = Stok, [1] = Kapasitas
+              // Tapi Ruangan juga punya Status (item-disabled class)
+
+              // Update Visual Status
+              const statusVal = editStatusSelect.value;
+              if (statusVal === "Tersedia") {
+                card.classList.remove("item-disabled");
+              } else {
+                card.classList.add("item-disabled");
+              }
+
+              // Update Kapasitas (jika ada elemennya)
+              // Note: Stok ruangan biasanya static 1, tapi kalau mau diupdate visualnya:
+              // Kita cek elemen 'b' ke-2 biasanya kapasitas
+              if (stokEls.length > 1) {
+                stokEls[1].textContent = editCapacityInput.value + " orang";
+              }
+
+              // Update data attributes
+              btnEdit.dataset.nama = editNamaItem.value;
+              btnEdit.dataset.deskripsi = editDeskripsiItem.value;
+              btnEdit.dataset.status = statusVal;
+              btnEdit.dataset.capacity = editCapacityInput.value;
+            }
+          }
+        }
+
       } catch (err) {
-        alert(err.message || "Error saat update");
+        Swal.fire("Gagal", err.message || "Error saat update", "error");
       }
     });
   }
