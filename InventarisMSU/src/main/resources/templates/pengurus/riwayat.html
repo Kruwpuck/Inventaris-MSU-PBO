@@ -179,8 +179,8 @@
                             <th>Mulai Peminjaman</th>
                             <th>Selesai Peminjaman</th>
                             <th>Fasilitas</th>
-                            <th class="text-center">Cancel</th>
-                            <th class="text-center">Submit</th>
+                            <th class="text-center">Batal</th>
+                            <th class="text-center">Kirim</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -224,7 +224,7 @@
                                     <button type="button"
                                         class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 btn-cancel"
                                         style="min-width: 80px;">
-                                        <i class="bi bi-x-circle me-1"></i> Cancel
+                                        <i class="bi bi-x-circle me-1"></i> Batal
                                     </button>
                                 </form>
                                 <span th:if="${p.status.name() == 'REJECTED'}" class="badge bg-danger">Ditolak</span>
@@ -238,7 +238,7 @@
                                     <button type="button"
                                         class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 btn-submit"
                                         style="min-width: 80px;">
-                                        <i class="bi bi-check-circle me-1"></i> Submit
+                                        <i class="bi bi-send me-1"></i> Kirim
                                     </button>
                                 </form>
                             </td>
@@ -250,19 +250,29 @@
     </div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
+    <style>
+        .toast-progress {
+            height: 5px;
+            background-color: #198754;
+            width: 100%;
+            transition: width 3s linear;
+        }
+    </style>
+
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
-        <div id="liveToast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive"
-            aria-atomic="true" style="min-width: 350px;">
-            <div class="d-flex p-3 bg-white rounded-3">
+        <div id="liveToast" class="toast border-0 shadow-lg align-items-center" role="alert" aria-live="assertive"
+            aria-atomic="true" style="min-width: 350px; overflow: hidden; border-radius: 0.5rem;">
+            <div class="d-flex p-3 bg-white">
                 <div class="me-3 display-6 text-success">
                     <i class="bi bi-check-circle-fill"></i>
                 </div>
-                <div class="toast-body p-0 d-flex flex-column justify-content-center text-dark">
-                    <span id="toastMessage" class="fw-medium" style="font-size: 0.95rem; line-height: 1.4;"></span>
+                <div class="toast-body p-0 d-flex flex-column justify-content-center text-dark flex-grow-1">
+                    <span id="toastMessage" class="fw-semibold" style="font-size: 0.95rem; line-height: 1.4;"></span>
                 </div>
-                <button type="button" class="btn-close ms-auto me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close ms-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
+            <!-- Countdown Progress Bar -->
+            <div id="toastProgressBar" class="toast-progress"></div>
         </div>
     </div>
 
@@ -279,8 +289,23 @@
             if (successMsg) {
                 const toastEl = document.getElementById('liveToast');
                 const toastMsg = document.getElementById('toastMessage');
+                const progressBar = document.getElementById('toastProgressBar');
+
                 toastMsg.textContent = successMsg;
-                const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+
+                // delay must match CSS transition time (3000ms)
+                const toast = new bootstrap.Toast(toastEl, { delay: 3000, autohide: true });
+
+                // Animate progress bar when toast is shown
+                toastEl.addEventListener('shown.bs.toast', function () {
+                    progressBar.style.width = '0%';
+                });
+
+                // Reset width when hidden so it can replay
+                toastEl.addEventListener('hidden.bs.toast', function () {
+                    progressBar.style.width = '100%';
+                });
+
                 toast.show();
             }
 
