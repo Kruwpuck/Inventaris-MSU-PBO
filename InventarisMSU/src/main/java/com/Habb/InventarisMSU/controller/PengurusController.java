@@ -27,7 +27,8 @@ public class PengurusController {
         var all = peminjamanService.getAllPeminjaman();
         var today = java.time.LocalDate.now();
         var approvedToday = all.stream()
-                .filter(p -> p.getStatus() == com.Habb.InventarisMSU.model.PeminjamanStatus.APPROVED)
+                .filter(p -> p.getStatus() == com.Habb.InventarisMSU.model.PeminjamanStatus.APPROVED ||
+                        p.getStatus() == com.Habb.InventarisMSU.model.PeminjamanStatus.TAKEN)
                 .filter(p -> !p.getStartDate().isAfter(today) && !p.getEndDate().isBefore(today)) // Active today
                 .toList();
 
@@ -68,5 +69,12 @@ public class PengurusController {
                 .toList();
         model.addAttribute("historyLoans", history);
         return "pengurus/riwayat";
+    }
+
+    @PostMapping("/riwayat/cancel")
+    public String cancelStatus(@RequestParam("id") Long id) {
+        // Only revert if status is COMPLETED -> TAKEN (logic: undone return)
+        peminjamanService.updateStatus(id, com.Habb.InventarisMSU.model.PeminjamanStatus.TAKEN);
+        return "redirect:/pengurus/riwayat";
     }
 }

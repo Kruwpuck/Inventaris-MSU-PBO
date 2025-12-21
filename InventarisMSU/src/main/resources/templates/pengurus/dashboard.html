@@ -163,7 +163,8 @@
     <section>
       <h3 class="section-title">Peminjaman Hari Ini</h3>
 
-      <div class="alert alert-light border shadow-sm rounded-4 text-center py-5">
+      <!-- Empty State -->
+      <div class="alert alert-light border shadow-sm rounded-4 text-center py-5" th:if="${#lists.isEmpty(activeLoans)}">
         <i class="bi bi-calendar-event display-3 text-success mb-3 d-block opacity-50"></i>
         <h5 class="text-muted">Data peminjaman hari ini akan muncul di sini.</h5>
         <p class="small text-muted mb-0">Silakan cek menu Peminjaman Fasilitas untuk detail lengkap.</p>
@@ -171,6 +172,43 @@
           <a th:href="@{/pengurus/fasilitas}" class="btn btn-success rounded-pill px-4">
             Lihat Semua Peminjaman
           </a>
+        </div>
+      </div>
+
+      <!-- Data List (Cards) -->
+      <div class="row g-4" th:if="${!#lists.isEmpty(activeLoans)}">
+        <div class="col-md-6 col-lg-4" th:each="p : ${activeLoans}">
+          <div class="card card-custom h-100 border-0">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="card-title fw-bold text-dark m-0" th:text="${p.borrowerName}"></h5>
+                <span class="badge rounded-pill"
+                  th:classappend="${p.status.name() == 'TAKEN' ? 'bg-warning text-dark' : 'bg-success'}"
+                  th:text="${p.status.name() == 'TAKEN' ? 'Sedang Dipinjam' : 'Disetujui'}">
+                </span>
+              </div>
+
+              <div class="d-flex align-items-center mb-2 text-muted small">
+                <i class="bi bi-clock me-2"></i>
+                <span th:text="${p.startDate} + ' ' + ${p.getStartTime()}"></span>
+              </div>
+
+              <hr class="my-3 opacity-25">
+
+              <ul class="list-unstyled mb-0">
+                <li th:each="d : ${p.details}" class="d-flex align-items-center mb-1">
+                  <i class="bi bi-box-seam me-2 text-success"></i>
+                  <span th:text="${d.item.name}" class="fw-semibold text-secondary me-1"></span>
+                  <span class="text-muted small" th:text="'(x' + ${d.quantity} + ')'"></span>
+                </li>
+              </ul>
+            </div>
+            <div class="card-footer bg-white border-0 pt-0 pb-3">
+              <a th:href="@{/pengurus/fasilitas}" class="btn btn-outline-success w-100 rounded-pill btn-sm">
+                <i class="bi bi-check-circle me-1"></i> Proses
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

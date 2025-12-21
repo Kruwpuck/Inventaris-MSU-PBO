@@ -203,8 +203,17 @@
                                     class="badge badge-status badge-completed">SELESAI</span>
                                 <span th:if="${p.status.name() == 'REJECTED'}"
                                     class="badge badge-status badge-rejected">DITOLAK</span>
-                                <span th:if="${p.status.name() == 'TAKEN'}"
-                                    class="badge badge-status badge-taken">DIAMBIL</span>
+
+                                <!-- Undo/Cancel Action -->
+                                <form th:if="${p.status.name() == 'COMPLETED'}" th:action="@{/pengurus/riwayat/cancel}"
+                                    method="post" class="d-inline ms-2">
+                                    <input type="hidden" name="id" th:value="${p.id}" />
+                                    <button type="submit"
+                                        class="btn btn-sm btn-link text-danger text-decoration-none p-0"
+                                        onclick="return confirm('Batalkan status selesai? Data akan kembali ke daftar Peminjaman Fasilitas.')">
+                                        <small><i class="bi bi-arrow-counterclockwise"></i> Batal</small>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     </tbody>
