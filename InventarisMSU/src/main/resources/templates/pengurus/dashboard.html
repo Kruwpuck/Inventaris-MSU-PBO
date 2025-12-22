@@ -187,9 +187,9 @@
   <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
-      <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
-        <img th:src="@{/assets/guest/loogoo.png}" alt="Logo" style="height: 45px" />
-      </a>
+        <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
+          <img th:src="@{/assets/guest/loogoo.png}" alt="Logo" style="height: 45px" />
+        </a>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
         <span class="navbar-toggler-icon"></span>
@@ -212,23 +212,24 @@
         <div class="ms-3 dropdown">
           <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
             type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
-            type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img th:src="@{/assets/guest/loogoo.png}" alt="User" class="rounded-circle me-2" width="32" height="32" />
-            <div class="text-start">
-            <div class="text-start">
-              <div class="fw-semibold text-dark small">Pengurus</div>
-              <div class="text-muted" style="font-size: 0.75rem">Pengurus Side</div>
-            </div>
-            <i class="bi bi-chevron-down ms-2 small"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm border-0 rounded-4">
-            <li>
-              <a class="dropdown-item text-danger rounded-3" th:href="@{/logout}">
-                <i class="bi bi-box-arrow-right me-2"></i>Keluar
-              </a>
-            </li>
-          </ul>
+            <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
+              type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img th:src="@{/assets/pengurus/Assets/gedung.png}" alt="User" class="rounded-circle me-2" width="32"
+                height="32" />
+              <div class="text-start">
+                <div class="text-start">
+                  <div class="fw-semibold text-dark small">Pengurus</div>
+                  <div class="text-muted" style="font-size: 0.75rem">Pengurus Side</div>
+                </div>
+                <i class="bi bi-chevron-down ms-2 small"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm border-0 rounded-4">
+              <li>
+                <a class="dropdown-item text-danger rounded-3" th:href="@{/logout}">
+                  <i class="bi bi-box-arrow-right me-2"></i>Keluar
+                </a>
+              </li>
+            </ul>
         </div>
       </div>
     </div>
@@ -284,9 +285,9 @@
           <tr>
             <th class="text-center" style="width: 5%;">NO</th>
             <th style="width: 15%;">NAMA PEMINJAM</th>
-            <th style="width: 15%;">KONTAK</th>
-            <th style="width: 15%;">WAKTU AMBIL</th>
-            <th style="width: 15%;">WAKTU KEMBALI</th>
+            <th style="width: 12%;">KONTAK</th>
+            <th style="width: 14%;">WAKTU AMBIL</th>
+            <th style="width: 14%;">WAKTU KEMBALI</th>
             <th style="width: 20%;">FASILITAS</th>
             <th class="text-center" style="width: 10%;">SUDAH AMBIL</th>
             <th class="text-center" style="width: 10%;">SUDAH KEMBALI</th>
@@ -363,6 +364,32 @@
     <input type="hidden" name="redirect" value="/pengurus/dashboard">
   </form>
 
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <style>
+    .toast-progress {
+      height: 5px;
+      background-color: #198754;
+      width: 100%;
+      transition: width 3s linear;
+    }
+  </style>
+
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
+    <div id="liveToast" class="toast border-0 shadow-lg align-items-center" role="alert" aria-live="assertive"
+      aria-atomic="true" style="min-width: 350px; overflow: hidden; border-radius: 0.5rem;">
+      <div class="d-flex p-3 bg-white">
+        <div class="me-3 display-6 text-success">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <div class="toast-body p-0 d-flex flex-column justify-content-center text-dark flex-grow-1">
+          <span id="toastMessage" class="fw-semibold" style="font-size: 0.95rem; line-height: 1.4;"></span>
+        </div>
+        <button type="button" class="btn-close ms-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div id="toastProgressBar" class="toast-progress"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -370,20 +397,45 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
 
+      // Toast Function
+      function showToast(message) {
+        const toastEl = document.getElementById('liveToast');
+        const toastMsg = document.getElementById('toastMessage');
+        const progressBar = document.getElementById('toastProgressBar');
+
+        toastMsg.textContent = message;
+
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000, autohide: true });
+
+        toastEl.addEventListener('shown.bs.toast', function () {
+          progressBar.style.width = '0%';
+        });
+
+        toastEl.addEventListener('hidden.bs.toast', function () {
+          progressBar.style.width = '100%';
+        });
+
+        // Initial state
+        progressBar.style.width = '100%';
+        toast.show();
+      }
+
       // SEARCH SEARCH SEARCH
       const searchInput = document.getElementById('searchInput');
-      searchInput.addEventListener('keyup', function () {
-        const searchTerm = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#tableBody tr');
+      if (searchInput) {
+        searchInput.addEventListener('keyup', function () {
+          const searchTerm = this.value.toLowerCase();
+          const rows = document.querySelectorAll('#tableBody tr');
 
-        rows.forEach(row => {
-          // Skip empty state row if it exists
-          if (row.cells.length === 1) return;
+          rows.forEach(row => {
+            // Skip empty state row if it exists
+            if (row.cells.length === 1) return;
 
-          const text = row.textContent.toLowerCase();
-          row.style.display = text.includes(searchTerm) ? '' : 'none';
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+          });
         });
-      });
+      }
 
       // Handle "Sudah Ambil" Checkbox
       const takenCheckboxes = document.querySelectorAll('.checkbox-taken');
@@ -391,6 +443,7 @@
         cb.addEventListener('change', function (e) {
           e.preventDefault();
           const id = this.getAttribute('data-id');
+          const checkbox = this;
 
           if (this.checked) {
             Swal.fire({
@@ -404,9 +457,9 @@
               cancelButtonText: 'Tidak'
             }).then((result) => {
               if (result.isConfirmed) {
-                submitStatus(id, 'TAKEN');
+                updateStatusAjax(id, 'TAKEN', checkbox);
               } else {
-                this.checked = false; // Revert check
+                checkbox.checked = false; // Revert check
               }
             });
           }
@@ -419,16 +472,13 @@
         cb.addEventListener('change', function (e) {
           e.preventDefault();
           const id = this.getAttribute('data-id');
+          const checkbox = this;
+
           // Find corresponding "Sudah Ambil" checkbox in the same row
           const row = this.closest('tr');
           const takenCheckbox = row.querySelector('.checkbox-taken');
 
           if (this.checked) {
-            // Auto-check "Sudah Ambil" visual feedback
-            if (takenCheckbox && !takenCheckbox.checked) {
-              takenCheckbox.checked = true;
-            }
-
             Swal.fire({
               title: 'Konfirmasi Pengembalian',
               text: "Ruangan berhasil dikembalikan. Jangan lupa kembalikan kartu identitas sebagai bukti pengembalian",
@@ -440,19 +490,53 @@
               cancelButtonText: 'Tidak'
             }).then((result) => {
               if (result.isConfirmed) {
-                submitStatus(id, 'RETURNED');
+                // Determine if we need to auto-check taken
+                if (takenCheckbox && !takenCheckbox.checked) {
+                  // If we are marking returned, it implies taken.
+                }
+                updateStatusAjax(id, 'RETURNED', checkbox, takenCheckbox);
               } else {
-                this.checked = false;
+                checkbox.checked = false;
               }
             });
           }
         });
       });
 
-      function submitStatus(id, action) {
-        document.getElementById('formId').value = id;
-        document.getElementById('formAction').value = action;
-        document.getElementById('statusForm').submit();
+      function updateStatusAjax(id, action, checkbox, linkedCheckbox = null) {
+        // Prepare Form Data
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('action', action);
+
+        fetch('/pengurus/api/fasilitas/update-status', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showToast(data.message || 'Status berhasil diperbarui');
+
+              // Visual Updates
+              checkbox.checked = true;
+              checkbox.disabled = true;
+
+              if (linkedCheckbox) {
+                linkedCheckbox.checked = true;
+                linkedCheckbox.disabled = true;
+              }
+
+            } else {
+              Swal.fire('Error', data.message || 'Gagal memperbarui status', 'error');
+              checkbox.checked = false;
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Terjadi kesalahan koneksi', 'error');
+            checkbox.checked = false;
+          });
       }
     });
   </script>

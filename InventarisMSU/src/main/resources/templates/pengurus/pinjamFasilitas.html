@@ -83,9 +83,9 @@
   <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
-      <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
-        <img th:src="@{/assets/guest/loogoo.png}" alt="Logo" style="height: 45px" />
-      </a>
+        <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
+          <img th:src="@{/assets/guest/loogoo.png}" alt="Logo" style="height: 45px" />
+        </a>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
         <span class="navbar-toggler-icon"></span>
@@ -108,23 +108,24 @@
         <div class="ms-3 dropdown">
           <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
             type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
-            type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img th:src="@{/assets/guest/loogoo.png}" alt="User" class="rounded-circle me-2" width="32" height="32" />
-            <div class="text-start">
-            <div class="text-start">
-              <div class="fw-semibold text-dark small">Pengurus</div>
-              <div class="text-muted" style="font-size: 0.75rem">Pengurus Side</div>
-            </div>
-            <i class="bi bi-chevron-down ms-2 small"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm border-0 rounded-4">
-            <li>
-              <a class="dropdown-item text-danger rounded-3" th:href="@{/logout}">
-                <i class="bi bi-box-arrow-right me-2"></i>Keluar
-              </a>
-            </li>
-          </ul>
+            <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
+              type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img th:src="@{/assets/pengurus/Assets/gedung.png}" alt="User" class="rounded-circle me-2" width="32"
+                height="32" />
+              <div class="text-start">
+                <div class="text-start">
+                  <div class="fw-semibold text-dark small">Pengurus</div>
+                  <div class="text-muted" style="font-size: 0.75rem">Pengurus Side</div>
+                </div>
+                <i class="bi bi-chevron-down ms-2 small"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm border-0 rounded-4">
+              <li>
+                <a class="dropdown-item text-danger rounded-3" th:href="@{/logout}">
+                  <i class="bi bi-box-arrow-right me-2"></i>Keluar
+                </a>
+              </li>
+            </ul>
         </div>
       </div>
     </div>
