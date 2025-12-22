@@ -12,6 +12,7 @@
 
     <!-- Font: Inter -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" />
+    <link rel="icon" th:href="@{/assets/guest/loogoo.png}">
 
     <style>
         body {
@@ -108,7 +109,9 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
-                <img th:src="@{/assets/pengurus/logo.png}" alt="Logo" style="height: 45px" />
+            <a class="navbar-brand" th:href="@{/pengurus/dashboard}">
+                <img th:src="@{/assets/guest/loogoo.png}" alt="Logo" style="height: 45px" />
+            </a>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
                 <span class="navbar-toggler-icon"></span>
@@ -131,8 +134,11 @@
                 <div class="ms-3 dropdown">
                     <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img th:src="@{/assets/pengurus/logo.png}" alt="User" class="rounded-circle me-2" width="32"
+                    <button class="btn btn-outline-secondary d-flex align-items-center rounded-pill px-3 py-1 border-0"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img th:src="@{/assets/guest/loogoo.png}" alt="User" class="rounded-circle me-2" width="32"
                             height="32" />
+                        <div class="text-start">
                         <div class="text-start">
                             <div class="fw-semibold text-dark small">Pengurus</div>
                             <div class="text-muted" style="font-size: 0.75rem">Pengurus Side</div>
