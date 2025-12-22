@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Entity
+@Table(name = "users")
+public class User extends BaseEntity {
+    // ID removed (Inherited)
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -19,13 +19,11 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    public Long getId() {
-        return id;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ID methods removed (inherited)
 
     public String getEmail() {
         return email;

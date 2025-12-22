@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "peminjaman_details")
-public class PeminjamanDetail {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Entity
+@Table(name = "peminjaman_details")
+public class PeminjamanDetail extends BaseEntity {
+    // ID removed (Inherited)
 
     @ManyToOne
     @JoinColumn(name = "peminjaman_id", nullable = false)
@@ -19,13 +19,9 @@ public class PeminjamanDetail {
 
     private Integer quantity;
 
-    public Long getId() {
-        return id;
-    }
+    private Integer quantity;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ID methods removed (inherited)
 
     public Peminjaman getPeminjaman() {
         return peminjaman;

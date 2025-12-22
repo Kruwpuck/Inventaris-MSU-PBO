@@ -7,11 +7,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "peminjaman")
-public class Peminjaman {
+@Entity
+@Table(name = "peminjaman")
+public class Peminjaman extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // ID removed (Inherited from BaseEntity)
 
     private String borrowerName;
     private String email;
@@ -53,13 +53,7 @@ public class Peminjaman {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ID Getters/Setters removed (Inherited from BaseEntity)
 
     public String getBorrowerName() {
         return borrowerName;

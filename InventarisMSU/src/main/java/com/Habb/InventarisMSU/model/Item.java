@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "items")
-public class Item {
+@Entity
+@Table(name = "items")
+public class Item extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // ID removed (Inherited)
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -32,13 +32,10 @@ public class Item {
     @Column(name = "capacity")
     private Integer capacity;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "capacity")
+    private Integer capacity;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ID Getters/Setters removed (Inherited)
 
     public String getName() {
         return name;

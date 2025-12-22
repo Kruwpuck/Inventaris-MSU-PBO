@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "laporan")
-public class Laporan {
+@Entity
+@Table(name = "laporan")
+public class Laporan extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // ID removed (Inherited)
 
     @OneToOne
     @JoinColumn(name = "id_peminjaman", nullable = false)
@@ -28,13 +28,7 @@ public class Laporan {
     private String notes;
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ID methods removed (inherited)
 
     public Peminjaman getPeminjaman() {
         return peminjaman;
