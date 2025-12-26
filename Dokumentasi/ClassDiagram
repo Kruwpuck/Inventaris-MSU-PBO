@@ -1,0 +1,352 @@
+classDiagram
+    direction TB
+    
+    %% --- DOMAIN MODEL LAYER ---
+    namespace Model {
+        class BaseEntity {
+            <<Abstract>>
+            +Long id
+            +getId() Long
+            +setId(Long id) void
+        }
+
+        class Item {
+            +String name
+            +ItemType type
+            +Integer stock
+            +String description
+            +String imageUrl
+            +String status
+            +Integer capacity
+            +getName() String
+            +setName(String name) void
+            +getType() ItemType
+            +setType(ItemType type) void
+            +getStock() Integer
+            +setStock(Integer stock) void
+            +getCapacity() Integer
+            +setCapacity(Integer capacity) void
+            +getDescription() String
+            +setDescription(String description) void
+            +getImageUrl() String
+            +setImageUrl(String imageUrl) void
+            +getStatus() String
+            +setStatus(String status) void
+        }
+
+        class Peminjaman {
+            +String borrowerName
+            +String email
+            +String phone
+            +String reason
+            +String nimNip
+            +String department
+            +String description
+            +String documentPath
+            +Integer duration
+            +String location
+            +String identityCardPath
+            +String session
+            +LocalDate startDate
+            +LocalDate endDate
+            +LocalTime startTime
+            +LocalTime endTime
+            +PeminjamanStatus status
+            +LocalDateTime submissionDate
+            +boolean handedOver
+            +boolean returned
+            +onCreate() void
+            +getBorrowerName() String
+            +setBorrowerName(String name) void
+            +getDetails() List~PeminjamanDetail~
+            +setDetails(List~PeminjamanDetail~ details) void
+            +getLaporan() Laporan
+            +setLaporan(Laporan laporan) void
+        }
+
+        class PeminjamanDetail {
+            +Integer quantity
+            +getPeminjaman() Peminjaman
+            +setPeminjaman(Peminjaman peminjaman) void
+            +getItem() Item
+            +setItem(Item item) void
+            +getQuantity() Integer
+            +setQuantity(Integer q) void
+        }
+
+        class Laporan {
+            +LocalDateTime pickedUpAt
+            +LocalDateTime returnedAt
+            +boolean isSubmitted
+            +String notes
+            +getPeminjaman() Peminjaman
+            +setPeminjaman(Peminjaman p) void
+            +getPickedUpAt() LocalDateTime
+            +getReturnedAt() LocalDateTime
+            +isSubmitted() boolean
+            +getNotes() String
+        }
+
+        class User {
+            +String email
+            +String password
+            +Role role
+            +getEmail() String
+            +getRole() Role
+        }
+
+        class ItemType {
+            <<Enumeration>>
+            BARANG
+            RUANGAN
+        }
+
+        class PeminjamanStatus {
+            <<Enumeration>>
+            PENDING
+            APPROVED
+            TAKEN
+            RETURNED
+            REJECTED
+            COMPLETED
+            OVERDUE
+        }
+
+        class Role {
+            <<Enumeration>>
+            PENGELOLA
+            PENGURUS
+        }
+    }
+
+    %% Relationships Model
+    BaseEntity <|-- Item
+    BaseEntity <|-- Peminjaman
+    BaseEntity <|-- PeminjamanDetail
+    BaseEntity <|-- Laporan
+    BaseEntity <|-- User
+
+    Peminjaman "1" *-- "0..*" PeminjamanDetail : Composition (Cascade ALL)
+    Peminjaman "1" *-- "0..1" Laporan : Composition (Cascade ALL)
+    PeminjamanDetail "*" --> "1" Item : Association
+    
+    Item ..> ItemType : Depends
+    Peminjaman ..> PeminjamanStatus : Depends
+    User ..> Role : Depends
+
+    %% --- DATA TRANSFER OBJECTS ---
+    namespace DTO {
+        class BookingRequestDTO {
+            +String borrowerName
+            +String email
+            +String phone
+            +String nimNip
+            +String itemsJson
+            +getBorrowerName() String
+            +getItemsJson() String
+        }
+        class PublicBookingDTO {
+            +Long id
+            +String borrowerName
+            +String status
+            +List~String~ items
+        }
+        class AvailabilityDTO {
+            +Long itemId
+            +String itemName
+            +int available
+        }
+        class CartItem {
+            +Long id
+            +String name
+            +int quantity
+        }
+    }
+
+    %% --- REPOSITORY LAYER ---
+    namespace Repository {
+        class ItemRepository {
+            <<Interface>>
+            +findByTypeOrderByIdDesc(ItemType type) List~Item~
+            +findByName(String name) Item
+            +findByType(ItemType type) List~Item~
+            +findTop4ByType(ItemType type) List~Item~
+            +countByType(ItemType type) long
+        }
+
+        class PeminjamanRepository {
+            <<Interface>>
+            +findByStatus(PeminjamanStatus status) List~Peminjaman~
+            +findByStatusNot(PeminjamanStatus status) List~Peminjaman~
+            +findByStartDate(LocalDate date) List~Peminjaman~
+            +findBookingsInDataRange(LocalDate start, LocalDate end) List~Peminjaman~
+            +findOverlappingRange(LocalDate start, LocalDate end) List~Peminjaman~
+            +findOverlappingBookings(LocalDate date) List~Peminjaman~
+            +countBorrowedItems(List~PeminjamanStatus~ statuses) List~Object[]~
+            +countByEmail(String email) long
+        }
+
+        class LaporanRepository {
+            <<Interface>>
+            +findByPeminjamanId(Long id) Laporan
+        }
+
+        class PeminjamanDetailRepository {
+            <<Interface>>
+        }
+
+        class UserRepository {
+            <<Interface>>
+            +findByEmail(String email) Optional~User~
+        }
+    }
+    
+    %% Relationships Repository
+    ItemRepository ..> Item : Uses
+    PeminjamanRepository ..> Peminjaman : Uses
+    LaporanRepository ..> Laporan : Uses
+    PeminjamanDetailRepository ..> PeminjamanDetail : Uses
+    UserRepository ..> User : Uses
+
+    %% --- SERVICE LAYER ---
+    namespace Service {
+        class GuestBookingService {
+            +submitBooking(BookingRequestDTO req, MultipartFile file, MultipartFile identity) void
+            +getPublicBookings(String dateStr) List~PublicBookingDTO~
+            +getBookedDays(String itemName, int year, int month) List~Integer~
+            +checkAvailability(String startDt, String startTm, String endDt, String endTm) List~AvailabilityDTO~
+            -sendBookingConfirmationEmail(Peminjaman p) void
+        }
+
+        class PeminjamanService {
+            +createPeminjaman(Peminjaman p) Peminjaman
+            +save(Peminjaman p) void
+            +getAllPeminjaman() List~Peminjaman~
+            +getPeminjamanById(Long id) Peminjaman
+            +updateStatus(Long id, PeminjamanStatus status, String reason) void
+            +updateHandover(Long id, boolean handedOver) void
+            +updateReturn(Long id, boolean returned) void
+            -sendApprovalEmail(Peminjaman p) void
+            -sendRejectionEmail(Peminjaman p, String reason) void
+        }
+
+        class ItemService {
+            +getAllItems() List~Item~
+            +getItemById(Long id) Item
+            +saveItem(Item item) Item
+            +deleteItem(Long id) void
+            +getAvailableStock(Item item, LocalDate start, LocalDate end) int
+        }
+
+        class ReportService {
+            +getAllData() List~Peminjaman~
+            +generateCsv() byte[]
+            +generateXlsx() byte[]
+            +generatePdf() byte[]
+        }
+        
+        class EmailService {
+            +sendSimpleMessage(String to, String subject, String text) void
+            +sendHtmlMessage(String to, String subject, String html) void
+        }
+        
+        class CustomUserDetailsService {
+            +loadUserByUsername(String email) UserDetails
+        }
+    }
+
+    %% Relationships Service
+    GuestBookingService --> PeminjamanRepository : Association
+    GuestBookingService --> ItemRepository : Association
+    GuestBookingService --> EmailService : Association
+    
+    PeminjamanService --> PeminjamanRepository : Association
+    PeminjamanService --> ItemRepository : Association
+    PeminjamanService --> EmailService : Association
+    
+    ItemService --> ItemRepository : Association
+    ItemService --> PeminjamanRepository : Association
+    
+    ReportService --> PeminjamanRepository : Association
+    
+    CustomUserDetailsService --> UserRepository : Association
+
+    %% --- CONTROLLER LAYER ---
+    namespace Controller {
+        class PeminjamanController {
+            +submitBooking(...) ResponseEntity
+            +getBookings(String date) ResponseEntity
+            +getBookedDays(...) ResponseEntity
+            +checkAvailability(...) ResponseEntity
+        }
+        
+        class PengelolaController {
+            +beranda(Model model) String
+            +approval(Model model) String
+            +updateStatus(Long id, String status, String reason) String
+            +laporan(Model model) String
+            +downloadCsv() ResponseEntity
+            +downloadXlsx() ResponseEntity
+            +downloadPdf() ResponseEntity
+        }
+        
+        class PengurusController {
+            +dashboard(Model model) String
+            +fasilitas(Model model) String
+            +updateStatusApi(Long id, String action) Map
+            +riwayat(Model model) String
+            +cancelStatus(Long id) String
+            +submitReport(Long id, String reason) String
+        }
+        
+        class ItemManageController {
+            +updateBarang(...) String
+            +updateRuangan(...) String
+            +deleteItem(Long id) String
+        }
+        
+        class TambahController {
+            +showTambah(Model model) String
+            +submitTambah(...) String
+        }
+        
+        class CartController {
+            +addToCart(CartItem item, HttpSession session) List
+            +getCart(HttpSession session) List
+            +clearCart(HttpSession session) void
+        }
+        
+        class HomeController {
+            +index(Model model) String
+            +catalogue(Model model) String
+            +ruangan(Model model) String
+        }
+    }
+
+    %% Relationships Controller
+    PeminjamanController --> GuestBookingService : Association
+    
+    PengelolaController --> ItemService : Association
+    PengelolaController --> PeminjamanService : Association
+    PengelolaController --> ReportService : Association
+    PengelolaController --> PeminjamanRepository : Association
+    
+    PengurusController --> PeminjamanService : Association
+    PengurusController --> LaporanRepository : Association
+    
+    ItemManageController --> ItemService : Association
+    TambahController --> ItemService : Association
+    
+    CartController --> ItemRepository : Association
+    HomeController --> ItemRepository : Association
+
+    %% Relationships DTO
+    GuestBookingService ..> BookingRequestDTO : Uses
+    GuestBookingService ..> PublicBookingDTO : Uses
+    GuestBookingService ..> AvailabilityDTO : Uses
+    
+    PeminjamanController ..> BookingRequestDTO : Uses
+    PeminjamanController ..> PublicBookingDTO : Uses
+    PeminjamanController ..> AvailabilityDTO : Uses
+    
+    CartController ..> CartItem : Uses
